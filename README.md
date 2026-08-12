@@ -53,6 +53,20 @@ cp .env.example .env.local
 pnpm dev            # http://localhost:3000
 ```
 
+### Cambiar el puerto
+
+Next.js decide en qué puerto arrancar **antes** de leer `.env.local` (por eso `PORT`
+no se puede fijar ahí — [así lo documenta Next.js](https://nextjs.org/docs/app/api-reference/cli/next#changing-the-default-port)).
+`pnpm dev`/`pnpm start` toman el puerto de la variable de entorno real del shell:
+
+```bash
+PORT=3300 pnpm dev
+```
+
+Si cambias el puerto de la API, actualiza también `API_URL`/`NEXT_PUBLIC_API_URL` en
+`.env.local` (o pásalas igual que `PORT`) para que el frontend siga apuntando a la
+API correcta.
+
 ## Scripts
 
 - `pnpm test` — specs de Jest

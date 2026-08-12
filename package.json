@@ -4,9 +4,9 @@
   "description": "Dynamic landing pages frontend: pages assembled on the fly from the headless web-builder-api",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p ${PORT:-3000}",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p ${PORT:-3000}",
     "test": "jest",
     "test:watch": "jest --watch",
     "typecheck": "tsc --noEmit",
