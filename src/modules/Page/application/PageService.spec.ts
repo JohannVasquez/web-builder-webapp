@@ -7,7 +7,7 @@ describe('PageService', () => {
     slug: 'nosotros',
     title: 'Nosotros',
     description: 'Quiénes somos',
-    sections: [{ type: 'Hero', position: 1, props: { title: 'Hola' } }],
+    sections: [{ type: 'Hero', position: 1, props: { title: 'Hola' }, anchor: null }],
   };
 
   it('delegates the lookup to the repository and returns the page', async () => {

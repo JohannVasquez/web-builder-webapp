@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import type { ReactElement } from 'react';
-import { NAVIGATION_LINKS } from '@/shared/config/navigation';
+import type { NavigationLink } from '@/modules/Navigation/domain/NavigationLink';
 import type { GlobalSettings } from '../domain/GlobalSettings';
 
 interface NavbarProps {
   readonly settings: GlobalSettings;
+  readonly links: readonly NavigationLink[];
 }
 
-export function Navbar({ settings }: NavbarProps): ReactElement {
+export function Navbar({ settings, links }: NavbarProps): ReactElement {
   return (
     <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
@@ -15,7 +16,7 @@ export function Navbar({ settings }: NavbarProps): ReactElement {
           {settings.siteName}
         </Link>
         <nav className="flex items-center gap-1 md:gap-2">
-          {NAVIGATION_LINKS.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}

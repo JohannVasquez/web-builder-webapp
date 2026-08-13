@@ -31,6 +31,7 @@ src/
 │   │   ├── infrastructure/        # ApiPageRepository (fetch) + factory
 │   │   └── presentation/          # COMPONENT_MAP, SectionRenderer y secciones
 │   ├── GlobalSettings/        # Marca global (Navbar, Footer, botón WhatsApp)
+│   ├── Navigation/            # Menú del sitio dictado por la API
 │   └── Contact/               # Formulario (shadcn/ui + RHF + Zod) y ContactService
 └── shared/                    # ui (shadcn), config y utilidades
 ```
@@ -41,6 +42,10 @@ src/
   (AC1.5) y las props inválidas hacen que el bloque no se renderice.
 - **Boundaries**: `eslint-plugin-boundaries` prohíbe que `domain` importe capas
   externas y que `presentation` toque `infrastructure`.
+- **Multi-página o one-page**: el menú viene de `GET /api/navigation` y las secciones
+  con `anchor` se renderizan con `id`, así que un `href` del menú puede ser una página
+  (`/nosotros`) o el ancla de una sección (`/#caracteristicas`). La estructura del
+  sitio se decide en la base de datos, no en el código (ver README de la API).
 
 ## Puesta en marcha
 

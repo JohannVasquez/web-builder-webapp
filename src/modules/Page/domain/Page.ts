@@ -4,6 +4,7 @@ export const PageSectionSchema = z.strictObject({
   type: z.string(),
   position: z.number(),
   props: z.record(z.string(), z.unknown()),
+  anchor: z.string().nullable(),
 });
 
 export const PageSchema = z.strictObject({
