@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 import { PageNotFound } from '@/modules/Page/presentation/PageNotFound';
 
-export default function NotFound(): ReactElement {
+export default function TenantNotFound(): ReactElement {
   return <PageNotFound />;
 }

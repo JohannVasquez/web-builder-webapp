@@ -9,6 +9,9 @@ const CallToActionPropsSchema = z.object({
   subtitle: z.string().optional(),
   buttonLabel: z.string().optional(),
   buttonHref: z.string().optional(),
+  /** Colores CSS definidos en la BD; sin ellos se usa el tema por defecto. */
+  backgroundColor: z.string().optional(),
+  textColor: z.string().optional(),
 });
 
 export function CallToAction({
@@ -18,14 +21,26 @@ export function CallToAction({
   if (!parsed.success) {
     return null;
   }
-  const { title, subtitle, buttonLabel, buttonHref } = parsed.data;
+  const { title, subtitle, buttonLabel, buttonHref, backgroundColor, textColor } =
+    parsed.data;
 
   return (
-    <section className="bg-primary text-primary-foreground">
+    <section
+      className="bg-primary text-primary-foreground"
+      style={{ backgroundColor, color: textColor }}
+    >
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 px-6 py-16 text-center">
         <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
         {subtitle !== undefined && (
-          <p className="text-primary-foreground/80 max-w-xl">{subtitle}</p>
+          <p
+            className={
+              textColor === undefined
+                ? 'text-primary-foreground/80 max-w-xl'
+                : 'max-w-xl opacity-80'
+            }
+          >
+            {subtitle}
+          </p>
         )}
         {buttonLabel !== undefined && buttonHref !== undefined && (
           <Button asChild variant="secondary" size="lg" className="mt-2">

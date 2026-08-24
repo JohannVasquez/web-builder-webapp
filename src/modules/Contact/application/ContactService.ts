@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TENANT_DOMAIN_HEADER } from '@/shared/config/tenant';
 import { ContactSchema, type ContactInput } from '../domain/ContactSchema';
 
 export interface ContactResult {
@@ -16,6 +17,14 @@ type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 export class ContactService {
   constructor(
     private readonly baseUrl: string,
+    /**
+     * Dominio del visitante (ej. `electrica.localhost`). Cuando el navegador
+     * llama a la API cross-origin (sin Caddy), el `Host` que ve la API es el
+     * suyo propio, así que el tenant debe viajar en este header — igual que
+     * hacen los server components. Vía Caddy el header simplemente coincide
+     * con el `Host` y no cambia nada.
+     */
+    private readonly tenantDomain?: string,
     private readonly fetchFn: FetchLike = (input, init) => fetch(input, init),
   ) {}
 
@@ -24,7 +33,12 @@ export class ContactService {
 
     const response = await this.fetchFn(`${this.baseUrl}/api/contact`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(this.tenantDomain === undefined
+          ? {}
+          : { [TENANT_DOMAIN_HEADER]: this.tenantDomain }),
+      },
       body: JSON.stringify(payload),
     });
 

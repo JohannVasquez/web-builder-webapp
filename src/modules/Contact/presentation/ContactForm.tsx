@@ -22,7 +22,14 @@ import { ContactService } from '../application/ContactService';
 
 export function ContactForm(): ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const contactService = useMemo(() => new ContactService(getPublicApiBaseUrl()), []);
+  const contactService = useMemo(
+    () =>
+      new ContactService(
+        getPublicApiBaseUrl(),
+        typeof window === 'undefined' ? undefined : window.location.hostname,
+      ),
+    [],
+  );
 
   const form = useForm<ContactInput>({
     resolver: zodResolver(ContactSchema),

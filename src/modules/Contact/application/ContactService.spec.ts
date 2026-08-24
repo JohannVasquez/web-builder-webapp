@@ -1,4 +1,5 @@
 import { ContactService } from './ContactService';
+import { TENANT_DOMAIN_HEADER } from '@/shared/config/tenant';
 import type { ContactInput } from '../domain/ContactSchema';
 
 describe('ContactService', () => {
@@ -21,7 +22,7 @@ describe('ContactService', () => {
       .mockResolvedValue(
         buildResponse(200, { success: true, message: 'Enviado con éxito' }),
       );
-    const service = new ContactService('http://api.test', fetchFn);
+    const service = new ContactService('http://api.test', undefined, fetchFn);
 
     const result = await service.sendContact(validInput);
 
@@ -32,9 +33,33 @@ describe('ContactService', () => {
     expect(result).toEqual({ success: true, message: 'Enviado con éxito' });
   });
 
+  it('sends the visitor domain so the API resolves the right tenant', async () => {
+    const fetchFn = jest
+      .fn<Promise<Response>, [string, RequestInit?]>()
+      .mockResolvedValue(buildResponse(200, { success: true, message: 'ok' }));
+    const service = new ContactService('http://api.test', 'electrica.localhost', fetchFn);
+
+    await service.sendContact(validInput);
+
+    const headers = fetchFn.mock.calls[0]?.[1]?.headers as Record<string, string>;
+    expect(headers[TENANT_DOMAIN_HEADER]).toBe('electrica.localhost');
+  });
+
+  it('omits the tenant header when no domain is provided', async () => {
+    const fetchFn = jest
+      .fn<Promise<Response>, [string, RequestInit?]>()
+      .mockResolvedValue(buildResponse(200, { success: true, message: 'ok' }));
+    const service = new ContactService('http://api.test', undefined, fetchFn);
+
+    await service.sendContact(validInput);
+
+    const headers = fetchFn.mock.calls[0]?.[1]?.headers as Record<string, string>;
+    expect(headers[TENANT_DOMAIN_HEADER]).toBeUndefined();
+  });
+
   it('rejects invalid input locally without calling the API', async () => {
     const fetchFn = jest.fn<Promise<Response>, [string, RequestInit?]>();
-    const service = new ContactService('http://api.test', fetchFn);
+    const service = new ContactService('http://api.test', undefined, fetchFn);
 
     await expect(
       service.sendContact({ ...validInput, email: 'invalido' }),
@@ -46,7 +71,7 @@ describe('ContactService', () => {
     const fetchFn = jest
       .fn<Promise<Response>, [string, RequestInit?]>()
       .mockResolvedValue(buildResponse(500, {}));
-    const service = new ContactService('http://api.test', fetchFn);
+    const service = new ContactService('http://api.test', undefined, fetchFn);
 
     await expect(service.sendContact(validInput)).rejects.toThrow('HTTP 500');
   });
