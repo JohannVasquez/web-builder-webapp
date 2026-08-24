@@ -1,12 +1,19 @@
 import { COMPONENT_MAP, resolveSectionComponent } from './componentMap';
 
 describe('componentMap', () => {
-  it.each(['Hero', 'Features', 'CallToAction', 'TextBlock', 'ContactForm', 'Stats'])(
-    'resolves the "%s" section type to a component',
-    (type) => {
-      expect(resolveSectionComponent(type)).toBeDefined();
-    },
-  );
+  it.each([
+    'Hero',
+    'Features',
+    'CallToAction',
+    'TextBlock',
+    'ContactForm',
+    'Stats',
+    'ServiceCards',
+    'SplitHighlights',
+    'Testimonials',
+  ])('resolves the "%s" section type to a component', (type) => {
+    expect(resolveSectionComponent(type)).toBeDefined();
+  });
 
   it('returns undefined for unknown section types so they are silently skipped', () => {
     expect(resolveSectionComponent('VideoGallery')).toBeUndefined();
