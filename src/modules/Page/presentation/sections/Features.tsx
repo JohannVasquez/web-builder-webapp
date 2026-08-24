@@ -20,14 +20,17 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import {
+  SectionBackgroundPropsSchema,
+  sectionBackgroundStyle,
+} from '@/shared/lib/sectionBackground';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const FeaturesPropsSchema = z.object({
   /** Línea corta sobre el título (ej. "Sectores que atendemos"). */
   eyebrow: z.string().optional(),
   title: z.string().default(''),
-  /** Color CSS de fondo de toda la sección (viene de la BD). */
-  backgroundColor: z.string().optional(),
+  ...SectionBackgroundPropsSchema.shape,
   /** Color CSS de los íconos y su burbuja. */
   accentColor: z.string().optional(),
   /**
@@ -72,20 +75,29 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
   if (!parsed.success) {
     return null;
   }
-  const { eyebrow, title, items, backgroundColor, accentColor, variant } = parsed.data;
+  const { eyebrow, title, items, accentColor, variant } = parsed.data;
+  const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
 
   return (
-    <section style={backgroundColor !== undefined ? { backgroundColor } : undefined}>
+    <section style={sectionBackgroundStyle(parsed.data)}>
       <div className="mx-auto max-w-5xl px-6 py-20">
         {eyebrow !== undefined && (
           <p
-            className="mb-2 text-center text-sm font-semibold tracking-wide uppercase"
+            className={cn(
+              'mb-2 text-center text-sm font-semibold tracking-wide uppercase',
+              hasBackgroundImage && accentColor === undefined && 'text-white/80',
+            )}
             style={accentColor !== undefined ? { color: accentColor } : undefined}
           >
             {eyebrow}
           </p>
         )}
-        <h2 className="mb-12 text-center text-3xl font-bold tracking-tight md:text-4xl">
+        <h2
+          className={cn(
+            'mb-12 text-center text-3xl font-bold tracking-tight md:text-4xl',
+            hasBackgroundImage && 'text-white',
+          )}
+        >
           {title}
         </h2>
         <div className="grid gap-8 md:grid-cols-3">
@@ -121,8 +133,24 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
                     <Icon className="size-6" />
                   </div>
                 )}
-                <h3 className="text-xl font-semibold">{item.title}</h3>
-                <p className="text-muted-foreground text-sm">{item.description}</p>
+                <h3
+                  className={cn(
+                    'text-xl font-semibold',
+                    variant === 'plain' && hasBackgroundImage && 'text-white',
+                  )}
+                >
+                  {item.title}
+                </h3>
+                <p
+                  className={cn(
+                    'text-sm',
+                    variant === 'plain' && hasBackgroundImage
+                      ? 'text-white/80'
+                      : 'text-muted-foreground',
+                  )}
+                >
+                  {item.description}
+                </p>
               </div>
             );
           })}

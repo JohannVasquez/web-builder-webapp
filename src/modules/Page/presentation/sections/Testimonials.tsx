@@ -4,11 +4,15 @@ import { useState, type ReactElement } from 'react';
 import { z } from 'zod';
 import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import {
+  SectionBackgroundPropsSchema,
+  sectionBackgroundStyle,
+} from '@/shared/lib/sectionBackground';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const TestimonialsPropsSchema = z.object({
   title: z.string().default(''),
-  backgroundColor: z.string().optional(),
+  ...SectionBackgroundPropsSchema.shape,
   accentColor: z.string().optional(),
   items: z
     .array(
@@ -33,22 +37,28 @@ export function Testimonials({
   if (!parsed.success) {
     return null;
   }
-  const { title, items, backgroundColor, accentColor } = parsed.data;
+  const { title, items, accentColor } = parsed.data;
   if (items.length === 0) {
     return null;
   }
 
   const current = items[activeIndex % items.length];
   const accent = accentColor ?? '#fbbf24';
+  const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
   const goTo = (delta: number): void => {
     setActiveIndex((index) => (index + delta + items.length) % items.length);
   };
 
   return (
-    <section style={backgroundColor !== undefined ? { backgroundColor } : undefined}>
+    <section style={sectionBackgroundStyle(parsed.data)}>
       <div className="mx-auto max-w-3xl px-6 py-20">
         {title !== '' && (
-          <h2 className="relative mx-auto mb-14 inline-block w-full pb-3 text-center text-3xl font-bold tracking-tight md:text-4xl">
+          <h2
+            className={cn(
+              'relative mx-auto mb-14 inline-block w-full pb-3 text-center text-3xl font-bold tracking-tight md:text-4xl',
+              hasBackgroundImage && 'text-white',
+            )}
+          >
             {title}
             <span
               className="absolute bottom-0 left-1/2 h-1 w-16 -translate-x-1/2 rounded-full"

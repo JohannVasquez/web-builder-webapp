@@ -1,6 +1,10 @@
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import { cn } from '@/shared/lib/utils';
+import {
+  SectionBackgroundPropsSchema,
+  sectionBackgroundStyle,
+} from '@/shared/lib/sectionBackground';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const TextBlockPropsSchema = z.object({
@@ -9,7 +13,7 @@ const TextBlockPropsSchema = z.object({
   /** Imagen lateral opcional (URL del bucket del módulo FileStorage). */
   imageUrl: z.string().optional(),
   imageAlt: z.string().optional(),
-  backgroundColor: z.string().optional(),
+  ...SectionBackgroundPropsSchema.shape,
 });
 
 export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement | null {
@@ -17,11 +21,12 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
   if (!parsed.success) {
     return null;
   }
-  const { title, content, imageUrl, imageAlt, backgroundColor } = parsed.data;
+  const { title, content, imageUrl, imageAlt } = parsed.data;
   const hasImage = imageUrl !== undefined;
+  const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
 
   return (
-    <section style={backgroundColor !== undefined ? { backgroundColor } : undefined}>
+    <section style={sectionBackgroundStyle(parsed.data)}>
       <div
         className={cn(
           'mx-auto px-6 py-16',
@@ -30,9 +35,23 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
       >
         <div>
           {title !== undefined && (
-            <h2 className="mb-6 text-3xl font-bold tracking-tight">{title}</h2>
+            <h2
+              className={cn(
+                'mb-6 text-3xl font-bold tracking-tight',
+                hasBackgroundImage && 'text-white',
+              )}
+            >
+              {title}
+            </h2>
           )}
-          <p className="text-muted-foreground leading-relaxed text-pretty">{content}</p>
+          <p
+            className={cn(
+              'leading-relaxed text-pretty',
+              hasBackgroundImage ? 'text-white/85' : 'text-muted-foreground',
+            )}
+          >
+            {content}
+          </p>
         </div>
         {hasImage && (
           // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image

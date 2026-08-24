@@ -25,12 +25,16 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import {
+  SectionBackgroundPropsSchema,
+  sectionBackgroundStyle,
+} from '@/shared/lib/sectionBackground';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const ServiceCardsPropsSchema = z.object({
   title: z.string().default(''),
   subtitle: z.string().optional(),
-  backgroundColor: z.string().optional(),
+  ...SectionBackgroundPropsSchema.shape,
   accentColor: z.string().optional(),
   items: z
     .array(
@@ -91,27 +95,34 @@ export function ServiceCards({
   if (!parsed.success) {
     return null;
   }
-  const {
-    title,
-    subtitle,
-    items,
-    backgroundColor,
-    accentColor,
-    viewAllLabel,
-    viewAllHref,
-  } = parsed.data;
+  const { title, subtitle, items, accentColor, viewAllLabel, viewAllHref } = parsed.data;
   const gridColumns = gridColumnsClassName(items.length);
+  const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
 
   return (
-    <section style={backgroundColor !== undefined ? { backgroundColor } : undefined}>
+    <section style={sectionBackgroundStyle(parsed.data)}>
       <div className="mx-auto max-w-6xl px-6 py-20">
         {(title !== '' || subtitle !== undefined) && (
           <div className="mx-auto mb-14 max-w-2xl text-center">
             {title !== '' && (
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
+              <h2
+                className={cn(
+                  'text-3xl font-bold tracking-tight md:text-4xl',
+                  hasBackgroundImage && 'text-white',
+                )}
+              >
+                {title}
+              </h2>
             )}
             {subtitle !== undefined && (
-              <p className="text-muted-foreground mt-3">{subtitle}</p>
+              <p
+                className={cn(
+                  'mt-3',
+                  hasBackgroundImage ? 'text-white/80' : 'text-muted-foreground',
+                )}
+              >
+                {subtitle}
+              </p>
             )}
           </div>
         )}

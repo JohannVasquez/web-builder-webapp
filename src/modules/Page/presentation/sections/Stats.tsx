@@ -1,12 +1,16 @@
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import { cn } from '@/shared/lib/utils';
+import {
+  SectionBackgroundPropsSchema,
+  sectionBackgroundStyle,
+} from '@/shared/lib/sectionBackground';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const StatsPropsSchema = z.object({
   title: z.string().optional(),
-  /** Colores CSS definidos en la BD; sin ellos se usa el tema por defecto. */
-  backgroundColor: z.string().optional(),
+  ...SectionBackgroundPropsSchema.shape,
+  /** Color CSS del texto; sin él, blanco automático sobre imagen de fondo. */
   textColor: z.string().optional(),
   /** Color CSS de las cifras, para destacarlas sobre el fondo. */
   accentColor: z.string().optional(),
@@ -25,10 +29,17 @@ export function Stats({ sectionProps }: SectionComponentProps): ReactElement | n
   if (!parsed.success) {
     return null;
   }
-  const { title, items, backgroundColor, textColor, accentColor } = parsed.data;
+  const { title, items, textColor, accentColor } = parsed.data;
+  const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
 
   return (
-    <section className="bg-secondary/40" style={{ backgroundColor, color: textColor }}>
+    <section
+      className="bg-secondary/40"
+      style={{
+        ...sectionBackgroundStyle(parsed.data),
+        color: textColor ?? (hasBackgroundImage ? '#ffffff' : undefined),
+      }}
+    >
       <div className="mx-auto max-w-5xl px-6 py-16">
         {title !== undefined && (
           <h2 className="mb-10 text-center text-3xl font-bold tracking-tight md:text-4xl">
@@ -51,7 +62,7 @@ export function Stats({ sectionProps }: SectionComponentProps): ReactElement | n
               </dd>
               <dt
                 className={
-                  textColor === undefined
+                  textColor === undefined && !hasBackgroundImage
                     ? 'text-muted-foreground text-sm'
                     : 'text-sm opacity-80'
                 }

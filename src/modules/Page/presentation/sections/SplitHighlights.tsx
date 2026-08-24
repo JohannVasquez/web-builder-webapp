@@ -20,15 +20,23 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import {
+  SectionBackgroundPropsSchema,
+  sectionBackgroundStyle,
+} from '@/shared/lib/sectionBackground';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const SplitHighlightsPropsSchema = z.object({
   /** Línea corta sobre el título (ej. "¿Por qué elegirnos?"). */
   eyebrow: z.string().optional(),
   title: z.string().default(''),
-  backgroundColor: z.string().optional(),
+  ...SectionBackgroundPropsSchema.shape,
   accentColor: z.string().optional(),
-  /** URL absoluta (bucket del módulo FileStorage). Sin ella, solo se muestra la lista. */
+  /**
+   * Foto que acompaña la lista (a un costado), no confundir con
+   * `backgroundImageUrl` (esa cubre la sección entera). Sin ella, solo se
+   * muestra la lista.
+   */
   imageUrl: z.string().optional(),
   imageAlt: z.string().optional(),
   imagePosition: z.enum(['left', 'right']).default('left'),
@@ -68,30 +76,31 @@ export function SplitHighlights({
   if (!parsed.success) {
     return null;
   }
-  const {
-    eyebrow,
-    title,
-    items,
-    backgroundColor,
-    accentColor,
-    imageUrl,
-    imageAlt,
-    imagePosition,
-  } = parsed.data;
+  const { eyebrow, title, items, accentColor, imageUrl, imageAlt, imagePosition } =
+    parsed.data;
   const hasImage = imageUrl !== undefined;
+  const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
 
   const content = (
     <div>
       {eyebrow !== undefined && (
         <p
-          className="mb-2 text-sm font-semibold tracking-wide uppercase"
+          className={cn(
+            'mb-2 text-sm font-semibold tracking-wide uppercase',
+            hasBackgroundImage && accentColor === undefined && 'text-white/80',
+          )}
           style={accentColor !== undefined ? { color: accentColor } : undefined}
         >
           {eyebrow}
         </p>
       )}
       {title !== '' && (
-        <h2 className="relative inline-block pb-3 text-3xl font-bold tracking-tight md:text-4xl">
+        <h2
+          className={cn(
+            'relative inline-block pb-3 text-3xl font-bold tracking-tight md:text-4xl',
+            hasBackgroundImage && 'text-white',
+          )}
+        >
           {title}
           <span
             className="absolute bottom-0 left-0 h-1 w-16 rounded-full"
@@ -118,8 +127,15 @@ export function SplitHighlights({
                 <Icon className="size-5" />
               </div>
               <div>
-                <h3 className="font-semibold">{item.title}</h3>
-                <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+                <h3 className={cn('font-semibold', hasBackgroundImage && 'text-white')}>
+                  {item.title}
+                </h3>
+                <p
+                  className={cn(
+                    'mt-1 text-sm leading-relaxed',
+                    hasBackgroundImage ? 'text-white/80' : 'text-muted-foreground',
+                  )}
+                >
                   {item.description}
                 </p>
               </div>
@@ -131,7 +147,7 @@ export function SplitHighlights({
   );
 
   return (
-    <section style={backgroundColor !== undefined ? { backgroundColor } : undefined}>
+    <section style={sectionBackgroundStyle(parsed.data)}>
       <div
         className={cn(
           'mx-auto max-w-6xl px-6 py-20',

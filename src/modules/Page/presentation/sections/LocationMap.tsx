@@ -1,12 +1,17 @@
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import { ExternalLink } from 'lucide-react';
+import { cn } from '@/shared/lib/utils';
+import {
+  SectionBackgroundPropsSchema,
+  sectionBackgroundStyle,
+} from '@/shared/lib/sectionBackground';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const LocationMapPropsSchema = z.object({
   title: z.string().optional(),
   subtitle: z.string().optional(),
-  backgroundColor: z.string().optional(),
+  ...SectionBackgroundPropsSchema.shape,
   accentColor: z.string().optional(),
   /**
    * Dirección en texto libre (ej. "Av. Vicuña Mackenna 2890, Ñuñoa,
@@ -39,8 +44,7 @@ export function LocationMap({
   if (!parsed.success) {
     return null;
   }
-  const { title, subtitle, backgroundColor, accentColor, address, lat, lng, mapLabel } =
-    parsed.data;
+  const { title, subtitle, accentColor, address, lat, lng, mapLabel } = parsed.data;
 
   const query = lat !== undefined && lng !== undefined ? `${lat},${lng}` : address;
   if (query === undefined || query === '') {
@@ -50,17 +54,32 @@ export function LocationMap({
   const encodedQuery = encodeURIComponent(query);
   const embedSrc = `https://www.google.com/maps?q=${encodedQuery}&output=embed`;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
+  const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
 
   return (
-    <section style={backgroundColor !== undefined ? { backgroundColor } : undefined}>
+    <section style={sectionBackgroundStyle(parsed.data)}>
       <div className="mx-auto max-w-6xl px-6 py-20">
         {(title !== undefined || subtitle !== undefined) && (
           <div className="mb-10 text-center">
             {title !== undefined && (
-              <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
+              <h2
+                className={cn(
+                  'text-3xl font-bold tracking-tight md:text-4xl',
+                  hasBackgroundImage && 'text-white',
+                )}
+              >
+                {title}
+              </h2>
             )}
             {subtitle !== undefined && (
-              <p className="text-muted-foreground mt-3">{subtitle}</p>
+              <p
+                className={cn(
+                  'mt-3',
+                  hasBackgroundImage ? 'text-white/80' : 'text-muted-foreground',
+                )}
+              >
+                {subtitle}
+              </p>
             )}
           </div>
         )}
