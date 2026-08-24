@@ -19,6 +19,7 @@ import {
   ShoppingCart,
   Sparkles,
   Sun,
+  Thermometer,
   Wrench,
   Zap,
   type LucideIcon,
@@ -64,6 +65,7 @@ const ICONS: Readonly<Record<string, LucideIcon>> = {
   sun: Sun,
   wrench: Wrench,
   ruler: Ruler,
+  thermometer: Thermometer,
 };
 
 /**

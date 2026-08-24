@@ -19,14 +19,24 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react';
+import { cn } from '@/shared/lib/utils';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const FeaturesPropsSchema = z.object({
+  /** Línea corta sobre el título (ej. "Sectores que atendemos"). */
+  eyebrow: z.string().optional(),
   title: z.string().default(''),
   /** Color CSS de fondo de toda la sección (viene de la BD). */
   backgroundColor: z.string().optional(),
   /** Color CSS de los íconos y su burbuja. */
   accentColor: z.string().optional(),
+  /**
+   * `card` (default): cada item en una tarjeta con borde y sombra.
+   * `plain`: solo ícono + título + descripción, sin tarjeta — para bandas
+   * de resumen como "sectores que atendemos", más livianas que una grilla
+   * de servicios.
+   */
+  variant: z.enum(['card', 'plain']).default('card'),
   items: z
     .array(
       z.object({
@@ -62,11 +72,19 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
   if (!parsed.success) {
     return null;
   }
-  const { title, items, backgroundColor, accentColor } = parsed.data;
+  const { eyebrow, title, items, backgroundColor, accentColor, variant } = parsed.data;
 
   return (
     <section style={backgroundColor !== undefined ? { backgroundColor } : undefined}>
       <div className="mx-auto max-w-5xl px-6 py-20">
+        {eyebrow !== undefined && (
+          <p
+            className="mb-2 text-center text-sm font-semibold tracking-wide uppercase"
+            style={accentColor !== undefined ? { color: accentColor } : undefined}
+          >
+            {eyebrow}
+          </p>
+        )}
         <h2 className="mb-12 text-center text-3xl font-bold tracking-tight md:text-4xl">
           {title}
         </h2>
@@ -76,7 +94,10 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
             return (
               <div
                 key={item.title}
-                className="bg-card flex flex-col items-center gap-4 rounded-xl border p-8 text-center shadow-sm"
+                className={cn(
+                  'flex flex-col items-center gap-4 text-center',
+                  variant === 'card' && 'bg-card rounded-xl border p-8 shadow-sm',
+                )}
               >
                 {item.imageUrl !== undefined ? (
                   // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
