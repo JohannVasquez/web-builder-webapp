@@ -10,6 +10,7 @@ import { ServiceCards } from './sections/ServiceCards';
 import { SplitHighlights } from './sections/SplitHighlights';
 import { Testimonials } from './sections/Testimonials';
 import { LocationMap } from './sections/LocationMap';
+import { Columns } from './sections/Columns';
 
 export type SectionComponent = ComponentType<SectionComponentProps>;
 
@@ -28,6 +29,7 @@ export const COMPONENT_MAP: Readonly<Record<string, SectionComponent>> = {
   SplitHighlights,
   Testimonials,
   LocationMap,
+  Columns,
 };
 
 export const resolveSectionComponent = (type: string): SectionComponent | undefined => {

@@ -12,6 +12,7 @@ describe('componentMap', () => {
     'SplitHighlights',
     'Testimonials',
     'LocationMap',
+    'Columns',
   ])('resolves the "%s" section type to a component', (type) => {
     expect(resolveSectionComponent(type)).toBeDefined();
   });
