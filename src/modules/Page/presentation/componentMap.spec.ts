@@ -1,7 +1,7 @@
 import { COMPONENT_MAP, resolveSectionComponent } from './componentMap';
 
 describe('componentMap', () => {
-  it.each(['Hero', 'Features', 'CallToAction', 'TextBlock', 'ContactForm'])(
+  it.each(['Hero', 'Features', 'CallToAction', 'TextBlock', 'ContactForm', 'Stats'])(
     'resolves the "%s" section type to a component',
     (type) => {
       expect(resolveSectionComponent(type)).toBeDefined();

@@ -5,6 +5,7 @@ import { Features } from './sections/Features';
 import { CallToAction } from './sections/CallToAction';
 import { TextBlock } from './sections/TextBlock';
 import { ContactFormSection } from './sections/ContactFormSection';
+import { Stats } from './sections/Stats';
 
 export type SectionComponent = ComponentType<SectionComponentProps>;
 
@@ -18,6 +19,7 @@ export const COMPONENT_MAP: Readonly<Record<string, SectionComponent>> = {
   CallToAction,
   TextBlock,
   ContactForm: ContactFormSection,
+  Stats,
 };
 
 export const resolveSectionComponent = (type: string): SectionComponent | undefined => {
