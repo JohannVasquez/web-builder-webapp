@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, type ReactElement } from 'react';
-import { ArrowRight, Check, Clock, Copy, Mail, MessageCircle, Phone } from 'lucide-react';
+import { ArrowRight, Check, Clock, Copy, Mail, Phone } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa6';
 import { cn } from '@/shared/lib/utils';
 import type { ContactChannel } from '../domain/ContactChannelSchema';
 
@@ -125,7 +126,7 @@ function ChannelValue({
 
 const ICON_BY_TYPE: Readonly<Record<ContactChannel['type'], ReactElement>> = {
   phone: <Phone className="size-5" />,
-  whatsapp: <MessageCircle className="size-5" />,
+  whatsapp: <FaWhatsapp className="size-5" />,
   email: <Mail className="size-5" />,
   hours: <Clock className="size-5" />,
   text: <Phone className="size-5" />,

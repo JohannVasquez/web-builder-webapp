@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa6';
 
 interface WhatsAppButtonProps {
   readonly whatsappNumber: string;
@@ -24,7 +24,7 @@ export function WhatsAppButton({
       aria-label="Escríbenos por WhatsApp"
       className="fixed right-6 bottom-6 z-50 flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-105"
     >
-      <MessageCircle className="size-7" />
+      <FaWhatsapp className="size-7" />
     </a>
   );
 }

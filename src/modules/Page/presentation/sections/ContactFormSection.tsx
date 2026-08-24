@@ -30,7 +30,7 @@ export function ContactFormSection({
 
   return (
     <section className="bg-secondary/50">
-      <div className={cn('mx-auto px-6 py-20', hasChannels ? 'max-w-5xl' : 'max-w-2xl')}>
+      <div className={cn('mx-auto px-6 py-20', hasChannels ? 'max-w-6xl' : 'max-w-2xl')}>
         <div className="mb-10 text-center">
           <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
           {subtitle !== undefined && (
@@ -38,7 +38,7 @@ export function ContactFormSection({
           )}
         </div>
         {hasChannels ? (
-          <div className="grid gap-8 md:grid-cols-2">
+          <div className="grid gap-8 md:grid-cols-[7fr_3fr]">
             <div className="bg-card rounded-2xl border p-6 shadow-sm md:p-8">
               <ContactForm />
             </div>
