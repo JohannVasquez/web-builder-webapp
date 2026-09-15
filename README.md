@@ -47,6 +47,25 @@ src/
   (`/nosotros`) o el ancla de una sección (`/#caracteristicas`). La estructura del
   sitio se decide en la base de datos, no en el código (ver README de la API).
 
+## Caché del sitio publicado
+
+Las lecturas del sitio (página, settings, navegación) se cachean con una
+etiqueta por **dominio** de tenant: `t:<dominio>` (ver
+`src/shared/lib/cacheTags.ts`). Que la clave sea el dominio y no un id es lo
+que garantiza que el contenido de un cliente nunca aparezca en el sitio de
+otro: el frontend nunca ve ids, solo el host de la visita.
+
+`POST /api/revalidate` invalida esas etiquetas. Lo llama la API después de
+cada escritura de administración o de un agente, por la red interna y con el
+secreto compartido `REVALIDATE_SECRET`. Entrando por Caddy, `/api/*` lo
+atiende la API, así que este endpoint no es alcanzable desde internet.
+
+Usa `revalidateTag(tag, { expire: 0 })` y no el perfil `'max'`: con
+stale-while-revalidate el primer visitante después de guardar seguiría viendo
+la versión vieja, y lo que se busca es que el cambio se vea de inmediato.
+
+Para invalidar a mano (por ejemplo, después de `make seed`): `make revalidate`.
+
 ## Puesta en marcha
 
 Requiere la [web-builder-api](../web-builder-api) corriendo (por defecto en

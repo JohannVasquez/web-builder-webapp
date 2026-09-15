@@ -2,6 +2,7 @@ import { GlobalSettingsSchema, type GlobalSettings } from '../domain/GlobalSetti
 import type { GlobalSettingsRepository } from '../domain/GlobalSettingsRepository';
 
 import { TENANT_DOMAIN_HEADER } from '@/shared/config/tenant';
+import { siteCacheOptions } from '@/shared/lib/cacheTags';
 
 export class ApiGlobalSettingsRepository implements GlobalSettingsRepository {
   constructor(
@@ -11,7 +12,7 @@ export class ApiGlobalSettingsRepository implements GlobalSettingsRepository {
 
   public async find(): Promise<GlobalSettings> {
     const response = await fetch(`${this.baseUrl}/api/settings`, {
-      cache: 'no-store',
+      ...siteCacheOptions(this.tenantDomain),
       headers:
         this.tenantDomain === undefined
           ? undefined

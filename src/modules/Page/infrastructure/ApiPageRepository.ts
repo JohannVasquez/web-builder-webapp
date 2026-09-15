@@ -2,6 +2,7 @@ import { PageSchema, type Page } from '../domain/Page';
 import type { PageRepository } from '../domain/PageRepository';
 
 import { TENANT_DOMAIN_HEADER } from '@/shared/config/tenant';
+import { siteCacheOptions } from '@/shared/lib/cacheTags';
 
 export class ApiPageRepository implements PageRepository {
   constructor(
@@ -13,7 +14,7 @@ export class ApiPageRepository implements PageRepository {
     const response = await fetch(
       `${this.baseUrl}/api/pages/${encodeURIComponent(slug)}`,
       {
-        cache: 'no-store',
+        ...siteCacheOptions(this.tenantDomain),
         headers:
           this.tenantDomain === undefined
             ? undefined
