@@ -25,7 +25,7 @@ export const SectionBackgroundPropsSchema = z.object({
 
 export type SectionBackgroundProps = z.infer<typeof SectionBackgroundPropsSchema>;
 
-const DEFAULT_BACKGROUND_OVERLAY = 'rgba(15, 23, 42, 0.55)';
+const DEFAULT_BACKGROUND_OVERLAY = 'var(--brand-overlay)';
 
 /**
  * Estilo inline para el `<section>` raíz de cualquier bloque: imagen de

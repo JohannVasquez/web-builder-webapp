@@ -11,7 +11,8 @@ interface ContactChannelsProps {
   readonly accentColor?: string;
 }
 
-const DEFAULT_ACCENT = '#f59e0b';
+const DEFAULT_ACCENT = 'var(--brand-accent)';
+// Verde oficial de la marca WhatsApp, no del cliente: no sale de los tokens.
 const WHATSAPP_COLOR = '#25D366';
 
 function IconBadge({

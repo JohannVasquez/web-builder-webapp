@@ -2,15 +2,8 @@ import { SessionSchema, type Session } from '../domain/Session';
 
 const STORAGE_KEY = 'web-builder.admin-session';
 
-/**
- * Guarda la sesión de administración en `localStorage`. El token es un JWT
- * Bearer (no cookie) porque el panel y la API pueden vivir en orígenes
- * distintos; ver la nota de `container.ts` en la API.
- *
- * Todo acceso va envuelto en try/catch: en modo privado, con almacenamiento
- * bloqueado o durante el render en servidor, `localStorage` no existe o
- * lanza, y eso no debe tumbar la interfaz.
- */
+// El token es JWT Bearer (no cookie) porque panel y API pueden vivir en orígenes distintos.
+// Todo acceso va en try/catch: en modo privado o SSR, localStorage puede no existir o lanzar.
 export const readSession = (): Session | null => {
   try {
     const raw = globalThis.localStorage?.getItem(STORAGE_KEY);

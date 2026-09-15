@@ -15,7 +15,7 @@ import type { SessionStorage } from '../domain/SessionStorage';
 
 export interface SessionContextValue {
   readonly session: Session | null;
-  /** `true` hasta que la sesión guardada se leyó en el cliente. */
+  // `true` hasta que la sesión guardada se leyó en el cliente.
   readonly isLoading: boolean;
   readonly token: string | null;
   signIn(session: Session): void;
@@ -74,7 +74,7 @@ export function SessionProvider({
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
 
-/** Para pantallas del panel, que sin sesión no deberían haberse montado. */
+// Para pantallas del panel, que sin sesión no deberían haberse montado.
 export function useSession(): SessionContextValue {
   const value = useContext(SessionContext);
   if (value === null) {
@@ -83,10 +83,8 @@ export function useSession(): SessionContextValue {
   return value;
 }
 
-/**
- * Para componentes que pueden montarse dentro o fuera del panel (el
- * `ImageUploader`, por ejemplo). Devuelve `null` en vez de lanzar.
- */
+// Para componentes que pueden montarse fuera del panel (ej. `ImageUploader`);
+// devuelve `null` en vez de lanzar.
 export function useOptionalSession(): SessionContextValue | null {
   return useContext(SessionContext);
 }

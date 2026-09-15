@@ -57,8 +57,7 @@ export function ImageUploader({
 
   const sessionContext = useOptionalSession();
   const token = sessionContext?.token ?? null;
-  // Se recrea al cambiar el token para que, tras volver a iniciar sesión, el
-  // siguiente intento use el token nuevo sin remontar el componente.
+  // Se recrea al cambiar el token: así el siguiente intento usa el token nuevo sin remontar.
   const fileStorageService = useMemo(
     () => new FileStorageService(getPublicApiBaseUrl(), undefined, () => token),
     [token],
@@ -94,8 +93,7 @@ export function ImageUploader({
       toast.success('Archivo subido correctamente.');
       onUploaded(uploaded.key);
     } catch (error) {
-      // Sesión caducada y fallo del servidor se arreglan de formas distintas,
-      // así que no comparten mensaje (SPEC 0.1).
+      // Sesión caducada y fallo de servidor se arreglan distinto: mensajes separados (SPEC 0.1).
       const message =
         error instanceof SessionExpiredError
           ? error.message

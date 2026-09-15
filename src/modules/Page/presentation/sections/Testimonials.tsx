@@ -43,7 +43,7 @@ export function Testimonials({
   }
 
   const current = items[activeIndex % items.length];
-  const accent = accentColor ?? '#fbbf24';
+  const accent = accentColor ?? 'var(--brand-accent)';
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
   const goTo = (delta: number): void => {
     setActiveIndex((index) => (index + delta + items.length) % items.length);

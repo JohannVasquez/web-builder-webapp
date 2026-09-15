@@ -16,10 +16,8 @@ export class TooManyAttemptsError extends Error {
   }
 }
 
-/**
- * Cliente del módulo Auth de la API. No guarda nada: quien decide dónde vive
- * la sesión es el `SessionProvider`, con el `SessionStorage` que le inyecten.
- */
+// Cliente del módulo Auth de la API: no guarda nada, quien decide dónde vive
+// la sesión es el `SessionProvider` con el `SessionStorage` que le inyecten.
 export class AuthService {
   constructor(
     private readonly baseUrl: string,
@@ -50,7 +48,7 @@ export class AuthService {
     return SessionSchema.parse(await response.json());
   }
 
-  /** Confirma que el token sigue vigente. Lanza `SessionExpiredError` si no. */
+  // Confirma que el token sigue vigente; lanza `SessionExpiredError` si no.
   public async me(token: string): Promise<Session['user']> {
     const response = await this.fetchFn(`${this.baseUrl}/api/admin/me`, {
       headers: { Authorization: `Bearer ${token}` },

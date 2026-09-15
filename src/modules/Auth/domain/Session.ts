@@ -15,11 +15,8 @@ export const SessionSchema = z.object({
 
 export type Session = z.infer<typeof SessionSchema>;
 
-/**
- * Error que distingue "tu sesión caducó" de "el servidor falló". El uploader
- * y el panel muestran mensajes distintos para cada caso: la primera se
- * arregla volviendo a entrar, la segunda no.
- */
+// Distingue "sesión caducada" de "fallo del servidor": uploader y panel
+// muestran mensajes distintos porque cada caso se arregla de forma distinta.
 export class SessionExpiredError extends Error {
   constructor() {
     super('Tu sesión caducó. Vuelve a iniciar sesión para continuar.');

@@ -104,7 +104,7 @@ export function SplitHighlights({
           {title}
           <span
             className="absolute bottom-0 left-0 h-1 w-16 rounded-full"
-            style={{ backgroundColor: accentColor ?? '#fbbf24' }}
+            style={{ backgroundColor: accentColor ?? 'var(--brand-accent)' }}
           />
         </h2>
       )}

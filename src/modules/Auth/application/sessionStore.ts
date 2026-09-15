@@ -1,16 +1,11 @@
 import type { Session } from '../domain/Session';
 import type { SessionStorage } from '../domain/SessionStorage';
 
-/**
- * Store externo mínimo sobre el `SessionStorage`, pensado para consumirse con
- * `useSyncExternalStore`. Se usa eso en vez de `useState` + `useEffect`
- * porque la sesión vive fuera de React (`localStorage`): leerla en un efecto
- * provocaría un render en cascada en cada montaje, y leerla durante el render
- * rompería la hidratación del servidor.
- */
+// Store externo mínimo sobre `SessionStorage` para `useSyncExternalStore`: la sesión vive
+// fuera de React, y leerla en un efecto o durante el render rompería el montaje o la hidratación.
 export interface SessionStore {
   readonly subscribe: (listener: () => void) => () => void;
-  /** Cachea la lectura: `useSyncExternalStore` exige un snapshot estable. */
+  // Cachea la lectura: `useSyncExternalStore` exige un snapshot estable.
   readonly getSnapshot: () => Session | null;
   readonly set: (session: Session | null) => void;
 }

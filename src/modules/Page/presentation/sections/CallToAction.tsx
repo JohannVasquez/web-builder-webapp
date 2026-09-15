@@ -34,6 +34,7 @@ export function CallToAction({
       className="bg-primary text-primary-foreground"
       style={{
         ...sectionBackgroundStyle(parsed.data),
+        // Va sobre el velo oscuro de la imagen de fondo, no sobre el fondo del tema.
         color: textColor ?? (hasBackgroundImage ? '#ffffff' : undefined),
       }}
     >

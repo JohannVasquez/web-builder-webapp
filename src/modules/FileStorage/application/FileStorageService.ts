@@ -7,19 +7,15 @@ import {
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
-/** Devuelve el token de administración vigente, o `null` si no hay sesión. */
+// Devuelve el token de administración vigente, o `null` si no hay sesión.
 export type TokenProvider = () => string | null;
 
 export class FileStorageService {
   constructor(
     private readonly baseUrl: string,
     private readonly fetchFn: FetchLike = (input, init) => fetch(input, init),
-    /**
-     * Subir y borrar exige sesión de administración (SPEC 0.1). Sin proveedor
-     * de token el servicio sigue compilando, pero la API responderá 401 — que
-     * es exactamente lo que debe pasar si alguien lo usa desde el sitio
-     * público.
-     */
+    // Subir y borrar exige sesión (SPEC 0.1); sin token la API responde 401,
+    // que es lo correcto si se usa desde el sitio público.
     private readonly getToken: TokenProvider = () => null,
   ) {}
 
@@ -59,10 +55,8 @@ export class FileStorageService {
     }
   }
 
-  /**
-   * No fija `Content-Type`: en un `FormData` lo pone el navegador junto con
-   * el `boundary`, y escribirlo a mano rompe el parseo multipart.
-   */
+  // No fija `Content-Type`: en `FormData` lo pone el navegador junto con el
+  // `boundary`, y escribirlo a mano rompe el parseo multipart.
   private authHeaders(): Record<string, string> {
     const token = this.getToken();
     return token === null ? {} : { Authorization: `Bearer ${token}` };

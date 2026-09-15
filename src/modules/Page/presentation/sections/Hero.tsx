@@ -34,8 +34,8 @@ const HeroPropsSchema = z.object({
   accentColor: z.string().optional(),
 });
 
-const DEFAULT_OVERLAY = 'rgba(23, 16, 76, 0.55)';
-const DEFAULT_ACCENT = '#fbbf24';
+const DEFAULT_OVERLAY = 'var(--brand-overlay)';
+const DEFAULT_ACCENT = 'var(--brand-accent)';
 const CAROUSEL_INTERVAL_MS = 5000;
 
 export function Hero({ sectionProps }: SectionComponentProps): ReactElement | null {
@@ -141,7 +141,9 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
                 size="lg"
                 variant={hasImage ? 'secondary' : 'default'}
                 style={
-                  hasImage ? { backgroundColor: accent, color: '#1f2937' } : undefined
+                  hasImage
+                    ? { backgroundColor: accent, color: 'var(--brand-accent-foreground)' }
+                    : undefined
                 }
               >
                 <Link href={ctaHref}>{ctaLabel}</Link>

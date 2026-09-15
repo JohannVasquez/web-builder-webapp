@@ -40,7 +40,6 @@ export const config = {
   // pasar `/acme.localhost/...` sin reescribir y volvía direccionable desde
   // fuera la forma interna de la ruta. Este proyecto no tiene `public/`, así
   // que basta con excluir `_next/` y el favicon.
-  // `api/revalidate` queda fuera porque es un endpoint del propio frontend
-  // (SPEC 0.2), no una página de tenant: reescribirlo lo volvería inalcanzable.
+  // `api/revalidate` queda fuera: es endpoint del propio frontend (SPEC 0.2), no de tenant.
   matcher: ['/((?!_next/|api/revalidate|favicon\\.ico).*)'],
 };
