@@ -13,7 +13,7 @@ export function Navbar({ settings, links }: NavbarProps): ReactElement {
   const { logoLight, logoDark } = settings.brand.assets;
 
   return (
-    <header className="bg-background/80 sticky top-0 z-50 border-b backdrop-blur">
+    <header className="ui-nav sticky top-0 z-50">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Link href="/" className="text-lg font-bold tracking-tight">
           {logoLight !== undefined ? (

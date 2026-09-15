@@ -64,7 +64,7 @@ export function LocationMap({
             {title !== undefined && (
               <h2
                 className={cn(
-                  'text-3xl font-bold tracking-tight md:text-4xl',
+                  'ui-heading text-3xl md:text-4xl',
                   hasBackgroundImage && 'text-white',
                 )}
               >
@@ -83,7 +83,7 @@ export function LocationMap({
             )}
           </div>
         )}
-        <div className="overflow-hidden rounded-2xl border shadow-sm">
+        <div className="ui-card overflow-hidden">
           <iframe
             src={embedSrc}
             title={title ?? 'Ubicación en el mapa'}
@@ -92,7 +92,7 @@ export function LocationMap({
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
-          <div className="bg-card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
             {address !== undefined && (
               <p className="text-muted-foreground text-sm">{address}</p>
             )}

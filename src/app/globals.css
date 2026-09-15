@@ -158,8 +158,8 @@
       var(--ui-card-border-color, var(--border));
     border-radius: var(--ui-radius-lg, 0.875rem);
     box-shadow: var(--ui-card-shadow, none);
-    backdrop-filter: var(--ui-card-backdrop, none);
     -webkit-backdrop-filter: var(--ui-card-backdrop, none);
+    backdrop-filter: var(--ui-card-backdrop, none);
     transition: box-shadow var(--ui-transition, 160ms ease);
   }
 
@@ -205,8 +205,8 @@
     background: var(--ui-nav-bg, var(--background));
     border-bottom: var(--ui-nav-border, 1px solid var(--border));
     box-shadow: var(--ui-nav-shadow, none);
-    backdrop-filter: var(--ui-nav-backdrop, none);
     -webkit-backdrop-filter: var(--ui-nav-backdrop, none);
+    backdrop-filter: var(--ui-nav-backdrop, none);
   }
 
   .ui-heading {

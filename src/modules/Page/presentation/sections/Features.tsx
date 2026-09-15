@@ -94,7 +94,7 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
         )}
         <h2
           className={cn(
-            'mb-12 text-center text-3xl font-bold tracking-tight md:text-4xl',
+            'ui-heading mb-12 text-center text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
           )}
         >
@@ -108,7 +108,7 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
                 key={item.title}
                 className={cn(
                   'flex flex-col items-center gap-4 text-center',
-                  variant === 'card' && 'bg-card rounded-xl border p-8 shadow-sm',
+                  variant === 'card' && 'ui-card p-8',
                 )}
               >
                 {item.imageUrl !== undefined ? (

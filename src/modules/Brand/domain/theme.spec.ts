@@ -94,4 +94,19 @@ describe('resolveBrandTheme', () => {
     expect(textScaleTokens('normal')['--brand-text-scale']).toBe('1');
     expect(textScaleTokens('spacious')['--brand-text-scale']).toBe('1.0625');
   });
+
+  it('deriva el acento del color principal cuando el cliente no lo definió', () => {
+    const theme = resolveBrandTheme({ primary: '#1d4ed8' });
+
+    expect(theme.light['--brand-accent']).toBe('#1d4ed8');
+    expect(theme.light['--brand-secondary']).not.toBe('#f5f5f5');
+  });
+
+  it('el texto de acento se lee aunque solo se haya definido el color principal', () => {
+    const theme = resolveBrandTheme({ primary: '#1d4ed8' });
+
+    expect(
+      ratio(theme.light['--brand-accent-text'], theme.light['--background']),
+    ).toBeGreaterThanOrEqual(WCAG_AA_NORMAL_TEXT);
+  });
 });

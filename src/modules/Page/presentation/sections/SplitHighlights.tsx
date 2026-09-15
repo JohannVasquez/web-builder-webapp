@@ -97,7 +97,7 @@ export function SplitHighlights({
       {title !== '' && (
         <h2
           className={cn(
-            'relative inline-block pb-3 text-3xl font-bold tracking-tight md:text-4xl',
+            'ui-heading relative inline-block pb-3 text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
           )}
         >

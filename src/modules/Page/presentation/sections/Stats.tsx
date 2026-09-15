@@ -34,7 +34,7 @@ export function Stats({ sectionProps }: SectionComponentProps): ReactElement | n
 
   return (
     <section
-      className="bg-secondary/40"
+      className="ui-surface"
       style={{
         ...sectionBackgroundStyle(parsed.data),
         // Va sobre el velo oscuro de la imagen de fondo, no sobre el fondo del tema.
@@ -43,9 +43,7 @@ export function Stats({ sectionProps }: SectionComponentProps): ReactElement | n
     >
       <div className="mx-auto max-w-5xl px-6 py-16">
         {title !== undefined && (
-          <h2 className="mb-10 text-center text-3xl font-bold tracking-tight md:text-4xl">
-            {title}
-          </h2>
+          <h2 className="ui-heading mb-10 text-center text-3xl md:text-4xl">{title}</h2>
         )}
         <dl
           className={cn(

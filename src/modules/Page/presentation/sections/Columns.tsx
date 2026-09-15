@@ -58,7 +58,7 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
             {title !== undefined && (
               <h2
                 className={cn(
-                  'text-3xl font-bold tracking-tight md:text-4xl',
+                  'ui-heading text-3xl md:text-4xl',
                   hasBackgroundImage && 'text-white',
                 )}
               >

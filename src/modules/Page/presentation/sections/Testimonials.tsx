@@ -55,7 +55,7 @@ export function Testimonials({
         {title !== '' && (
           <h2
             className={cn(
-              'relative mx-auto mb-14 inline-block w-full pb-3 text-center text-3xl font-bold tracking-tight md:text-4xl',
+              'ui-heading relative mx-auto mb-14 inline-block w-full pb-3 text-center text-3xl md:text-4xl',
               hasBackgroundImage && 'text-white',
             )}
           >
@@ -66,7 +66,7 @@ export function Testimonials({
             />
           </h2>
         )}
-        <div className="bg-card relative rounded-2xl border p-8 shadow-sm md:p-10">
+        <div className="ui-card relative p-8 md:p-10">
           {current.badgeLabel !== undefined && (
             <span
               className="mb-4 inline-block rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"

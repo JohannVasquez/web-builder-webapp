@@ -39,7 +39,7 @@ export function CallToAction({
       }}
     >
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 px-6 py-16 text-center">
-        <h2 className="text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
+        <h2 className="ui-heading text-3xl md:text-4xl">{title}</h2>
         {subtitle !== undefined && (
           <p
             className={

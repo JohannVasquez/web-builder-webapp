@@ -107,7 +107,7 @@ export function ServiceCards({
             {title !== '' && (
               <h2
                 className={cn(
-                  'text-3xl font-bold tracking-tight md:text-4xl',
+                  'ui-heading text-3xl md:text-4xl',
                   hasBackgroundImage && 'text-white',
                 )}
               >
@@ -130,10 +130,7 @@ export function ServiceCards({
           {items.map((item) => {
             const Icon = (item.icon !== undefined && ICONS[item.icon]) || Sparkles;
             return (
-              <div
-                key={item.title}
-                className="bg-card flex flex-col rounded-xl border p-7 shadow-sm"
-              >
+              <div key={item.title} className="ui-card flex flex-col p-7">
                 <div
                   className="bg-primary/10 text-primary mb-5 flex size-11 items-center justify-center rounded-full"
                   style={

@@ -36,14 +36,14 @@ export function ContactFormSection({
 
   return (
     <section
-      className={cn(!hasBackgroundImage && 'bg-secondary/50')}
+      className={cn(!hasBackgroundImage && 'ui-surface')}
       style={sectionBackgroundStyle(parsed.data)}
     >
       <div className={cn('mx-auto px-6 py-20', hasChannels ? 'max-w-6xl' : 'max-w-2xl')}>
         <div className="mb-10 text-center">
           <h2
             className={cn(
-              'text-3xl font-bold tracking-tight md:text-4xl',
+              'ui-heading text-3xl md:text-4xl',
               hasBackgroundImage && 'text-white',
             )}
           >
@@ -62,13 +62,13 @@ export function ContactFormSection({
         </div>
         {hasChannels ? (
           <div className="grid gap-8 md:grid-cols-[7fr_3fr]">
-            <div className="bg-card rounded-2xl border p-6 shadow-sm md:p-8">
+            <div className="ui-card p-6 md:p-8">
               <ContactForm />
             </div>
             <ContactChannels items={channels} accentColor={accentColor} />
           </div>
         ) : hasBackgroundImage ? (
-          <div className="bg-card rounded-2xl border p-6 shadow-sm md:p-8">
+          <div className="ui-card p-6 md:p-8">
             <ContactForm />
           </div>
         ) : (

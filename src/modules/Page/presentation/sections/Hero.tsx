@@ -36,6 +36,8 @@ const HeroPropsSchema = z.object({
 
 const DEFAULT_OVERLAY = 'var(--brand-overlay)';
 const DEFAULT_ACCENT = 'var(--brand-accent)';
+// Sobre imagen el título va sobre el velo oscuro; sin imagen, sobre el fondo del tema.
+const DEFAULT_ACCENT_TEXT = 'var(--brand-accent-text)';
 const CAROUSEL_INTERVAL_MS = 5000;
 
 export function Hero({ sectionProps }: SectionComponentProps): ReactElement | null {
@@ -78,6 +80,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
   const hasImage = slides.length > 0;
   const overlay = overlayColor ?? DEFAULT_OVERLAY;
   const accent = accentColor ?? DEFAULT_ACCENT;
+  const accentText = accentColor ?? DEFAULT_ACCENT_TEXT;
 
   return (
     <section
@@ -118,7 +121,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
           {titleAccent !== undefined && (
             <>
               <br />
-              <span style={{ color: accent }}>{titleAccent}</span>
+              <span style={{ color: hasImage ? accent : accentText }}>{titleAccent}</span>
             </>
           )}
         </h1>

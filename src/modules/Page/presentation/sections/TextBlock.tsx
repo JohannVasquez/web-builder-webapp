@@ -37,7 +37,7 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
           {title !== undefined && (
             <h2
               className={cn(
-                'mb-6 text-3xl font-bold tracking-tight',
+                'ui-heading mb-6 text-3xl',
                 hasBackgroundImage && 'text-white',
               )}
             >

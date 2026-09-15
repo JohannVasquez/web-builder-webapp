@@ -53,9 +53,15 @@ const buildScheme = (
 
   // Los colores de marca se guardan intactos: son fondos de botón o tarjeta y el
   // contraste lo aporta su propio `-foreground`. Tocarlos aquí falsearía la marca.
+  // Con solo `primary` definido, los otros dos derivan de él: caer al gris neutro hacía
+  // desaparecer cualquier texto de acento sobre fondo claro (Spec 1.1).
   const primary = read(palette.primary, NEUTRAL.primary);
-  const secondary = read(palette.secondary, NEUTRAL.secondary);
-  const accent = read(palette.accent, NEUTRAL.accent);
+  const hasPrimary = palette.primary !== undefined && parseHex(palette.primary) !== null;
+  const secondary = read(
+    palette.secondary,
+    hasPrimary ? toHex(mix(primary, background, 0.35)) : NEUTRAL.secondary,
+  );
+  const accent = read(palette.accent, hasPrimary ? toHex(primary) : NEUTRAL.accent);
   const success = read(palette.success, NEUTRAL.success);
   const warning = read(palette.warning, NEUTRAL.warning);
   const danger = read(palette.danger, NEUTRAL.danger);
