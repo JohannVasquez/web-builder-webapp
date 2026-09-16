@@ -223,4 +223,26 @@
     pointer-events: none;
     background: var(--ui-page-bg, none);
   }
+
+  /* El estado inicial oculto vive bajo [data-js='on'], que marca un script antes del primer
+     pintado: sin JS el contenido nunca se esconde y siempre se lee. */
+  [data-js='on'] .reveal-fade {
+    opacity: 0;
+    transition: opacity 700ms ease-out;
+  }
+  [data-js='on'] .reveal-fade[data-revealed='true'] {
+    opacity: 1;
+  }
+
+  [data-js='on'] .reveal-slide {
+    opacity: 0;
+    transform: translateY(1.5rem);
+    transition:
+      opacity 700ms ease-out,
+      transform 700ms ease-out;
+  }
+  [data-js='on'] .reveal-slide[data-revealed='true'] {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

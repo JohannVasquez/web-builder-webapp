@@ -28,13 +28,17 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const ServiceCardsPropsSchema = z.object({
   title: z.string().default(''),
   subtitle: z.string().optional(),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   accentColor: z.string().optional(),
   items: z
     .array(
@@ -98,10 +102,19 @@ export function ServiceCards({
   const { title, subtitle, items, accentColor, viewAllLabel, viewAllHref } = parsed.data;
   const gridColumns = gridColumnsClassName(items.length);
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'normal',
+    contentWidth: 'wide',
+    textAlign: 'left',
+  });
 
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div className="mx-auto max-w-6xl px-6 py-20">
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {(title !== '' || subtitle !== undefined) && (
           <div className="mx-auto mb-14 max-w-2xl text-center">
             {title !== '' && (
@@ -194,7 +207,7 @@ export function ServiceCards({
             </Link>
           </div>
         )}
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

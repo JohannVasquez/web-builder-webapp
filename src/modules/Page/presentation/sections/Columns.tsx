@@ -4,7 +4,10 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const ColumnItemSchema = z.object({
@@ -21,6 +24,7 @@ const ColumnsPropsSchema = z.object({
   title: z.string().optional(),
   subtitle: z.string().optional(),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   accentColor: z.string().optional(),
   /**
    * 1 a 4 columnas; cada una es una foto, texto, o ambos (foto arriba +
@@ -49,10 +53,19 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
   }
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
   const gridColumns = GRID_COLUMNS_CLASS[columns.length] ?? 'md:grid-cols-3';
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'normal',
+    contentWidth: 'wide',
+    textAlign: 'left',
+  });
 
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div className="mx-auto max-w-6xl px-6 py-20">
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {(title !== undefined || subtitle !== undefined) && (
           <div className="mx-auto mb-14 max-w-2xl text-center">
             {title !== undefined && (
@@ -137,7 +150,7 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
             );
           })}
         </div>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

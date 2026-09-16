@@ -1,9 +1,6 @@
 import { z } from 'zod';
 
-/**
- * Mismo esquema que valida el backend (módulo Contact de web-builder-api):
- * única fuente de verdad en ambas fronteras (AC3.2 / AC3.3).
- */
+// Mismo esquema que valida el backend: única fuente de verdad en ambas fronteras.
 export const ContactSchema = z.strictObject({
   name: z
     .string()
@@ -18,6 +15,8 @@ export const ContactSchema = z.strictObject({
     .string()
     .min(10, 'El mensaje debe tener al menos 10 caracteres')
     .max(2000, 'El mensaje no puede superar los 2000 caracteres'),
+  // Trampa para bots: se pinta fuera de pantalla y una persona nunca la llena.
+  website: z.string().max(0).optional(),
 });
 
 export type ContactInput = z.infer<typeof ContactSchema>;

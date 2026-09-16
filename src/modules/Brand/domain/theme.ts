@@ -9,7 +9,7 @@ import {
   readableForeground,
   toHex,
   type Rgb,
-} from './color';
+} from '@/shared/lib/color';
 import type { BrandPalette, TextScale } from './Brand';
 
 // Paleta neutra por defecto: es el aspecto que el sitio ya tenía antes de la identidad de marca.

@@ -5,6 +5,8 @@ import { useEffect, useState, type ReactElement } from 'react';
 import { z } from 'zod';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const HeroPropsSchema = z.object({
@@ -32,6 +34,7 @@ const HeroPropsSchema = z.object({
   overlayColor: z.string().optional(),
   textColor: z.string().optional(),
   accentColor: z.string().optional(),
+  ...SectionLayoutPropsSchema.shape,
 });
 
 const DEFAULT_OVERLAY = 'var(--brand-overlay)';
@@ -81,12 +84,18 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
   const overlay = overlayColor ?? DEFAULT_OVERLAY;
   const accent = accentColor ?? DEFAULT_ACCENT;
   const accentText = accentColor ?? DEFAULT_ACCENT_TEXT;
+  const { section, container } = sectionLayoutClasses(parsed.data, {
+    paddingY: 'spacious',
+    contentWidth: 'normal',
+    textAlign: 'center',
+  });
 
   return (
     <section
       className={cn(
         'relative',
         hasImage ? 'bg-cover bg-center' : 'bg-gradient-to-b from-secondary to-background',
+        section,
       )}
       style={
         hasImage
@@ -97,7 +106,10 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
           : undefined
       }
     >
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-6 py-24 text-center md:py-32">
+      <RevealOnScroll
+        animation={parsed.data.animation}
+        className={cn(container, 'flex flex-col items-center gap-6')}
+      >
         {eyebrow !== undefined && (
           <span
             className={cn(
@@ -168,7 +180,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
             )}
           </div>
         )}
-      </div>
+      </RevealOnScroll>
       {isCarousel && (
         <div className="absolute inset-x-0 bottom-6 flex justify-center gap-2">
           {slides.map((slide, index) => (

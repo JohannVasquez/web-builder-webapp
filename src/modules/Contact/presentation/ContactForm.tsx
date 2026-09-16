@@ -34,7 +34,7 @@ export function ContactForm(): ReactElement {
   const form = useForm<ContactInput>({
     resolver: zodResolver(ContactSchema),
     mode: 'onBlur',
-    defaultValues: { name: '', email: '', message: '' },
+    defaultValues: { name: '', email: '', message: '', website: '' },
   });
 
   const onSubmit = async (values: ContactInput): Promise<void> => {
@@ -54,9 +54,23 @@ export function ContactForm(): ReactElement {
     <Form {...form}>
       <form
         onSubmit={(event) => void form.handleSubmit(onSubmit)(event)}
-        className="space-y-6"
+        className="relative space-y-6"
         noValidate
       >
+        {/* Honeypot: fuera de pantalla y oculto a lectores, no con display:none (algunos bots lo detectan). */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute left-[-9999px] h-0 w-0 overflow-hidden"
+        >
+          <label htmlFor="website">No completar</label>
+          <input
+            id="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            {...form.register('website')}
+          />
+        </div>
         <FormField
           control={form.control}
           name="name"

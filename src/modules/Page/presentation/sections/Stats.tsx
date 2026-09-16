@@ -4,12 +4,16 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const StatsPropsSchema = z.object({
   title: z.string().optional(),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   /** Color CSS del texto; sin él, blanco automático sobre imagen de fondo. */
   textColor: z.string().optional(),
   /** Color CSS de las cifras, para destacarlas sobre el fondo. */
@@ -31,17 +35,23 @@ export function Stats({ sectionProps }: SectionComponentProps): ReactElement | n
   }
   const { title, items, textColor, accentColor } = parsed.data;
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'compact',
+    contentWidth: 'normal',
+    textAlign: 'left',
+  });
 
   return (
     <section
-      className="ui-surface"
+      className={cn('ui-surface', layout.section)}
       style={{
         ...sectionBackgroundStyle(parsed.data),
         // Va sobre el velo oscuro de la imagen de fondo, no sobre el fondo del tema.
         color: textColor ?? (hasBackgroundImage ? '#ffffff' : undefined),
       }}
+      {...sectionSurfaceAttributes(parsed.data)}
     >
-      <div className="mx-auto max-w-5xl px-6 py-16">
+      <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {title !== undefined && (
           <h2 className="ui-heading mb-10 text-center text-3xl md:text-4xl">{title}</h2>
         )}
@@ -71,7 +81,7 @@ export function Stats({ sectionProps }: SectionComponentProps): ReactElement | n
             </div>
           ))}
         </dl>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

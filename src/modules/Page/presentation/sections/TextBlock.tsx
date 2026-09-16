@@ -4,7 +4,10 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const TextBlockPropsSchema = z.object({
@@ -14,6 +17,7 @@ const TextBlockPropsSchema = z.object({
   imageUrl: z.string().optional(),
   imageAlt: z.string().optional(),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
 });
 
 export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement | null {
@@ -24,14 +28,21 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
   const { title, content, imageUrl, imageAlt } = parsed.data;
   const hasImage = imageUrl !== undefined;
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'compact',
+    contentWidth: hasImage ? 'normal' : 'narrow',
+    textAlign: 'left',
+  });
 
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div
-        className={cn(
-          'mx-auto px-6 py-16',
-          hasImage ? 'grid max-w-5xl items-center gap-10 md:grid-cols-2' : 'max-w-3xl',
-        )}
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll
+        animation={parsed.data.animation}
+        className={cn(layout.container, hasImage && 'grid items-center gap-10 md:grid-cols-2')}
       >
         <div>
           {title !== undefined && (
@@ -61,7 +72,7 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
             className="w-full rounded-xl shadow-sm"
           />
         )}
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

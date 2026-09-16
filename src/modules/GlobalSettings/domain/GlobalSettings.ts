@@ -17,6 +17,8 @@ export const GlobalSettingsSchema = z.object({
   xUrl: z.string().default(''),
   customLinkUrl: z.string().default(''),
   customLinkLabel: z.string().default(''),
+  // Dominio canónico del cliente; puede ser distinto de aquel por el que entró el visitante.
+  primaryDomain: z.string().nullable().default(null),
   brand: BrandSchema.default(DEFAULT_BRAND),
 });
 
@@ -37,5 +39,6 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   xUrl: '',
   customLinkUrl: '',
   customLinkLabel: '',
+  primaryDomain: null,
   brand: DEFAULT_BRAND,
 };

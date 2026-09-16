@@ -23,7 +23,10 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const FeaturesPropsSchema = z.object({
@@ -31,6 +34,7 @@ const FeaturesPropsSchema = z.object({
   eyebrow: z.string().optional(),
   title: z.string().default(''),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   /** Color CSS de los íconos y su burbuja. */
   accentColor: z.string().optional(),
   /**
@@ -77,10 +81,19 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
   }
   const { eyebrow, title, items, accentColor, variant } = parsed.data;
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'normal',
+    contentWidth: 'normal',
+    textAlign: 'left',
+  });
 
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div className="mx-auto max-w-5xl px-6 py-20">
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {eyebrow !== undefined && (
           <p
             className={cn(
@@ -155,7 +168,7 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
             );
           })}
         </div>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

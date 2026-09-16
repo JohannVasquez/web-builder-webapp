@@ -2,10 +2,14 @@ import Link from 'next/link';
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import { Button } from '@/shared/ui/button';
+import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const CallToActionPropsSchema = z.object({
@@ -14,6 +18,7 @@ const CallToActionPropsSchema = z.object({
   buttonLabel: z.string().optional(),
   buttonHref: z.string().optional(),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   /** Color CSS del texto; sin él, blanco automático sobre imagen de fondo. */
   textColor: z.string().optional(),
 });
@@ -28,17 +33,26 @@ export function CallToAction({
   const { title, subtitle, buttonLabel, buttonHref, backgroundImageUrl, textColor } =
     parsed.data;
   const hasBackgroundImage = backgroundImageUrl !== undefined;
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'compact',
+    contentWidth: 'medium',
+    textAlign: 'center',
+  });
 
   return (
     <section
-      className="bg-primary text-primary-foreground"
+      className={cn('bg-primary text-primary-foreground', layout.section)}
       style={{
         ...sectionBackgroundStyle(parsed.data),
         // Va sobre el velo oscuro de la imagen de fondo, no sobre el fondo del tema.
         color: textColor ?? (hasBackgroundImage ? '#ffffff' : undefined),
       }}
+      {...sectionSurfaceAttributes(parsed.data)}
     >
-      <div className="mx-auto flex max-w-4xl flex-col items-center gap-4 px-6 py-16 text-center">
+      <RevealOnScroll
+        animation={parsed.data.animation}
+        className={cn(layout.container, 'flex flex-col items-center gap-4')}
+      >
         <h2 className="ui-heading text-3xl md:text-4xl">{title}</h2>
         {subtitle !== undefined && (
           <p
@@ -56,7 +70,7 @@ export function CallToAction({
             <Link href={buttonHref}>{buttonLabel}</Link>
           </Button>
         )}
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

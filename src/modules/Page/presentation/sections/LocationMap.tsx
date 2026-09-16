@@ -5,13 +5,17 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const LocationMapPropsSchema = z.object({
   title: z.string().optional(),
   subtitle: z.string().optional(),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   accentColor: z.string().optional(),
   /**
    * Dirección en texto libre (ej. "Av. Vicuña Mackenna 2890, Ñuñoa,
@@ -55,10 +59,19 @@ export function LocationMap({
   const embedSrc = `https://www.google.com/maps?q=${encodedQuery}&output=embed`;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'normal',
+    contentWidth: 'wide',
+    textAlign: 'left',
+  });
 
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div className="mx-auto max-w-6xl px-6 py-20">
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {(title !== undefined || subtitle !== undefined) && (
           <div className="mb-10 text-center">
             {title !== undefined && (
@@ -108,7 +121,7 @@ export function LocationMap({
             </a>
           </div>
         </div>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

@@ -7,12 +7,16 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const TestimonialsPropsSchema = z.object({
   title: z.string().default(''),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   accentColor: z.string().optional(),
   items: z
     .array(
@@ -48,10 +52,19 @@ export function Testimonials({
   const goTo = (delta: number): void => {
     setActiveIndex((index) => (index + delta + items.length) % items.length);
   };
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'normal',
+    contentWidth: 'narrow',
+    textAlign: 'left',
+  });
 
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div className="mx-auto max-w-3xl px-6 py-20">
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {title !== '' && (
           <h2
             className={cn(
@@ -148,7 +161,7 @@ export function Testimonials({
             </div>
           )}
         </div>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

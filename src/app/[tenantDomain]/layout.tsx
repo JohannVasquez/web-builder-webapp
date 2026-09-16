@@ -9,6 +9,7 @@ import { BrandStyle } from '@/modules/Brand/presentation/BrandStyle';
 import { ThemeScript } from '@/modules/Brand/presentation/ThemeScript';
 import { resolveFontPairing } from '@/modules/Brand/presentation/fonts';
 import { VisualStyleTokens } from '@/modules/VisualStyle/presentation/VisualStyleTokens';
+import { LocalBusinessJsonLd } from '@/modules/GlobalSettings/presentation/LocalBusinessJsonLd';
 import { Toaster } from '@/shared/ui/sonner';
 
 interface TenantLayoutProps {
@@ -22,25 +23,32 @@ export async function generateMetadata({
   const { tenantDomain } = await params;
   const settings = await createGlobalSettingsService(tenantDomain).getSettings();
   const { favicon, ogImage } = settings.brand.assets;
+  // Rutas estables en vez de las URLs firmadas del bucket, que expiran en una hora y
+  // dejarían sin imagen cualquier enlace ya compartido.
+  const brandAsset = (name: string): string => `/brand-asset/${name}`;
+
+  // El canónico apunta al dominio principal del cliente, no a aquel por el que entró el
+  // visitante: un tenant con dos dominios no puede competir consigo mismo en buscadores.
+  const canonicalHost = settings.primaryDomain ?? tenantDomain;
 
   return {
-    // Sin base absoluta, Next no puede construir la URL de og:image ni la canónica.
-    metadataBase: new URL(`https://${tenantDomain}`),
+    metadataBase: new URL(`https://${canonicalHost}`),
+    alternates: { canonical: '/' },
     title: { default: settings.siteName, template: `%s | ${settings.siteName}` },
     description: settings.tagline,
-    icons: favicon === undefined ? undefined : { icon: favicon },
+    icons: favicon === undefined ? undefined : { icon: brandAsset('favicon') },
     openGraph: {
       type: 'website',
       siteName: settings.siteName,
       title: settings.siteName,
       description: settings.tagline,
-      images: ogImage === undefined ? undefined : [{ url: ogImage }],
+      images: ogImage === undefined ? undefined : [{ url: brandAsset('og-image') }],
     },
     twitter: {
       card: ogImage === undefined ? 'summary' : 'summary_large_image',
       title: settings.siteName,
       description: settings.tagline,
-      images: ogImage === undefined ? undefined : [ogImage],
+      images: ogImage === undefined ? undefined : [brandAsset('og-image')],
     },
   };
 }
@@ -59,6 +67,10 @@ export default async function TenantLayout({
   return (
     <>
       <ThemeScript colorMode={settings.brand.colorMode} />
+      <LocalBusinessJsonLd
+        settings={settings}
+        siteUrl={`https://${settings.primaryDomain ?? tenantDomain}`}
+      />
       <BrandStyle
         brand={settings.brand}
         headingVariable={pairing.headingVariableName}

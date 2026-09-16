@@ -18,8 +18,10 @@ export interface SessionContextValue {
   // `true` hasta que la sesión guardada se leyó en el cliente.
   readonly isLoading: boolean;
   readonly token: string | null;
-  signIn(session: Session): void;
-  signOut(): void;
+  // Propiedades de función y no métodos: como se desestructuran del contexto, declararlas
+  // como métodos hace que `unbound-method` marque cada uso.
+  readonly signIn: (session: Session) => void;
+  readonly signOut: () => void;
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null);

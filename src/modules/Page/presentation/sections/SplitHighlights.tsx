@@ -23,7 +23,10 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const SplitHighlightsPropsSchema = z.object({
@@ -31,6 +34,7 @@ const SplitHighlightsPropsSchema = z.object({
   eyebrow: z.string().optional(),
   title: z.string().default(''),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   accentColor: z.string().optional(),
   /**
    * Foto que acompaña la lista (a un costado), no confundir con
@@ -146,13 +150,21 @@ export function SplitHighlights({
     </div>
   );
 
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'normal',
+    contentWidth: hasImage ? 'wide' : 'narrow',
+    textAlign: 'left',
+  });
+
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div
-        className={cn(
-          'mx-auto max-w-6xl px-6 py-20',
-          hasImage ? 'grid items-center gap-12 md:grid-cols-2' : 'max-w-3xl',
-        )}
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll
+        animation={parsed.data.animation}
+        className={cn(layout.container, hasImage && 'grid items-center gap-12 md:grid-cols-2')}
       >
         {hasImage && (
           // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
@@ -166,7 +178,7 @@ export function SplitHighlights({
           />
         )}
         {content}
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

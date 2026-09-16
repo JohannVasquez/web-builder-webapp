@@ -13,6 +13,7 @@ describe('PageService', () => {
   it('delegates the lookup to the repository and returns the page', async () => {
     const repository: jest.Mocked<PageRepository> = {
       findBySlug: jest.fn().mockResolvedValue(page),
+      findAllPublished: jest.fn().mockResolvedValue([]),
     };
     const service = new PageService(repository);
 
@@ -25,6 +26,7 @@ describe('PageService', () => {
   it('returns null when the page does not exist', async () => {
     const repository: jest.Mocked<PageRepository> = {
       findBySlug: jest.fn().mockResolvedValue(null),
+      findAllPublished: jest.fn().mockResolvedValue([]),
     };
     const service = new PageService(repository);
 

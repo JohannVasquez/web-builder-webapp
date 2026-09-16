@@ -28,9 +28,18 @@ export function VisualStyleTokens({ styleId }: VisualStyleTokensProps): ReactEle
   const activeDark =
     active.darkTokens === undefined ? '' : `.dark{${declarations(active.darkTokens)}}`;
 
+  // Los tokens del estilo se repiten en `[data-surface]` porque un `var()` dentro de una
+  // custom property se resuelve donde está DECLARADA, no donde se usa: declarado solo en
+  // `:root`, `--ui-card-bg: var(--card)` congela el `--card` global y una sección con color
+  // propio seguiría pintando sus tarjetas con el color del tema. Repetir la regla la vuelve
+  // a resolver contra los valores locales de esa sección.
   const css = [
     `:root{${declarations(active.tokens)}}`,
     activeDark,
+    `[data-surface]{${declarations(active.tokens)}}`,
+    active.darkTokens === undefined
+      ? ''
+      : `.dark [data-surface]{${declarations(active.darkTokens)}}`,
     ...VISUAL_STYLES.map(scopedRules),
   ].join('');
 

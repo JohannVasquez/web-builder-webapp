@@ -1,4 +1,4 @@
-import { contrastRatio, parseHex, WCAG_AA_NORMAL_TEXT } from './color';
+import { contrastRatio, parseHex, WCAG_AA_NORMAL_TEXT } from '@/shared/lib/color';
 import { resolveBrandTheme, textScaleTokens } from './theme';
 
 describe('resolveBrandTheme', () => {
