@@ -30,6 +30,7 @@ import {
   sectionLayoutClasses,
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
+import { imageLoading } from '@/shared/lib/imageLoading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -138,6 +139,7 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
                       src={item.imageUrl}
                       alt=""
                       className="size-16 shrink-0 rounded-lg object-cover"
+                      {...imageLoading()}
                     />
                   ) : (
                     <div
@@ -208,6 +210,7 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
                       src={item.imageUrl}
                       alt=""
                       className="h-32 w-full rounded-2xl object-cover"
+                      {...imageLoading()}
                     />
                   ) : (
                     <div
@@ -261,6 +264,7 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
                     src={item.imageUrl}
                     alt=""
                     className="h-32 w-full rounded-lg object-cover"
+                    {...imageLoading()}
                   />
                 ) : (
                   <div

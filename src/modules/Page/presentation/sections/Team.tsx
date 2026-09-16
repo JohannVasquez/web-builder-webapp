@@ -20,6 +20,7 @@ import {
   sectionLayoutClasses,
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
+import { imageLoading } from '@/shared/lib/imageLoading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -102,6 +103,7 @@ function Avatar({
         src={member.photoUrl}
         alt={member.name}
         className={cn(size, 'shrink-0 rounded-full object-cover')}
+        {...imageLoading()}
       />
     );
   }

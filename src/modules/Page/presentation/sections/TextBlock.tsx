@@ -6,7 +6,11 @@ import {
   sectionBackgroundStyle,
   sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
-import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import {
+  SectionLayoutPropsSchema,
+  sectionLayoutClasses,
+} from '@/shared/lib/sectionLayout';
+import { imageLoading } from '@/shared/lib/imageLoading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -42,7 +46,10 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
     >
       <RevealOnScroll
         animation={parsed.data.animation}
-        className={cn(layout.container, hasImage && 'grid items-center gap-10 md:grid-cols-2')}
+        className={cn(
+          layout.container,
+          hasImage && 'grid items-center gap-10 md:grid-cols-2',
+        )}
       >
         <div>
           {title !== undefined && (
@@ -70,6 +77,7 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
             src={imageUrl}
             alt={imageAlt ?? ''}
             className="w-full rounded-xl shadow-sm"
+            {...imageLoading()}
           />
         )}
       </RevealOnScroll>

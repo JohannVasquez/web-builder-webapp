@@ -6,7 +6,11 @@ import {
   sectionBackgroundStyle,
   sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
-import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import {
+  SectionLayoutPropsSchema,
+  sectionLayoutClasses,
+} from '@/shared/lib/sectionLayout';
+import { imageLoading } from '@/shared/lib/imageLoading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -105,6 +109,7 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
                     src={column.imageUrl}
                     alt={column.imageAlt ?? ''}
                     className="aspect-4/3 w-full rounded-xl object-cover shadow-sm"
+                    {...imageLoading()}
                   />
                 )}
                 {hasText && (

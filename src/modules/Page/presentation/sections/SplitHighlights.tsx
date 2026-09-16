@@ -25,7 +25,11 @@ import {
   sectionBackgroundStyle,
   sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
-import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import {
+  SectionLayoutPropsSchema,
+  sectionLayoutClasses,
+} from '@/shared/lib/sectionLayout';
+import { imageLoading } from '@/shared/lib/imageLoading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -164,7 +168,10 @@ export function SplitHighlights({
     >
       <RevealOnScroll
         animation={parsed.data.animation}
-        className={cn(layout.container, hasImage && 'grid items-center gap-12 md:grid-cols-2')}
+        className={cn(
+          layout.container,
+          hasImage && 'grid items-center gap-12 md:grid-cols-2',
+        )}
       >
         {hasImage && (
           // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
@@ -175,6 +182,7 @@ export function SplitHighlights({
               'aspect-4/3 w-full rounded-2xl object-cover shadow-sm',
               imagePosition === 'right' && 'md:order-2',
             )}
+            {...imageLoading()}
           />
         )}
         {content}

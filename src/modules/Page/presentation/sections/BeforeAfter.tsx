@@ -14,6 +14,7 @@ import {
   sectionLayoutClasses,
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
+import { imageLoading } from '@/shared/lib/imageLoading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -113,6 +114,7 @@ export function BeforeAfter({
                 src={beforeUrl}
                 alt={beforeLabel}
                 className="aspect-4/3 w-full object-cover"
+                {...imageLoading()}
               />
               <figcaption className="text-muted-foreground p-3 text-center text-sm font-medium">
                 {beforeLabel}
@@ -124,6 +126,7 @@ export function BeforeAfter({
                 src={afterUrl}
                 alt={afterLabel}
                 className="aspect-4/3 w-full object-cover"
+                {...imageLoading()}
               />
               <figcaption className="text-muted-foreground p-3 text-center text-sm font-medium">
                 {afterLabel}
@@ -154,6 +157,7 @@ export function BeforeAfter({
               src={afterUrl}
               alt={afterLabel}
               className="absolute inset-0 size-full object-cover"
+              {...imageLoading()}
             />
             {/* eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image */}
             <img
@@ -161,6 +165,7 @@ export function BeforeAfter({
               alt={beforeLabel}
               className="absolute inset-0 size-full object-cover"
               style={{ clipPath: `inset(0 ${100 - value}% 0 0)` }}
+              {...imageLoading()}
             />
             <div
               className="bg-background pointer-events-none absolute inset-y-0 w-0.5"
