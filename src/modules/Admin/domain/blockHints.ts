@@ -90,6 +90,10 @@ export const BLOCK_PROPS_HINTS: Readonly<Record<string, string>> = {
     'eyebrow, title, rating (0 a 5), reviewCount, profileUrl, variant ("summary" o "cards"), ' +
     'reviews (arreglo de {author, rating, text, date, avatarUrl}). ' +
     `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  LatestPosts:
+    'eyebrow, title, count (cuántas publicaciones traer, 3 por defecto), tag (filtra por etiqueta), ' +
+    'variant ("grid" o "list"). Trae las publicaciones del blog del propio sitio; sin ninguna, el bloque no se muestra. ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
 };
 
 export const blockPropsHint = (type: string): string =>

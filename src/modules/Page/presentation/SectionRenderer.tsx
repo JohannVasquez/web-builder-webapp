@@ -1,9 +1,11 @@
 import type { ReactElement } from 'react';
+import type { BlogService } from '@/modules/Blog/application/BlogService';
 import type { PageSection } from '../domain/Page';
 import { resolveSectionComponent } from './componentMap';
 
 interface SectionRendererProps {
   readonly sections: readonly PageSection[];
+  readonly blogService?: BlogService;
 }
 
 /**
@@ -12,7 +14,10 @@ interface SectionRendererProps {
  * silenciosamente (AC1.5). Las secciones con `anchor` se envuelven con un id
  * para poder enlazarlas como `/slug#ancla` (sitios one-page).
  */
-export function SectionRenderer({ sections }: SectionRendererProps): ReactElement {
+export function SectionRenderer({
+  sections,
+  blogService,
+}: SectionRendererProps): ReactElement {
   const ordered = [...sections].sort((a, b) => a.position - b.position);
 
   return (
@@ -26,11 +31,13 @@ export function SectionRenderer({ sections }: SectionRendererProps): ReactElemen
         if (section.anchor !== null && section.anchor !== '') {
           return (
             <div key={key} id={section.anchor} className="scroll-mt-16">
-              <Component sectionProps={section.props} />
+              <Component sectionProps={section.props} blogService={blogService} />
             </div>
           );
         }
-        return <Component key={key} sectionProps={section.props} />;
+        return (
+          <Component key={key} sectionProps={section.props} blogService={blogService} />
+        );
       })}
     </>
   );

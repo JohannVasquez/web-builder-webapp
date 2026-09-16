@@ -308,6 +308,14 @@ const SAMPLE_PROPS: Readonly<Record<string, Readonly<Record<string, unknown>>>> 
       },
     ],
   },
+  // Sin `tenantDomain` (esta página no tiene un tenant real) el bloque no pide datos y no se
+  // muestra: es el mismo comportamiento que tendría un sitio sin publicaciones todavía.
+  LatestPosts: {
+    eyebrow: 'Blog',
+    title: 'Últimas publicaciones',
+    count: 3,
+    variant: 'grid',
+  },
 };
 
 function SampleRow(): ReactElement {

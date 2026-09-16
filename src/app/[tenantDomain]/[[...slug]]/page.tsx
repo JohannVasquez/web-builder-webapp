@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { createPageService } from '@/modules/Page/infrastructure/pageServiceFactory';
+import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
 import { SectionRenderer } from '@/modules/Page/presentation/SectionRenderer';
 
 interface DynamicPageProps {
@@ -39,5 +40,10 @@ export default async function DynamicPage({
     notFound();
   }
 
-  return <SectionRenderer sections={page.sections} />;
+  return (
+    <SectionRenderer
+      sections={page.sections}
+      blogService={createBlogService(tenantDomain)}
+    />
+  );
 }

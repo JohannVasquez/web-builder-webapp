@@ -130,6 +130,11 @@ export const BLOCK_CATALOG: readonly BlockCatalogEntry[] = [
     label: 'Reseñas de Google',
     description: 'Calificación general y reseñas destacadas del negocio.',
   },
+  {
+    type: 'LatestPosts',
+    label: 'Últimas publicaciones',
+    description: 'Últimas entradas del blog del sitio, en tarjetas o en lista.',
+  },
 ];
 
 export const findBlockCatalogEntry = (type: string): BlockCatalogEntry | undefined =>
