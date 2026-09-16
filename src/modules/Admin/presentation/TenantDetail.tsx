@@ -3,7 +3,17 @@
 import Link from 'next/link';
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { toast } from 'sonner';
-import { ArrowLeft, ExternalLink, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  ExternalLink,
+  Image as ImageIcon,
+  Loader2,
+  Mail,
+  Palette,
+  Pencil,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import {
   AdminPageResponseSchema,
   AdminPagesSchema,
@@ -110,6 +120,24 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
             </a>
           )}
         </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/identidad`}>
+            <Palette className="size-4" /> Identidad de marca
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/imagenes`}>
+            <ImageIcon className="size-4" /> Imágenes
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/mensajes`}>
+            <Mail className="size-4" /> Mensajes
+          </Link>
+        </Button>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4">

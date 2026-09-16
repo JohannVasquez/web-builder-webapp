@@ -48,6 +48,20 @@ export class AdminApiClient {
     await this.send('DELETE', path);
   }
 
+  // No usa `send`: un `FormData` no lleva `Content-Type` a mano (el navegador pone el
+  // boundary) ni se serializa con `JSON.stringify`.
+  public async upload<T>(path: string, file: File, schema: z.ZodType<T>): Promise<T> {
+    const token = this.getToken();
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await this.fetchFn(`${this.baseUrl}${path}`, {
+      method: 'POST',
+      headers: token === null ? {} : { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+    return schema.parse(await this.parseResponse(response));
+  }
+
   private async send(method: string, path: string, body?: unknown): Promise<unknown> {
     const token = this.getToken();
     const response = await this.fetchFn(`${this.baseUrl}${path}`, {
@@ -58,7 +72,10 @@ export class AdminApiClient {
       },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
+    return this.parseResponse(response);
+  }
 
+  private async parseResponse(response: Response): Promise<unknown> {
     if (response.status === 401) {
       throw new SessionExpiredError();
     }
