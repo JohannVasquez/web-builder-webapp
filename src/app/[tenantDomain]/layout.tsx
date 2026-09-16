@@ -79,8 +79,17 @@ export default async function TenantLayout({
         bodyVariable={pairing.bodyVariableName}
       />
       <VisualStyleTokens styleId={settings.brand.visualStyle} />
+      {/* Primer elemento enfocable: permite saltarse el menú sin tabular por todos sus enlaces. */}
+      <a
+        href="#contenido"
+        className="bg-primary text-primary-foreground sr-only rounded-md px-4 py-2 focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[60]"
+      >
+        Saltar al contenido
+      </a>
       <Navbar settings={settings} links={links} />
-      <main className="ui-page-backdrop flex-1">{children}</main>
+      <main id="contenido" tabIndex={-1} className="ui-page-backdrop flex-1">
+        {children}
+      </main>
       <Footer settings={settings} />
       <WhatsAppButton whatsappNumber={settings.whatsappNumber} />
       <Analytics config={readAnalyticsConfig(settings)} />
