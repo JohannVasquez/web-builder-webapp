@@ -68,6 +68,68 @@ export const BLOCK_CATALOG: readonly BlockCatalogEntry[] = [
     description:
       'De 1 a 4 columnas, cada una con foto y/o texto, para pasos o comparaciones.',
   },
+  {
+    type: 'Faq',
+    label: 'Preguntas frecuentes',
+    description:
+      'Preguntas que se despliegan al tocarlas. Resuelve dudas sin alargar la página.',
+  },
+  {
+    type: 'Pricing',
+    label: 'Planes y precios',
+    description:
+      'Tarjetas comparativas con lista de características y un plan destacado.',
+  },
+  {
+    type: 'Gallery',
+    label: 'Galería de imágenes',
+    description: 'Grilla o mosaico de fotos, con vista ampliada al tocar una.',
+  },
+  {
+    type: 'LogoCloud',
+    label: 'Logos de clientes',
+    description: 'Fila de logos o cinta en movimiento, para mostrar con quién trabajan.',
+  },
+  {
+    type: 'Team',
+    label: 'Equipo',
+    description: 'Fotos, nombres, cargos y redes de las personas detrás del negocio.',
+  },
+  {
+    type: 'Timeline',
+    label: 'Proceso o línea de tiempo',
+    description: 'Pasos numerados o hitos con fecha, para explicar cómo se trabaja.',
+  },
+  {
+    type: 'Video',
+    label: 'Video',
+    description: 'Video de YouTube, Vimeo o propio, con portada y carga diferida.',
+  },
+  {
+    type: 'AnnouncementBar',
+    label: 'Barra de anuncio',
+    description: 'Franja con un mensaje breve y un enlace, por ejemplo una promoción.',
+  },
+  {
+    type: 'BeforeAfter',
+    label: 'Antes y después',
+    description: 'Comparador deslizable entre dos imágenes, para mostrar un resultado.',
+  },
+  {
+    type: 'OpeningHours',
+    label: 'Horarios de atención',
+    description: 'Días y horarios, indicando si el negocio está abierto en este momento.',
+  },
+  {
+    type: 'Newsletter',
+    label: 'Suscripción a novedades',
+    description: 'Captura de correo con mensaje de confirmación.',
+  },
+  {
+    type: 'GoogleReviews',
+    label: 'Reseñas de Google',
+    description: 'Calificación general y reseñas destacadas del negocio.',
+  },
 ];
 
 export const findBlockCatalogEntry = (type: string): BlockCatalogEntry | undefined =>

@@ -141,6 +141,173 @@ const SAMPLE_PROPS: Readonly<Record<string, Readonly<Record<string, unknown>>>> 
       },
     ],
   },
+  Faq: {
+    eyebrow: 'Dudas frecuentes',
+    title: '¿Tienes preguntas?',
+    items: [
+      {
+        question: '¿Trabajan fuera de Santiago?',
+        answer:
+          'Sí, cubrimos toda la Región Metropolitana y alrededores con recargo de traslado.',
+      },
+      {
+        question: '¿Cuánto demora una cotización?',
+        answer:
+          'Respondemos dentro del día hábil siguiente, con precio y plazo cerrados.',
+      },
+      {
+        question: '¿Emiten boleta o factura?',
+        answer: 'Las dos. Lo indicas al confirmar el trabajo.',
+      },
+    ],
+  },
+  Pricing: {
+    eyebrow: 'Planes',
+    title: 'Elige cómo empezar',
+    showBillingToggle: true,
+    plans: [
+      {
+        name: 'Básico',
+        description: 'Para partir con presencia en línea.',
+        priceMonthly: 29000,
+        priceYearly: 290000,
+        features: ['Sitio de una página', 'Formulario de contacto', 'Dominio propio'],
+        ctaLabel: 'Empezar',
+        ctaHref: '/contacto',
+      },
+      {
+        name: 'Profesional',
+        description: 'El que eligen la mayoría de los negocios.',
+        priceMonthly: 49000,
+        priceYearly: 490000,
+        features: ['Hasta 5 páginas', 'Blog incluido', 'Soporte prioritario'],
+        ctaLabel: 'Empezar',
+        ctaHref: '/contacto',
+        featured: true,
+      },
+      {
+        name: 'Tienda',
+        description: 'Para vender en línea.',
+        priceMonthly: 79000,
+        features: ['Catálogo de productos', 'Pedidos por WhatsApp', 'Reportes de ventas'],
+        ctaLabel: 'Empezar',
+        ctaHref: '/contacto',
+      },
+    ],
+  },
+  Gallery: {
+    eyebrow: 'Trabajos',
+    title: 'Algunos proyectos',
+    images: [
+      { url: '/styleguide/sample-1.svg', alt: 'Tablero eléctrico recién instalado' },
+      { url: '/styleguide/sample-2.svg', alt: 'Cuadrilla trabajando en terreno' },
+      { url: '/styleguide/sample-3.svg', alt: 'Luminarias de una bodega industrial' },
+    ],
+  },
+  LogoCloud: {
+    title: 'Confían en nosotros',
+    logos: [
+      { url: '/styleguide/sample-1.svg', alt: 'Cliente uno' },
+      { url: '/styleguide/sample-2.svg', alt: 'Cliente dos' },
+      { url: '/styleguide/sample-3.svg', alt: 'Cliente tres' },
+    ],
+  },
+  Team: {
+    eyebrow: 'Quiénes somos',
+    title: 'El equipo',
+    members: [
+      {
+        name: 'Camila Soto',
+        role: 'Jefa de proyectos',
+        bio: 'Doce años coordinando obras eléctricas.',
+      },
+      {
+        name: 'Rodrigo Pérez',
+        role: 'Instalador SEC clase A',
+        bio: 'Especialista en tableros industriales.',
+      },
+      {
+        name: 'Valentina Ruiz',
+        role: 'Atención a clientes',
+        bio: 'Responde cotizaciones el mismo día.',
+      },
+    ],
+  },
+  Timeline: {
+    eyebrow: 'Cómo trabajamos',
+    title: 'Tres pasos, sin sorpresas',
+    steps: [
+      {
+        title: 'Diagnóstico',
+        description: 'Visitamos el lugar y evaluamos la instalación existente.',
+      },
+      {
+        title: 'Propuesta',
+        description: 'Te enviamos una cotización clara, con precio y plazo.',
+      },
+      {
+        title: 'Ejecución',
+        description: 'Realizamos el trabajo y entregamos la certificación.',
+      },
+    ],
+  },
+  Video: {
+    eyebrow: 'Conócenos',
+    title: 'Un minuto con nosotros',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    caption: 'Así trabajamos en terreno.',
+  },
+  AnnouncementBar: {
+    message: '20% de descuento en mantenciones durante este mes.',
+    linkLabel: 'Ver condiciones',
+    linkHref: '/contacto',
+    variant: 'inline',
+  },
+  BeforeAfter: {
+    eyebrow: 'Resultados',
+    title: 'Antes y después',
+    beforeUrl: '/styleguide/sample-1.svg',
+    afterUrl: '/styleguide/sample-2.svg',
+    beforeLabel: 'Antes',
+    afterLabel: 'Después',
+    caption: 'Tablero de un edificio de Ñuñoa, renovado en dos días.',
+  },
+  OpeningHours: {
+    eyebrow: 'Atención',
+    title: 'Cuándo puedes visitarnos',
+    days: [
+      { day: 'lunes', open: '09:00', close: '18:00' },
+      { day: 'martes', open: '09:00', close: '18:00' },
+      { day: 'miercoles', open: '09:00', close: '18:00' },
+      { day: 'jueves', open: '09:00', close: '18:00' },
+      { day: 'viernes', open: '09:00', close: '18:00' },
+      { day: 'sabado', open: '10:00', close: '14:00' },
+      { day: 'domingo', closed: true },
+    ],
+  },
+  Newsletter: {
+    eyebrow: 'Novedades',
+    title: 'Te avisamos cuando haya algo bueno',
+    subtitle: 'Un correo al mes, sin relleno.',
+  },
+  GoogleReviews: {
+    eyebrow: 'Opiniones',
+    title: 'Lo que dicen en Google',
+    rating: 4.8,
+    reviewCount: 127,
+    reviews: [
+      {
+        author: 'Marcela Reyes',
+        rating: 5,
+        text: 'Llegaron a la hora acordada y dejaron todo certificado. Impecable.',
+      },
+      {
+        author: 'Jorge Fuentes',
+        rating: 5,
+        text: 'Cotizaron el mismo día y el precio no cambió al final del trabajo.',
+      },
+    ],
+  },
 };
 
 function SampleRow(): ReactElement {

@@ -46,6 +46,50 @@ export const BLOCK_PROPS_HINTS: Readonly<Record<string, string>> = {
   Columns:
     'title, subtitle, accentColor, columns (1 a 4 elementos: {imageUrl, imageAlt, eyebrow, title, content}). ' +
     `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  Faq:
+    'eyebrow, title, variant ("accordion" o "list"), items (arreglo de {question, answer}). ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  Pricing:
+    'eyebrow, title, subtitle, variant ("cards" o "table"), showBillingToggle (booleano), ' +
+    'plans (arreglo de {name, description, priceMonthly, priceYearly, currency, features: string[], ctaLabel, ctaHref, featured}). ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  Gallery:
+    'eyebrow, title, variant ("grid" o "masonry"), images (arreglo de {url, alt, caption}). ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  LogoCloud:
+    'eyebrow, title, variant ("row" o "marquee"), logos (arreglo de {url, alt, href}). ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  Team:
+    'eyebrow, title, accentColor, variant ("grid" o "list"), ' +
+    'members (arreglo de {name, role, photoUrl, bio, socials: [{label, url}]}). Sin foto se muestran las iniciales. ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  Timeline:
+    'eyebrow, title, accentColor, variant ("vertical" u "horizontal"), ' +
+    'steps (arreglo de {label, title, description, date}). Sin date, los pasos se numeran. ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  Video:
+    'eyebrow, title, videoUrl (YouTube, Vimeo o archivo propio), posterUrl, caption, ' +
+    'variant ("contained" o "full"). El reproductor se inserta recién al pulsar play. ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  AnnouncementBar:
+    'message, linkLabel, linkHref, dismissible (booleano), id (para distinguir un anuncio de otro), ' +
+    'accentColor, variant ("top" o "inline"). ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  BeforeAfter:
+    'eyebrow, title, beforeUrl, afterUrl, beforeLabel, afterLabel, caption, ' +
+    'variant ("slider" o "sideBySide"). ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  OpeningHours:
+    'eyebrow, title, timezone (por defecto "America/Santiago"), variant ("list" o "compact"), ' +
+    'days (arreglo de {day, open, close, closed, note}), holidays (arreglo de {date, note}). ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  Newsletter:
+    'eyebrow, title, subtitle, buttonLabel, successMessage, variant ("inline" o "card"). ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
+  GoogleReviews:
+    'eyebrow, title, rating (0 a 5), reviewCount, profileUrl, variant ("summary" o "cards"), ' +
+    'reviews (arreglo de {author, rating, text, date, avatarUrl}). ' +
+    `También: ${BACKGROUND_HINT}; ${LAYOUT_HINT}.`,
 };
 
 export const blockPropsHint = (type: string): string =>

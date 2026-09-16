@@ -48,8 +48,8 @@ export const config = {
   // Ojo con el patrón habitual `(?!.*\\..*)` de excluir "rutas con punto":
   // aquí los tenants SON dominios y llevan puntos, así que ese patrón dejaba
   // pasar `/acme.localhost/...` sin reescribir y volvía direccionable desde
-  // fuera la forma interna de la ruta. Este proyecto no tiene `public/`, así
-  // que basta con excluir `_next/` y el favicon.
+  // fuera la forma interna de la ruta. Lo único que hay en `public/` son las
+  // imágenes de ejemplo de la guía de estilos, que ya quedan bajo `styleguide`.
   // `api/revalidate` queda fuera: es endpoint del propio frontend (SPEC 0.2), no de tenant.
   matcher: ['/((?!_next/|api/revalidate|api/catalog|styleguide|favicon\\.ico).*)'],
 };

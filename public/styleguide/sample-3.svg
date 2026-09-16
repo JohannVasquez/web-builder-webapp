@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Imagen de ejemplo 3">
+  <rect width="400" height="300" fill="currentColor" opacity="0.06"/>
+  <rect x="24" y="24" width="352" height="252" fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="200" y="158" text-anchor="middle" font-family="system-ui,sans-serif" font-size="22" fill="currentColor" opacity="0.45">Ejemplo 3</text>
+</svg>
