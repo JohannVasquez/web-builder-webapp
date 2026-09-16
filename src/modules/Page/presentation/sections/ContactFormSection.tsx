@@ -10,7 +10,10 @@ import {
   sectionBackgroundStyle,
   sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
-import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import {
+  SectionLayoutPropsSchema,
+  sectionLayoutClasses,
+} from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -44,11 +47,21 @@ function SectionHeading({
 }): ReactElement {
   return (
     <div className="mb-10 text-center">
-      <h2 className={cn('ui-heading text-3xl md:text-4xl', hasBackgroundImage && 'text-white')}>
+      <h2
+        className={cn(
+          'ui-heading text-3xl md:text-4xl',
+          hasBackgroundImage && 'text-white',
+        )}
+      >
         {title}
       </h2>
       {subtitle !== undefined && (
-        <p className={cn('mt-3', hasBackgroundImage ? 'text-white/80' : 'text-muted-foreground')}>
+        <p
+          className={cn(
+            'mt-3',
+            hasBackgroundImage ? 'text-white/80' : 'text-muted-foreground',
+          )}
+        >
           {subtitle}
         </p>
       )}
@@ -56,19 +69,23 @@ function SectionHeading({
   );
 }
 
-export function ContactFormSection({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function ContactFormSection({
+  sectionProps,
+}: SectionComponentProps): ReactElement | null {
   const parsed = ContactFormSectionPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
   }
-  const { title, subtitle, accentColor, channels, address, lat, lng, mapLabel } = parsed.data;
+  const { title, subtitle, accentColor, channels, address, lat, lng, mapLabel } =
+    parsed.data;
   const hasChannels = channels.length > 0;
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
 
   const mapQuery = lat !== undefined && lng !== undefined ? `${lat},${lng}` : address;
   const hasMapQuery = mapQuery !== undefined && mapQuery !== '';
   // El variant `map` sin dirección ni coordenadas no tiene nada que mostrar: se comporta como `channels`.
-  const variant = parsed.data.variant === 'map' && !hasMapQuery ? 'channels' : parsed.data.variant;
+  const variant =
+    parsed.data.variant === 'map' && !hasMapQuery ? 'channels' : parsed.data.variant;
 
   if (variant === 'map' && mapQuery !== undefined) {
     const encodedQuery = encodeURIComponent(mapQuery);
@@ -88,7 +105,11 @@ export function ContactFormSection({ sectionProps }: SectionComponentProps): Rea
         data-variant={variant}
       >
         <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
-          <SectionHeading title={title} subtitle={subtitle} hasBackgroundImage={hasBackgroundImage} />
+          <SectionHeading
+            title={title}
+            subtitle={subtitle}
+            hasBackgroundImage={hasBackgroundImage}
+          />
           <div className="grid gap-8 md:grid-cols-2">
             <div className="ui-card p-6 md:p-8">
               <ContactForm />
@@ -103,7 +124,9 @@ export function ContactFormSection({ sectionProps }: SectionComponentProps): Rea
                 referrerPolicy="no-referrer-when-downgrade"
               />
               <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
-                {address !== undefined && <p className="text-muted-foreground text-sm">{address}</p>}
+                {address !== undefined && (
+                  <p className="text-muted-foreground text-sm">{address}</p>
+                )}
                 <a
                   href={mapsUrl}
                   target="_blank"
@@ -137,7 +160,11 @@ export function ContactFormSection({ sectionProps }: SectionComponentProps): Rea
         data-variant={variant}
       >
         <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
-          <SectionHeading title={title} subtitle={subtitle} hasBackgroundImage={hasBackgroundImage} />
+          <SectionHeading
+            title={title}
+            subtitle={subtitle}
+            hasBackgroundImage={hasBackgroundImage}
+          />
           {hasBackgroundImage ? (
             <div className="ui-card p-6 md:p-8">
               <ContactForm />
@@ -164,7 +191,11 @@ export function ContactFormSection({ sectionProps }: SectionComponentProps): Rea
       data-variant={variant}
     >
       <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
-        <SectionHeading title={title} subtitle={subtitle} hasBackgroundImage={hasBackgroundImage} />
+        <SectionHeading
+          title={title}
+          subtitle={subtitle}
+          hasBackgroundImage={hasBackgroundImage}
+        />
         {hasChannels ? (
           <div className="grid gap-8 md:grid-cols-[7fr_3fr]">
             <div className="ui-card p-6 md:p-8">

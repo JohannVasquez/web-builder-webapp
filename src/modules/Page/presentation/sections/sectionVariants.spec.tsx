@@ -88,7 +88,9 @@ describe('CallToAction variants', () => {
   };
 
   it('sin variant se ve igual que la variante banner explícita', () => {
-    const withoutVariant = renderToStaticMarkup(<CallToAction sectionProps={baseProps} />);
+    const withoutVariant = renderToStaticMarkup(
+      <CallToAction sectionProps={baseProps} />,
+    );
     const withBanner = renderToStaticMarkup(
       <CallToAction sectionProps={{ ...baseProps, variant: 'banner' }} />,
     );
@@ -153,7 +155,9 @@ describe('Testimonials variants', () => {
   };
 
   it('sin variant se ve igual que la variante carousel explícita', () => {
-    const withoutVariant = renderToStaticMarkup(<Testimonials sectionProps={baseProps} />);
+    const withoutVariant = renderToStaticMarkup(
+      <Testimonials sectionProps={baseProps} />,
+    );
     const withCarousel = renderToStaticMarkup(
       <Testimonials sectionProps={{ ...baseProps, variant: 'carousel' }} />,
     );

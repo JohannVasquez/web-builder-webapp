@@ -46,10 +46,20 @@ export function CallToAction({
   if (!parsed.success) {
     return null;
   }
-  const { title, subtitle, buttonLabel, buttonHref, backgroundImageUrl, textColor, variant } =
-    parsed.data;
+  const {
+    title,
+    subtitle,
+    buttonLabel,
+    buttonHref,
+    backgroundImageUrl,
+    textColor,
+    variant,
+  } = parsed.data;
   const hasBackgroundImage = backgroundImageUrl !== undefined;
-  const layout = sectionLayoutClasses(parsed.data, CALL_TO_ACTION_LAYOUT_DEFAULTS[variant]);
+  const layout = sectionLayoutClasses(
+    parsed.data,
+    CALL_TO_ACTION_LAYOUT_DEFAULTS[variant],
+  );
 
   if (variant === 'card') {
     return (

@@ -12,7 +12,9 @@ describe('Stats variants', () => {
 
   it('sin variant, el HTML es idéntico al de "row" explícito', () => {
     const withoutVariant = renderToStaticMarkup(<Stats sectionProps={{ items }} />);
-    const withRow = renderToStaticMarkup(<Stats sectionProps={{ items, variant: 'row' }} />);
+    const withRow = renderToStaticMarkup(
+      <Stats sectionProps={{ items, variant: 'row' }} />,
+    );
 
     expect(withoutVariant).toEqual(withRow);
   });
@@ -21,15 +23,21 @@ describe('Stats variants', () => {
     const withUnknown = renderToStaticMarkup(
       <Stats sectionProps={{ items, variant: 'bogus' }} />,
     );
-    const withRow = renderToStaticMarkup(<Stats sectionProps={{ items, variant: 'row' }} />);
+    const withRow = renderToStaticMarkup(
+      <Stats sectionProps={{ items, variant: 'row' }} />,
+    );
 
     expect(withUnknown).toEqual(withRow);
   });
 
   it('cada variante produce un marcado distinguible', () => {
     const row = renderToStaticMarkup(<Stats sectionProps={{ items, variant: 'row' }} />);
-    const cards = renderToStaticMarkup(<Stats sectionProps={{ items, variant: 'cards' }} />);
-    const counter = renderToStaticMarkup(<Stats sectionProps={{ items, variant: 'counter' }} />);
+    const cards = renderToStaticMarkup(
+      <Stats sectionProps={{ items, variant: 'cards' }} />,
+    );
+    const counter = renderToStaticMarkup(
+      <Stats sectionProps={{ items, variant: 'counter' }} />,
+    );
 
     expect(row).toContain('data-variant="row"');
     expect(cards).toContain('data-variant="cards"');
@@ -48,7 +56,9 @@ describe('Stats variants', () => {
   });
 
   it('en "counter" renderiza el valor final en el HTML del servidor, sin quedar en 0', () => {
-    const html = renderToStaticMarkup(<Stats sectionProps={{ items, variant: 'counter' }} />);
+    const html = renderToStaticMarkup(
+      <Stats sectionProps={{ items, variant: 'counter' }} />,
+    );
 
     expect(html).toContain('+1.200');
     expect(html).toContain('24/7');
@@ -59,7 +69,10 @@ describe('Stats variants', () => {
   it('en "counter", una cifra sin dígitos se muestra tal cual sin animar', () => {
     const html = renderToStaticMarkup(
       <Stats
-        sectionProps={{ items: [{ value: 'Excelente', label: 'Rating' }], variant: 'counter' }}
+        sectionProps={{
+          items: [{ value: 'Excelente', label: 'Rating' }],
+          variant: 'counter',
+        }}
       />,
     );
 
@@ -82,7 +95,9 @@ describe('ServiceCards variants', () => {
   ];
 
   it('sin variant, el HTML es idéntico al de "grid" explícito', () => {
-    const withoutVariant = renderToStaticMarkup(<ServiceCards sectionProps={{ items }} />);
+    const withoutVariant = renderToStaticMarkup(
+      <ServiceCards sectionProps={{ items }} />,
+    );
     const withGrid = renderToStaticMarkup(
       <ServiceCards sectionProps={{ items, variant: 'grid' }} />,
     );
@@ -102,7 +117,9 @@ describe('ServiceCards variants', () => {
   });
 
   it('cada variante produce un marcado distinguible', () => {
-    const grid = renderToStaticMarkup(<ServiceCards sectionProps={{ items, variant: 'grid' }} />);
+    const grid = renderToStaticMarkup(
+      <ServiceCards sectionProps={{ items, variant: 'grid' }} />,
+    );
     const carousel = renderToStaticMarkup(
       <ServiceCards sectionProps={{ items, variant: 'carousel' }} />,
     );
@@ -121,7 +138,9 @@ describe('ServiceCards variants', () => {
 
   it('el contenido aparece en todas las variantes', () => {
     for (const variant of ['grid', 'carousel', 'accordion']) {
-      const html = renderToStaticMarkup(<ServiceCards sectionProps={{ items, variant }} />);
+      const html = renderToStaticMarkup(
+        <ServiceCards sectionProps={{ items, variant }} />,
+      );
       expect(html).toContain('Instalación');
       expect(html).toContain('Servicio de instalación completo.');
       expect(html).toContain('Mantención');
@@ -139,7 +158,9 @@ describe('ServiceCards variants', () => {
 });
 
 describe('ContactFormSection variants', () => {
-  const channels = [{ type: 'phone' as const, title: 'Llámanos', value: '+56 9 1234 5678' }];
+  const channels = [
+    { type: 'phone' as const, title: 'Llámanos', value: '+56 9 1234 5678' },
+  ];
 
   it('sin variant, el HTML es idéntico al de "channels" explícito', () => {
     const withoutVariant = renderToStaticMarkup(
@@ -182,7 +203,11 @@ describe('ContactFormSection variants', () => {
     );
     const map = renderToStaticMarkup(
       <ContactFormSection
-        sectionProps={{ title: 'Contáctanos', variant: 'map', address: 'Av. Siempre Viva 123' }}
+        sectionProps={{
+          title: 'Contáctanos',
+          variant: 'map',
+          address: 'Av. Siempre Viva 123',
+        }}
       />,
     );
 
@@ -214,7 +239,9 @@ describe('ContactFormSection variants', () => {
 
   it('"map" sin address ni lat/lng cae a "channels"', () => {
     const mapWithoutProps = renderToStaticMarkup(
-      <ContactFormSection sectionProps={{ title: 'Contáctanos', channels, variant: 'map' }} />,
+      <ContactFormSection
+        sectionProps={{ title: 'Contáctanos', channels, variant: 'map' }}
+      />,
     );
     const explicitChannels = renderToStaticMarkup(
       <ContactFormSection

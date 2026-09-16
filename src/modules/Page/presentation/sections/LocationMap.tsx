@@ -7,7 +7,10 @@ import {
   sectionBackgroundStyle,
   sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
-import { SectionLayoutPropsSchema, sectionLayoutClasses } from '@/shared/lib/sectionLayout';
+import {
+  SectionLayoutPropsSchema,
+  sectionLayoutClasses,
+} from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 

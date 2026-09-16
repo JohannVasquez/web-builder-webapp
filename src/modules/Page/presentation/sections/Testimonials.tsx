@@ -101,7 +101,10 @@ export function Testimonials({
   );
 
   const renderCard = (item: TestimonialItem): ReactElement => (
-    <div key={item.authorName} className="ui-card flex flex-col gap-4 break-inside-avoid p-6">
+    <div
+      key={item.authorName}
+      className="ui-card flex flex-col gap-4 break-inside-avoid p-6"
+    >
       {item.badgeLabel !== undefined && (
         <span
           className="w-fit rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
