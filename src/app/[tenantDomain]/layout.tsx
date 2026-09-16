@@ -10,6 +10,8 @@ import { ThemeScript } from '@/modules/Brand/presentation/ThemeScript';
 import { resolveFontPairing } from '@/modules/Brand/presentation/fonts';
 import { VisualStyleTokens } from '@/modules/VisualStyle/presentation/VisualStyleTokens';
 import { LocalBusinessJsonLd } from '@/modules/GlobalSettings/presentation/LocalBusinessJsonLd';
+import { Analytics } from '@/modules/Analytics/presentation/Analytics';
+import { readAnalyticsConfig } from '@/modules/Analytics/domain/Analytics';
 import { Toaster } from '@/shared/ui/sonner';
 
 interface TenantLayoutProps {
@@ -81,6 +83,7 @@ export default async function TenantLayout({
       <main className="ui-page-backdrop flex-1">{children}</main>
       <Footer settings={settings} />
       <WhatsAppButton whatsappNumber={settings.whatsappNumber} />
+      <Analytics config={readAnalyticsConfig(settings)} />
       <Toaster position="top-center" richColors />
     </>
   );

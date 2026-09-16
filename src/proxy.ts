@@ -51,5 +51,5 @@ export const config = {
   // fuera la forma interna de la ruta. Este proyecto no tiene `public/`, así
   // que basta con excluir `_next/` y el favicon.
   // `api/revalidate` queda fuera: es endpoint del propio frontend (SPEC 0.2), no de tenant.
-  matcher: ['/((?!_next/|api/revalidate|styleguide|favicon\\.ico).*)'],
+  matcher: ['/((?!_next/|api/revalidate|api/catalog|styleguide|favicon\\.ico).*)'],
 };
