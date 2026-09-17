@@ -6,4 +6,8 @@ export interface SessionStorage {
   read(): Session | null;
   write(session: Session): void;
   clear(): void;
+  // Marca de tiempo (epoch ms) de la última interacción: sostiene el cierre por
+  // inactividad (SPEC 9.1) y se guarda junto a la sesión, no en memoria del componente.
+  readLastActivityAt(): number | null;
+  writeLastActivityAt(timestamp: number): void;
 }

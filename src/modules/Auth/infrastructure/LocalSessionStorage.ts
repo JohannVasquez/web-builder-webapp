@@ -1,6 +1,13 @@
 import type { SessionStorage } from '../domain/SessionStorage';
 import type { Session } from '../domain/Session';
-import { clearSession, readSession, writeSession } from './sessionStorage';
+import {
+  clearSession,
+  readSession,
+  writeSession,
+  readLastActivityAt,
+  writeLastActivityAt,
+  clearLastActivityAt,
+} from './sessionStorage';
 
 export class LocalSessionStorage implements SessionStorage {
   public read(): Session | null {
@@ -13,5 +20,14 @@ export class LocalSessionStorage implements SessionStorage {
 
   public clear(): void {
     clearSession();
+    clearLastActivityAt();
+  }
+
+  public readLastActivityAt(): number | null {
+    return readLastActivityAt();
+  }
+
+  public writeLastActivityAt(timestamp: number): void {
+    writeLastActivityAt(timestamp);
   }
 }

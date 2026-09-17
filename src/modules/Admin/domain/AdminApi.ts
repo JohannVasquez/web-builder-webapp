@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { BrandSchema } from '@/modules/Brand/domain/Brand';
+import { AdminRoleSchema } from '@/modules/Auth/domain/Session';
 
 export const TenantSchema = z.object({
   id: z.number().int().positive(),
@@ -113,7 +114,9 @@ export const CatalogVisualStyleSchema = z.object({
 
 // El catálogo trae bloques y opciones que esta pantalla no usa; `z.object` ignora esas
 // claves de más en vez de rechazarlas, así que basta describir la que se lee.
-export const CatalogSchema = z.object({ visualStyles: z.array(CatalogVisualStyleSchema) });
+export const CatalogSchema = z.object({
+  visualStyles: z.array(CatalogVisualStyleSchema),
+});
 
 export const MediaAssetSchema = z.object({
   key: z.string(),
@@ -153,6 +156,20 @@ export const SubscriberSchema = z.object({
   createdAt: z.string(),
 });
 
+// Cuentas del panel (SPEC 9.2): distinta de `AdminUser` en el módulo Auth, que describe
+// a quien inició sesión, no a cualquier fila de la lista de personas con acceso.
+export const UserAccountSchema = z.object({
+  id: z.number().int().positive(),
+  email: z.string(),
+  name: z.string(),
+  role: AdminRoleSchema,
+  disabled: z.boolean(),
+});
+
+export const UserAccountsSchema = z.object({ users: z.array(UserAccountSchema) });
+
+export const UserAccountResponseSchema = z.object({ user: UserAccountSchema });
+
 export const SubscribersSchema = z.object({
   subscribers: z.array(SubscriberSchema),
   total: z.number(),
@@ -170,3 +187,4 @@ export type CatalogVisualStyle = z.infer<typeof CatalogVisualStyleSchema>;
 export type MediaAsset = z.infer<typeof MediaAssetSchema>;
 export type AssetUsage = z.infer<typeof AssetUsageSchema>;
 export type Subscriber = z.infer<typeof SubscriberSchema>;
+export type UserAccount = z.infer<typeof UserAccountSchema>;
