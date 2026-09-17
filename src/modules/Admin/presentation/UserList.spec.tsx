@@ -8,6 +8,7 @@ const owner: UserAccount = {
   name: 'Ana',
   role: 'owner',
   disabled: false,
+    tenantScope: null,
 };
 
 const disabledEditor: UserAccount = {
@@ -16,6 +17,7 @@ const disabledEditor: UserAccount = {
   name: 'Ben',
   role: 'editor',
   disabled: true,
+    tenantScope: null,
 };
 
 const noop = (): void => {
@@ -23,11 +25,17 @@ const noop = (): void => {
 };
 
 describe('UserList', () => {
+  const tenantNames = new Map([
+    [40, 'Pastelería Luna'],
+    [9, 'ElectroAndes'],
+  ]);
+
   it('sin personas muestra el mensaje de lista vacía', () => {
     const html = renderToStaticMarkup(
       <UserList
         users={[]}
         pendingActionId={null}
+      tenantNames={tenantNames}
         onRoleChange={noop}
         onStatusChange={noop}
       />,
@@ -40,6 +48,7 @@ describe('UserList', () => {
       <UserList
         users={[owner]}
         pendingActionId={null}
+      tenantNames={tenantNames}
         onRoleChange={noop}
         onStatusChange={noop}
       />,
@@ -54,6 +63,7 @@ describe('UserList', () => {
       <UserList
         users={[disabledEditor]}
         pendingActionId={null}
+      tenantNames={tenantNames}
         onRoleChange={noop}
         onStatusChange={noop}
       />,
@@ -69,6 +79,7 @@ describe('UserList', () => {
       <UserList
         users={[owner]}
         pendingActionId={null}
+      tenantNames={tenantNames}
         onRoleChange={noop}
         onStatusChange={noop}
       />,

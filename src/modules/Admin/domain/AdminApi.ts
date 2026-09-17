@@ -85,6 +85,18 @@ export const AdminPagesSchema = z.object({ pages: z.array(AdminPageSchema) });
 // el backend siempre devuelve la página completa ya actualizada.
 export const AdminPageResponseSchema = z.object({ page: AdminPageSchema });
 
+// Historial del borrador: cada cambio guarda una foto antes de aplicarse (SPEC 9.4).
+export const PageVersionSchema = z.object({
+  id: z.number().int().positive(),
+  summary: z.string(),
+  actorType: z.string(),
+  actorName: z.string(),
+  published: z.boolean(),
+  createdAt: z.string(),
+});
+
+export const PageVersionsSchema = z.object({ versions: z.array(PageVersionSchema) });
+
 export const ApiKeySchema = z.object({
   id: z.number().int().positive(),
   name: z.string(),
@@ -215,6 +227,8 @@ export const UserAccountSchema = z.object({
   name: z.string(),
   role: AdminRoleSchema,
   disabled: z.boolean(),
+  // `null` = alcanza a todos los clientes. Solo el rol `client` trae una lista.
+  tenantScope: z.array(z.number().int().positive()).nullable(),
 });
 
 export const UserAccountsSchema = z.object({ users: z.array(UserAccountSchema) });
@@ -244,6 +258,7 @@ export type DomainInstruction = z.infer<typeof DomainInstructionSchema>;
 export type TenantDomain = z.infer<typeof TenantDomainSchema>;
 export type AdminPage = z.infer<typeof AdminPageSchema>;
 export type AdminSection = z.infer<typeof AdminSectionSchema>;
+export type PageVersion = z.infer<typeof PageVersionSchema>;
 export type ApiKey = z.infer<typeof ApiKeySchema>;
 export type ApiKeyStatus = ApiKey['status'];
 export type ActivityEntry = z.infer<typeof ActivityEntrySchema>;

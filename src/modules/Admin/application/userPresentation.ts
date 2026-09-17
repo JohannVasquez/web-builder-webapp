@@ -20,7 +20,31 @@ export const ROLE_OPTIONS: readonly RoleOption[] = [
     description:
       'Puede trabajar en los clientes, pero no ve claves de acceso ni usuarios.',
   },
+  {
+    value: 'client',
+    label: 'Cliente',
+    description:
+      'Edita solo los sitios que le asignes y no puede borrar ni dar de alta clientes.',
+  },
 ];
+
+// El rol cliente no significa nada sin sitios asignados, así que la API lo rechaza.
+export const needsTenantScope = (role: AdminRole): boolean => role === 'client';
+
+export const describeUserScope = (
+  user: Pick<UserAccount, 'role' | 'tenantScope'>,
+  tenantNames: ReadonlyMap<number, string>,
+): string => {
+  if (user.role !== 'client' || user.tenantScope === null) {
+    return 'Todos los clientes';
+  }
+  if (user.tenantScope.length === 0) {
+    return 'Sin clientes asignados';
+  }
+  return user.tenantScope
+    .map((id) => tenantNames.get(id) ?? `Cliente ${String(id)}`)
+    .join(', ');
+};
 
 export const roleLabel = (role: AdminRole): string =>
   ROLE_OPTIONS.find((option) => option.value === role)?.label ?? role;

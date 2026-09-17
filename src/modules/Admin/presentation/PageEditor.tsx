@@ -38,6 +38,7 @@ import {
 import { formatProps, parseProps } from '../application/propsEditor';
 import { useAdminApi } from './useAdminApi';
 import { BlockThumbnail } from './BlockThumbnail';
+import { PageHistory } from './PageHistory';
 import { PagePreview } from './PagePreview';
 import { useAsyncData, refreshAsyncData } from '@/shared/lib/useAsyncData';
 import { useUnsavedChangesGuard } from './useUnsavedChangesGuard';
@@ -322,6 +323,19 @@ export function PageEditor({ tenantId, pageId }: PageEditorProps): ReactElement 
     }
   };
 
+  // Restaurar reemplaza el borrador; el sitio no cambia hasta que se publica.
+  const restoreVersion = async (versionId: number): Promise<void> => {
+    await run(
+      () =>
+        api.post(
+          `${base}/versions/${String(versionId)}/restore`,
+          {},
+          AdminPageResponseSchema,
+        ),
+      'Versión restaurada en el borrador. Publica para que se vea en el sitio.',
+    );
+  };
+
   const reorder = async (sectionIds: number[]): Promise<void> => {
     await run(
       () => api.put(`${base}/sections/reorder`, { sectionIds }, AdminPageResponseSchema),
@@ -509,6 +523,13 @@ export function PageEditor({ tenantId, pageId }: PageEditorProps): ReactElement 
           />
         </div>
       )}
+
+      <PageHistory
+        tenantId={tenantId}
+        pageId={pageId}
+        isBusy={isBusy}
+        onRestore={restoreVersion}
+      />
 
       {showCatalog && (
         <div className="ui-card space-y-5 p-4">

@@ -7,12 +7,15 @@ import type { AdminRole } from '@/modules/Auth/domain/Session';
 import {
   UserAccountsSchema,
   UserAccountResponseSchema,
+  TenantsSchema,
   type UserAccount,
 } from '../domain/AdminApi';
 import {
   ROLE_OPTIONS,
   roleLabel,
   describeUserStatus,
+  describeUserScope,
+  needsTenantScope,
 } from '../application/userPresentation';
 import { describeAdminError } from '../application/adminErrorMessage';
 import { useAdminApi } from './useAdminApi';
@@ -37,6 +40,8 @@ const STATUS_BADGE_CLASSES: Record<'active' | 'disabled', string> = {
 export interface UserListProps {
   readonly users: readonly UserAccount[];
   readonly pendingActionId: number | null;
+  // Nombre de cada cliente, para poder decir a cuáles alcanza una persona sin mostrar ids.
+  readonly tenantNames: ReadonlyMap<number, string>;
   readonly onRoleChange: (user: UserAccount, nextRole: AdminRole) => void;
   readonly onStatusChange: (user: UserAccount, disabled: boolean) => void;
 }
@@ -46,6 +51,7 @@ export interface UserListProps {
 export function UserList({
   users,
   pendingActionId,
+  tenantNames,
   onRoleChange,
   onStatusChange,
 }: UserListProps): ReactElement {
@@ -101,6 +107,9 @@ export function UserList({
                   </option>
                 ))}
               </select>
+              <span className="text-muted-foreground text-xs">
+                Accede a: {describeUserScope(user, tenantNames)}
+              </span>
             </div>
 
             <div className="flex flex-wrap gap-2 pt-1">
@@ -143,6 +152,46 @@ export function UserList({
   );
 }
 
+interface TenantPickerProps {
+  readonly tenants: readonly { id: number; name: string }[];
+  readonly selected: readonly number[];
+  readonly onToggle: (tenantId: number) => void;
+}
+
+// Sin hooks propios, para poder renderizarlo en pruebas igual que `UserList`.
+export function TenantPicker({
+  tenants,
+  selected,
+  onToggle,
+}: TenantPickerProps): ReactElement {
+  if (tenants.length === 0) {
+    return (
+      <p className="text-muted-foreground text-sm">
+        Todavía no hay clientes que asignar.
+      </p>
+    );
+  }
+
+  return (
+    <ul className="grid gap-2 sm:grid-cols-2">
+      {tenants.map((tenant) => (
+        <li key={tenant.id}>
+          <label className="ui-input has-[:checked]:border-primary flex cursor-pointer items-center gap-2 p-3 text-sm">
+            <input
+              type="checkbox"
+              checked={selected.includes(tenant.id)}
+              onChange={() => {
+                onToggle(tenant.id);
+              }}
+            />
+            <span>{tenant.name}</span>
+          </label>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function UserManager(): ReactElement {
   const api = useAdminApi();
   const users = useAsyncData(USERS_CACHE_KEY, async () => {
@@ -154,19 +203,46 @@ export function UserManager(): ReactElement {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState<AdminRole>('editor');
+  const [scope, setScope] = useState<readonly number[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<{
     message: string;
     issues: readonly { path: string; message: string }[];
   } | null>(null);
   const [pendingActionId, setPendingActionId] = useState<number | null>(null);
+  const [pendingRoleChange, setPendingRoleChange] = useState<{
+    user: UserAccount;
+    nextRole: AdminRole;
+  } | null>(null);
+
+  const tenants = useAsyncData('admin:tenants', async () => {
+    const { tenants: list } = await api.get('/api/admin/tenants', TenantsSchema);
+    return list;
+  });
+
+  const tenantNames = new Map(
+    (tenants.data ?? []).map((tenant) => [tenant.id, tenant.name]),
+  );
 
   const resetForm = (): void => {
     setEmail('');
     setName('');
     setRole('editor');
+    setScope([]);
     setFormError(null);
   };
+
+  const toggleScope = (tenantId: number): void => {
+    setScope((current) =>
+      current.includes(tenantId)
+        ? current.filter((id) => id !== tenantId)
+        : [...current, tenantId],
+    );
+  };
+
+  // El rol cliente sin sitios asignados no significa nada, y la API lo rechaza: se avisa
+  // acá para no mandar una petición que ya sabemos que va a fallar.
+  const missingScope = needsTenantScope(role) && scope.length === 0;
 
   const handleInvite = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -177,11 +253,24 @@ export function UserManager(): ReactElement {
       return;
     }
 
+    if (missingScope) {
+      setFormError({
+        message: 'Elige al menos un cliente al que esta persona pueda entrar.',
+        issues: [],
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await api.post(
         '/api/admin/users',
-        { email: email.trim(), name: name.trim(), role },
+        {
+          email: email.trim(),
+          name: name.trim(),
+          role,
+          tenantIds: needsTenantScope(role) ? scope : [],
+        },
         UserAccountResponseSchema,
       );
       refreshAsyncData(USERS_CACHE_KEY);
@@ -202,13 +291,25 @@ export function UserManager(): ReactElement {
     }
   };
 
-  const handleRoleChange = async (
-    user: UserAccount,
-    nextRole: AdminRole,
-  ): Promise<void> => {
+  // Pasar a cliente exige decir a qué sitios, así que primero se abre el selector y el
+  // cambio se manda recién cuando ya hay algo que mandar.
+  const startRoleChange = (user: UserAccount, nextRole: AdminRole): void => {
     if (nextRole === user.role) {
       return;
     }
+    if (needsTenantScope(nextRole)) {
+      setPendingRoleChange({ user, nextRole });
+      setScope(user.tenantScope ?? []);
+      return;
+    }
+    void handleRoleChange(user, nextRole, []);
+  };
+
+  const handleRoleChange = async (
+    user: UserAccount,
+    nextRole: AdminRole,
+    nextScope: readonly number[],
+  ): Promise<void> => {
     const confirmed = window.confirm(
       `Vas a cambiar el rol de ${user.name} a "${roleLabel(nextRole)}". ¿Continuar?`,
     );
@@ -219,10 +320,12 @@ export function UserManager(): ReactElement {
     try {
       await api.patch(
         `/api/admin/users/${String(user.id)}/role`,
-        { role: nextRole },
+        { role: nextRole, tenantIds: nextScope },
         UserAccountResponseSchema,
       );
       refreshAsyncData(USERS_CACHE_KEY);
+      setPendingRoleChange(null);
+      setScope([]);
       toast.success('Rol actualizado.');
     } catch (cause) {
       toast.error(
@@ -332,6 +435,17 @@ export function UserManager(): ReactElement {
             </div>
           </fieldset>
 
+          {needsTenantScope(role) && (
+            <fieldset className="space-y-2">
+              <legend className="text-sm font-medium">¿A qué clientes puede entrar?</legend>
+              <TenantPicker
+                tenants={tenants.data ?? []}
+                selected={scope}
+                onToggle={toggleScope}
+              />
+            </fieldset>
+          )}
+
           {formError !== null && (
             <div role="alert" className="text-destructive space-y-1 text-sm">
               <p>{formError.message}</p>
@@ -365,6 +479,47 @@ export function UserManager(): ReactElement {
         </form>
       )}
 
+      {pendingRoleChange !== null && (
+        <div className="ui-card space-y-3 p-5">
+          <h2 className="ui-heading text-base">
+            ¿A qué clientes puede entrar {pendingRoleChange.user.name}?
+          </h2>
+          <p className="text-muted-foreground text-sm">
+            Con el rol cliente solo va a ver y editar los sitios que marques acá.
+          </p>
+          <TenantPicker
+            tenants={tenants.data ?? []}
+            selected={scope}
+            onToggle={toggleScope}
+          />
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              disabled={scope.length === 0 || pendingActionId !== null}
+              onClick={() =>
+                void handleRoleChange(
+                  pendingRoleChange.user,
+                  pendingRoleChange.nextRole,
+                  scope,
+                )
+              }
+            >
+              Guardar acceso
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setPendingRoleChange(null);
+                setScope([]);
+              }}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      )}
+
       {users.error !== null && (
         <p role="alert" className="text-destructive">
           {users.error}
@@ -381,7 +536,8 @@ export function UserManager(): ReactElement {
         <UserList
           users={users.data}
           pendingActionId={pendingActionId}
-          onRoleChange={(user, nextRole) => void handleRoleChange(user, nextRole)}
+          tenantNames={tenantNames}
+          onRoleChange={startRoleChange}
           onStatusChange={(user, disabled) => void handleStatusChange(user, disabled)}
         />
       )}
