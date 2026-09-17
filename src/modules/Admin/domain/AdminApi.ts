@@ -67,6 +67,7 @@ export const AdminSectionSchema = z.object({
   position: z.number().int(),
   props: z.record(z.string(), z.unknown()),
   anchor: z.string().nullable(),
+  isHidden: z.boolean(),
 });
 
 export const AdminPageSchema = z.object({
@@ -220,6 +221,17 @@ export const UserAccountsSchema = z.object({ users: z.array(UserAccountSchema) }
 
 export const UserAccountResponseSchema = z.object({ user: UserAccountSchema });
 
+// Menú de navegación del sitio del cliente (SPEC 9.4): el orden del arreglo es el orden
+// del menú, así que se reemplaza entero en vez de tener id por enlace.
+export const NavigationLinkSchema = z.object({
+  label: z.string(),
+  href: z.string(),
+});
+
+export const NavigationLinksSchema = z.object({
+  links: z.array(NavigationLinkSchema),
+});
+
 export const SubscribersSchema = z.object({
   subscribers: z.array(SubscriberSchema),
   total: z.number(),
@@ -242,3 +254,4 @@ export type MediaAsset = z.infer<typeof MediaAssetSchema>;
 export type AssetUsage = z.infer<typeof AssetUsageSchema>;
 export type Subscriber = z.infer<typeof SubscriberSchema>;
 export type UserAccount = z.infer<typeof UserAccountSchema>;
+export type NavigationLink = z.infer<typeof NavigationLinkSchema>;

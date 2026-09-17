@@ -37,3 +37,30 @@ export const insertDuplicateAfter = (
   next.splice(index + 1, 0, newId);
   return next;
 };
+
+export type DropPlacement = 'before' | 'after';
+
+// A qué lado del bloque objetivo cae el que se está arrastrando, según en qué mitad de su
+// alto se soltó el puntero (0 = borde superior del bloque objetivo, 1 = borde inferior).
+export const dropPlacement = (offsetRatio: number): DropPlacement =>
+  offsetRatio < 0.5 ? 'before' : 'after';
+
+// Nuevo orden completo al soltar un bloque arrastrado sobre otro (Pantalla 2, arrastrar con
+// la API nativa de HTML5). Si alguno de los dos ids no está en la lista, o se suelta sobre
+// sí mismo, el orden no cambia.
+export const reorderByDrag = (
+  ids: readonly number[],
+  draggedId: number,
+  targetId: number,
+  placement: DropPlacement,
+): number[] => {
+  if (draggedId === targetId || !ids.includes(draggedId) || !ids.includes(targetId)) {
+    return [...ids];
+  }
+  const withoutDragged = ids.filter((id) => id !== draggedId);
+  const targetIndex = withoutDragged.indexOf(targetId);
+  const insertAt = placement === 'before' ? targetIndex : targetIndex + 1;
+  const next = [...withoutDragged];
+  next.splice(insertAt, 0, draggedId);
+  return next;
+};

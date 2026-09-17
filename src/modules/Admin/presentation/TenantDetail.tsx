@@ -9,6 +9,7 @@ import {
   Image as ImageIcon,
   Loader2,
   Mail,
+  Menu as MenuIcon,
   Pause,
   Palette,
   Pencil,
@@ -146,6 +147,11 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
         <Button asChild size="sm" variant="outline">
           <Link href={`/clientes/${tenantId}/mensajes`}>
             <Mail className="size-4" /> Mensajes
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/menu`}>
+            <MenuIcon className="size-4" /> Menú de navegación
           </Link>
         </Button>
       </div>
@@ -585,15 +591,28 @@ function TogglePublishButton({
 }: TogglePublishButtonProps): ReactElement {
   const api = useAdminApi();
 
+  // Publicar usa el endpoint dedicado, no un PATCH de `isPublished`: ese endpoint también
+  // toma una foto del borrador actual (`publishedContent`), que es lo que sirve el sitio
+  // público. Un PATCH a secas dejaría la página marcada como publicada pero sin nada (o con
+  // una foto vieja) detrás. Despublicar sí es un simple cambio de visibilidad.
   const handleClick = async (): Promise<void> => {
     onPending(page.id);
     try {
-      await api.patch(
-        `/api/admin/tenants/${tenantId}/pages/${String(page.id)}`,
-        { isPublished: !page.isPublished },
-        AdminPageResponseSchema,
-      );
-      toast.success(page.isPublished ? 'Página despublicada.' : 'Página publicada.');
+      if (page.isPublished) {
+        await api.patch(
+          `/api/admin/tenants/${tenantId}/pages/${String(page.id)}`,
+          { isPublished: false },
+          AdminPageResponseSchema,
+        );
+        toast.success('Página despublicada.');
+      } else {
+        await api.post(
+          `/api/admin/tenants/${tenantId}/pages/${String(page.id)}/publish`,
+          {},
+          AdminPageResponseSchema,
+        );
+        toast.success('Página publicada.');
+      }
       onDone();
     } catch (cause) {
       toast.error(
