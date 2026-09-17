@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { createPageService } from '@/modules/Page/infrastructure/pageServiceFactory';
 import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
+import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { SectionRenderer } from '@/modules/Page/presentation/SectionRenderer';
 
 interface DynamicPageProps {
@@ -44,6 +45,7 @@ export default async function DynamicPage({
     <SectionRenderer
       sections={page.sections}
       blogService={createBlogService(tenantDomain)}
+      storeService={createStoreService(tenantDomain)}
     />
   );
 }

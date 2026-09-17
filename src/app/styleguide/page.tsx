@@ -316,6 +316,13 @@ const SAMPLE_PROPS: Readonly<Record<string, Readonly<Record<string, unknown>>>> 
     count: 3,
     variant: 'grid',
   },
+  // Sin `storeService` (esta página no tiene una tienda real) el bloque no pide datos y no
+  // se muestra: mismo comportamiento que `LatestPosts` sin `blogService`.
+  FeaturedProducts: {
+    eyebrow: 'Tienda',
+    title: 'Productos destacados',
+    limit: 4,
+  },
 };
 
 function SampleRow(): ReactElement {

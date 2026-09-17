@@ -135,6 +135,11 @@ export const BLOCK_CATALOG: readonly BlockCatalogEntry[] = [
     label: 'Últimas publicaciones',
     description: 'Últimas entradas del blog del sitio, en tarjetas o en lista.',
   },
+  {
+    type: 'FeaturedProducts',
+    label: 'Productos destacados',
+    description: 'Grilla de productos destacados de la tienda del sitio.',
+  },
 ];
 
 export const findBlockCatalogEntry = (type: string): BlockCatalogEntry | undefined =>

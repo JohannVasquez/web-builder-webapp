@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 import type { NavigationLink } from '@/modules/Navigation/domain/NavigationLink';
 import { ThemeToggle } from '@/modules/Brand/presentation/ThemeToggle';
+import { CartIndicator } from '@/modules/Store/presentation/CartIndicator';
 import { cn } from '@/shared/lib/utils';
 import type { GlobalSettings } from '../domain/GlobalSettings';
 
@@ -15,6 +16,8 @@ interface NavbarProps {
   readonly links: readonly NavigationLink[];
   // `classic` (default): logo a la izquierda, enlaces a la derecha. `centered`: logo al medio en escritorio (celular vuelve a `classic`). `transparent`: sin fondo hasta hacer scroll, para ir sobre una portada.
   readonly variant?: NavbarVariant;
+  // El indicador del carrito solo tiene sentido si el cliente tiene tienda encendida.
+  readonly showCart?: boolean;
 }
 
 function NavLink({ link }: { readonly link: NavigationLink }): ReactElement {
@@ -48,7 +51,11 @@ function Logo({
           />
           {logoDark !== undefined && (
             // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-            <img src={logoDark} alt={settings.siteName} className="hidden h-8 w-auto dark:block" />
+            <img
+              src={logoDark}
+              alt={settings.siteName}
+              className="hidden h-8 w-auto dark:block"
+            />
           )}
         </>
       ) : (
@@ -58,8 +65,15 @@ function Logo({
   );
 }
 
-export function Navbar({ settings, links, variant = 'classic' }: NavbarProps): ReactElement {
-  const resolvedVariant: NavbarVariant = NAVBAR_VARIANTS.includes(variant) ? variant : 'classic';
+export function Navbar({
+  settings,
+  links,
+  variant = 'classic',
+  showCart = false,
+}: NavbarProps): ReactElement {
+  const resolvedVariant: NavbarVariant = NAVBAR_VARIANTS.includes(variant)
+    ? variant
+    : 'classic';
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] = useState(false);
   const isTransparent = resolvedVariant === 'transparent';
@@ -95,12 +109,14 @@ export function Navbar({ settings, links, variant = 'classic' }: NavbarProps): R
             {links.map((link) => (
               <NavLink key={link.href} link={link} />
             ))}
+            {showCart && <CartIndicator />}
             {settings.brand.colorMode === 'system' && <ThemeToggle />}
           </nav>
           <div className="hidden md:flex md:flex-1 md:items-center md:gap-1">
             {rightLinks.map((link) => (
               <NavLink key={link.href} link={link} />
             ))}
+            {showCart && <CartIndicator />}
             {settings.brand.colorMode === 'system' && <ThemeToggle />}
           </div>
         </div>
@@ -110,16 +126,22 @@ export function Navbar({ settings, links, variant = 'classic' }: NavbarProps): R
 
   return (
     <header
-      className={cn('sticky top-0 z-50 transition-colors', (!isTransparent || scrolled) && 'ui-nav')}
+      className={cn(
+        'sticky top-0 z-50 transition-colors',
+        (!isTransparent || scrolled) && 'ui-nav',
+      )}
       data-variant={resolvedVariant}
     >
-      {isTransparent && <div ref={sentinelRef} aria-hidden="true" className="h-px w-full" />}
+      {isTransparent && (
+        <div ref={sentinelRef} aria-hidden="true" className="h-px w-full" />
+      )}
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
         <Logo settings={settings} />
         <nav className="flex items-center gap-1 md:gap-2">
           {links.map((link) => (
             <NavLink key={link.href} link={link} />
           ))}
+          {showCart && <CartIndicator />}
           {settings.brand.colorMode === 'system' && <ThemeToggle />}
         </nav>
       </div>
