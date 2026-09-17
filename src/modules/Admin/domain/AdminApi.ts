@@ -2,14 +2,64 @@ import { z } from 'zod';
 import { BrandSchema } from '@/modules/Brand/domain/Brand';
 import { AdminRoleSchema } from '@/modules/Auth/domain/Session';
 
+// Mismos tres valores que `TENANT_STATUSES` en el backend (SPEC 9.3): pausar no borra
+// nada y reactivar deja el sitio tal cual estaba.
+export const TENANT_STATUSES = ['active', 'paused', 'building'] as const;
+export const TenantStatusSchema = z.enum(TENANT_STATUSES);
+
 export const TenantSchema = z.object({
   id: z.number().int().positive(),
   slug: z.string(),
   name: z.string(),
   primaryDomain: z.string().nullable(),
+  status: TenantStatusSchema,
 });
 
 export const TenantsSchema = z.object({ tenants: z.array(TenantSchema) });
+
+export const TenantResponseSchema = z.object({ tenant: TenantSchema });
+
+// Kit de inicio por rubro (SPEC 9.3): lo que trae un cliente nuevo antes de personalizarlo.
+export const SiteTemplateSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  industry: z.string(),
+  description: z.string(),
+  pageCount: z.number(),
+  visualStyle: z.string(),
+});
+
+export const SiteTemplatesSchema = z.object({ templates: z.array(SiteTemplateSchema) });
+
+export const DomainInstructionSchema = z.object({
+  type: z.string(),
+  host: z.string(),
+  value: z.string(),
+  purpose: z.string(),
+});
+
+const TenantDomainBaseSchema = z.object({
+  id: z.number().int().positive(),
+  domain: z.string(),
+  isPrimary: z.boolean(),
+  isVerified: z.boolean(),
+  verifiedAt: z.string().nullable(),
+});
+
+// El listado trae las instrucciones DNS de cada dominio; crear uno también las devuelve,
+// pero fuera del objeto del dominio (ver `AddDomainResponseSchema`).
+export const TenantDomainSchema = TenantDomainBaseSchema.extend({
+  instructions: z.array(DomainInstructionSchema),
+});
+
+export const TenantDomainsSchema = z.object({ domains: z.array(TenantDomainSchema) });
+
+export const DomainResponseSchema = z.object({ domain: TenantDomainBaseSchema });
+
+export const AddDomainResponseSchema = z.object({
+  domain: TenantDomainBaseSchema,
+  instructions: z.array(DomainInstructionSchema),
+});
 
 export const AdminSectionSchema = z.object({
   id: z.number().int().positive(),
@@ -176,6 +226,10 @@ export const SubscribersSchema = z.object({
 });
 
 export type Tenant = z.infer<typeof TenantSchema>;
+export type TenantStatus = z.infer<typeof TenantStatusSchema>;
+export type SiteTemplate = z.infer<typeof SiteTemplateSchema>;
+export type DomainInstruction = z.infer<typeof DomainInstructionSchema>;
+export type TenantDomain = z.infer<typeof TenantDomainSchema>;
 export type AdminPage = z.infer<typeof AdminPageSchema>;
 export type AdminSection = z.infer<typeof AdminSectionSchema>;
 export type ApiKey = z.infer<typeof ApiKeySchema>;

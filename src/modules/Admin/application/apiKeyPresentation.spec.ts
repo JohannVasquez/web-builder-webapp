@@ -6,8 +6,8 @@ import {
 import type { Tenant } from '../domain/AdminApi';
 
 const tenants: Tenant[] = [
-  { id: 1, slug: 'acme', name: 'Acme', primaryDomain: null },
-  { id: 2, slug: 'globex', name: 'Globex', primaryDomain: null },
+  { id: 1, slug: 'acme', name: 'Acme', primaryDomain: null, status: 'active' },
+  { id: 2, slug: 'globex', name: 'Globex', primaryDomain: null, status: 'active' },
 ];
 
 describe('describeApiKeyScope', () => {
