@@ -13,6 +13,7 @@ import { VisualStyleTokens } from '@/modules/VisualStyle/presentation/VisualStyl
 import { LocalBusinessJsonLd } from '@/modules/GlobalSettings/presentation/LocalBusinessJsonLd';
 import { Analytics } from '@/modules/Analytics/presentation/Analytics';
 import { readAnalyticsConfig } from '@/modules/Analytics/domain/Analytics';
+import { isUnderConstruction } from '@/modules/GlobalSettings/domain/GlobalSettings';
 import { Toaster } from '@/shared/ui/sonner';
 import { TenantProviders } from './providers';
 
@@ -35,8 +36,20 @@ export async function generateMetadata({
   // visitante: un tenant con dos dominios no puede competir consigo mismo en buscadores.
   const canonicalHost = settings.primaryDomain ?? tenantDomain;
 
+  // Un sitio en construcción no se indexa entero, aunque cada página diga lo contrario.
+  const underConstruction = isUnderConstruction(settings);
+
   return {
     metadataBase: new URL(`https://${canonicalHost}`),
+    ...(underConstruction ? { robots: { index: false, follow: false } } : {}),
+    verification: {
+      ...(settings.googleSiteVerification === ''
+        ? {}
+        : { google: settings.googleSiteVerification }),
+      ...(settings.bingSiteVerification === ''
+        ? {}
+        : { other: { 'msvalidate.01': settings.bingSiteVerification } }),
+    },
     alternates: { canonical: '/' },
     title: { default: settings.siteName, template: `%s | ${settings.siteName}` },
     description: settings.tagline,

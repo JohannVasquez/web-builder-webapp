@@ -5,6 +5,7 @@ import { createPageService } from '@/modules/Page/infrastructure/pageServiceFact
 import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { SectionRenderer } from '@/modules/Page/presentation/SectionRenderer';
+import { robotsFor } from '@/shared/lib/seo';
 
 interface DynamicPageProps {
   readonly params: Promise<{ tenantDomain: string; slug?: string[] }>;
@@ -26,8 +27,12 @@ export async function generateMetadata({ params }: DynamicPageProps): Promise<Me
     return { title: 'Página no encontrada' };
   }
   return {
-    title: page.title,
-    description: page.description,
+    title: page.seoTitle ?? page.title,
+    description: page.seoDescription ?? page.description,
+    robots: robotsFor(page.noindex),
+    ...(page.ogImageUrl === null || page.ogImageUrl === undefined
+      ? {}
+      : { openGraph: { images: [{ url: page.ogImageUrl }] } }),
   };
 }
 

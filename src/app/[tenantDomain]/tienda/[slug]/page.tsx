@@ -6,6 +6,7 @@ import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastruc
 import { ProductGallery } from '@/modules/Store/presentation/ProductGallery';
 import { AddToCartForm } from '@/modules/Store/presentation/AddToCartForm';
 import { ProductJsonLd } from '@/modules/Store/presentation/ProductJsonLd';
+import { robotsFor } from '@/shared/lib/seo';
 
 interface StoreProductPageProps {
   readonly params: Promise<{ tenantDomain: string; slug: string }>;
@@ -23,8 +24,9 @@ export async function generateMetadata({
   const image = product.imageUrls[0];
 
   return {
-    title: product.name,
-    description: product.description,
+    title: product.seoTitle ?? product.name,
+    description: product.seoDescription ?? product.description,
+    robots: robotsFor(product.noindex),
     openGraph: {
       type: 'website',
       title: product.name,

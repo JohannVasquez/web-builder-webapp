@@ -10,6 +10,9 @@ export const BlogPostSummarySchema = z.object({
   publishedAt: z.string(),
   tags: z.array(z.string()),
   readingMinutes: z.number(),
+  // Opcionales hasta que la API los envíe (ver web-builder-api#63). Ausente = se indexa.
+  updatedAt: z.string().optional(),
+  noindex: z.boolean().optional(),
 });
 
 export type BlogPostSummary = z.infer<typeof BlogPostSummarySchema>;

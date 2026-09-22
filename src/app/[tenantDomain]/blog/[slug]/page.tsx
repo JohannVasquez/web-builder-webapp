@@ -9,6 +9,7 @@ import { BlogPostCard } from '@/modules/Blog/presentation/BlogPostCard';
 import { BlogPostingJsonLd } from '@/modules/Blog/presentation/BlogPostingJsonLd';
 import { ShareButtons } from '@/modules/Blog/presentation/ShareButtons';
 import { formatPublishedAt } from '@/modules/Blog/presentation/blogDate';
+import { robotsFor } from '@/shared/lib/seo';
 
 interface BlogPostPageProps {
   readonly params: Promise<{ tenantDomain: string; slug: string }>;
@@ -28,6 +29,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title,
     description,
+    robots: robotsFor(post.noindex),
     openGraph: {
       type: 'article',
       title,
