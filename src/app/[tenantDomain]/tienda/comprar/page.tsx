@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState, type ReactElement } from 'react';
+import { useMemo, useRef, useState, type ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { useCart } from '@/modules/Store/presentation/CartProvider';
+import { createIdempotencyKeyTracker } from '@/modules/Store/application/idempotencyKey';
 import { OrderSummary } from '@/modules/Store/presentation/OrderSummary';
 import { formatClp } from '@/modules/Store/presentation/money';
 import { StoreOrderService } from '@/modules/Store/application/StoreOrderService';
@@ -60,6 +61,11 @@ type CheckoutFormValues = z.infer<typeof CheckoutFormSchema>;
 export default function CheckoutPage(): ReactElement {
   const router = useRouter();
   const cart = useCart();
+  // Una clave por compra, estable entre dobles clics y reintentos (ver idempotencyKey.ts).
+  const submittingRef = useRef(false);
+  const [keyForPurchase] = useState(() =>
+    createIdempotencyKeyTracker(() => crypto.randomUUID()),
+  );
   const orderService = useMemo(
     () =>
       new StoreOrderService(
@@ -135,10 +141,16 @@ export default function CheckoutPage(): ReactElement {
   }
 
   const onSubmit = async (values: CheckoutFormValues): Promise<void> => {
+    // Dos clics seguidos llegan antes de que React vuelva a pintar el botón deshabilitado: la
+    // ref los frena en el acto. La clave de idempotencia de la API queda como respaldo.
+    if (submittingRef.current) {
+      return;
+    }
+    submittingRef.current = true;
     setIsSubmitting(true);
     try {
       const method: DeliveryMethod = requiresAddress ? 'shipping' : 'pickup';
-      const response = await orderService.checkout({
+      const purchase = {
         items: [...cart.items],
         couponCode: appliedCoupon,
         shippingCode: effectiveShippingCode,
@@ -154,7 +166,8 @@ export default function CheckoutPage(): ReactElement {
           typeof window === 'undefined'
             ? undefined
             : `${window.location.origin}/tienda/gracias`,
-      });
+      };
+      const response = await orderService.checkout(purchase, keyForPurchase(purchase));
 
       cart.clear();
 
@@ -172,6 +185,7 @@ export default function CheckoutPage(): ReactElement {
         cause instanceof Error ? cause.message : 'No pudimos procesar tu compra.',
       );
     } finally {
+      submittingRef.current = false;
       setIsSubmitting(false);
     }
   };

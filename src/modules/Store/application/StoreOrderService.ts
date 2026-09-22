@@ -28,9 +28,10 @@ export class StoreOrderService {
     private readonly fetchFn: FetchLike = (input, init) => fetch(input, init),
   ) {}
 
-  private headers(): HeadersInit {
+  private headers(extra: Record<string, string> = {}): HeadersInit {
     return {
       'Content-Type': 'application/json',
+      ...extra,
       ...(this.tenantDomain === undefined
         ? {}
         : { [TENANT_DOMAIN_HEADER]: this.tenantDomain }),
@@ -41,10 +42,11 @@ export class StoreOrderService {
     path: string,
     body: unknown,
     schema: { parse: (v: unknown) => T },
+    extraHeaders: Record<string, string> = {},
   ): Promise<T> {
     const response = await this.fetchFn(`${this.baseUrl}${path}`, {
       method: 'POST',
-      headers: this.headers(),
+      headers: this.headers(extraHeaders),
       body: JSON.stringify(body),
     });
 
@@ -64,7 +66,16 @@ export class StoreOrderService {
     return this.post('/api/store/quote', request, QuoteResponseSchema);
   }
 
-  public async checkout(request: CheckoutRequest): Promise<CheckoutResponse> {
-    return this.post('/api/store/checkout', request, CheckoutResponseSchema);
+  // Con clave, la API garantiza un solo pedido aunque la compra llegue dos veces.
+  public async checkout(
+    request: CheckoutRequest,
+    idempotencyKey?: string,
+  ): Promise<CheckoutResponse> {
+    return this.post(
+      '/api/store/checkout',
+      request,
+      CheckoutResponseSchema,
+      idempotencyKey === undefined ? {} : { 'Idempotency-Key': idempotencyKey },
+    );
   }
 }
