@@ -29,6 +29,7 @@ export const CheckoutRequestSchema = z.object({
   customer: CustomerInputSchema,
   delivery: DeliveryInputSchema,
   returnUrl: z.string().optional(),
+  acceptedTerms: z.boolean().optional(),
 });
 
 export type CheckoutRequest = z.infer<typeof CheckoutRequestSchema>;

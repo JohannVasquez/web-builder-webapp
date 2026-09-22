@@ -17,6 +17,7 @@ const quoteResponse: QuoteResponse = {
   availableShipping: [],
   taxIncluded: true,
   taxRatePercent: 19,
+  termsPageSlug: null,
 };
 
 const request: QuoteRequest = { items: [{ productId: 1, quantity: 1 }] };

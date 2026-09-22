@@ -85,6 +85,7 @@ const SettingsEditor = ({
     settings.shippingOptions,
   );
   const [paymentProvider, setPaymentProvider] = useState(settings.paymentProvider);
+  const [termsPageSlug, setTermsPageSlug] = useState(settings.termsPageSlug ?? '');
   const [notificationEmail, setNotificationEmail] = useState(
     settings.notificationEmail ?? '',
   );
@@ -134,6 +135,7 @@ const SettingsEditor = ({
         paymentProvider,
         notificationEmail:
           notificationEmail.trim() === '' ? null : notificationEmail.trim(),
+        termsPageSlug: termsPageSlug.trim() === '' ? null : termsPageSlug.trim(),
         paymentCredentials:
           Object.keys(paymentCredentials).length > 0 ? paymentCredentials : undefined,
       };
@@ -220,6 +222,27 @@ const SettingsEditor = ({
             value={notificationEmail}
             onChange={(e) => setNotificationEmail(e.target.value)}
           />
+        </div>
+      </div>
+
+      <div className="space-y-4 rounded-md border p-4">
+        <h3 className="font-semibold text-lg">Términos y condiciones de compra</h3>
+        <div className="space-y-2">
+          <Label htmlFor="termsPageSlug">Dirección de la página de términos</Label>
+          <Input
+            id="termsPageSlug"
+            placeholder="terminos-de-compra"
+            value={termsPageSlug}
+            aria-describedby="termsPageSlug-help"
+            onChange={(e) => setTermsPageSlug(e.target.value)}
+          />
+          <p id="termsPageSlug-help" className="text-muted-foreground text-sm">
+            Cuando esa página está publicada, el comprador tiene que aceptarla para
+            comprar y cada pedido guarda la constancia. Puedes crearla desde la plantilla
+            &quot;Términos y condiciones de compra&quot; en las páginas legales del
+            cliente; nace sin publicar para que la revises. Déjalo vacío si no quieres
+            exigirlos.
+          </p>
         </div>
       </div>
 

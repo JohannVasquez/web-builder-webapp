@@ -45,6 +45,7 @@ const EMPTY_QUOTE: QuoteResponse = {
   availableShipping: [],
   taxIncluded: true,
   taxRatePercent: 0,
+  termsPageSlug: null,
 };
 
 // La dirección se valida en el servidor, no acá: `CustomerInputSchema` ya trae los mensajes
@@ -63,6 +64,8 @@ export default function CheckoutPage(): ReactElement {
   const cart = useCart();
   // Una clave por compra, estable entre dobles clics y reintentos (ver idempotencyKey.ts).
   const submittingRef = useRef(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [termsError, setTermsError] = useState<string | null>(null);
   const [keyForPurchase] = useState(() =>
     createIdempotencyKeyTracker(() => crypto.randomUUID()),
   );
@@ -146,6 +149,11 @@ export default function CheckoutPage(): ReactElement {
     if (submittingRef.current) {
       return;
     }
+    // La API también lo valida; acá se ataja antes para no mandar una compra que va a fallar.
+    if (quote.termsPageSlug !== null && !acceptedTerms) {
+      setTermsError('Para comprar tienes que aceptar los términos y condiciones de compra.');
+      return;
+    }
     submittingRef.current = true;
     setIsSubmitting(true);
     try {
@@ -166,6 +174,7 @@ export default function CheckoutPage(): ReactElement {
           typeof window === 'undefined'
             ? undefined
             : `${window.location.origin}/tienda/gracias`,
+        acceptedTerms,
       };
       const response = await orderService.checkout(purchase, keyForPurchase(purchase));
 
@@ -343,6 +352,40 @@ export default function CheckoutPage(): ReactElement {
                 </Button>
               </div>
             </section>
+
+            {quote.termsPageSlug !== null && (
+              <div className="space-y-1">
+                <label className="flex items-start gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={acceptedTerms}
+                    aria-describedby={termsError === null ? undefined : 'terms-error'}
+                    onChange={(event) => {
+                      setAcceptedTerms(event.target.checked);
+                      setTermsError(null);
+                    }}
+                  />
+                  <span>
+                    Leí y acepto los{' '}
+                    <a
+                      href={`/${quote.termsPageSlug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary underline underline-offset-2"
+                    >
+                      términos y condiciones de compra
+                    </a>
+                    .
+                  </span>
+                </label>
+                {termsError !== null && (
+                  <p id="terms-error" role="alert" className="text-destructive text-sm">
+                    {termsError}
+                  </p>
+                )}
+              </div>
+            )}
 
             <Button type="submit" size="lg" disabled={isSubmitting}>
               {isSubmitting ? (

@@ -41,6 +41,8 @@ describe('OrderList', () => {
     paymentProvider: 'flow',
     paidAt: null,
     createdAt: '2026-09-22T04:00:00Z',
+    termsAcceptedAt: null,
+    termsVersion: null,
   };
 
   it('renders correctly', () => {
@@ -61,5 +63,22 @@ describe('OrderList', () => {
     expect(html).toContain('Enviado');
     expect(html).toContain('Marcar como Entregado');
     expect(html).not.toContain('Marcar como Pagado');
+  });
+
+  it('muestra la constancia cuando el comprador aceptó los términos', () => {
+    const html = renderToStaticMarkup(
+      <OrderList
+        orders={[
+          {
+            ...baseOrder,
+            termsAcceptedAt: '2026-09-22T14:17:29.234Z',
+            termsVersion: 'v1',
+          },
+        ]}
+        onAdvanceStatus={() => undefined}
+      />,
+    );
+
+    expect(html).toContain('Aceptó los términos de compra');
   });
 });

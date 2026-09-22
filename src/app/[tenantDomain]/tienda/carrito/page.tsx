@@ -30,6 +30,7 @@ const EMPTY_QUOTE: QuoteResponse = {
   availableShipping: [],
   taxIncluded: true,
   taxRatePercent: 0,
+  termsPageSlug: null,
 };
 
 // Los precios que se muestran acá SIEMPRE los manda `/api/store/quote`: el carrito solo

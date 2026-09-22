@@ -56,12 +56,23 @@ export const OrderList = ({
                 <p>{order.customer.name}</p>
                 <p>{order.customer.email}</p>
                 <p>{order.customer.phone}</p>
+                {order.termsAcceptedAt !== null && (
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    Aceptó los términos de compra el{' '}
+                    {new Date(order.termsAcceptedAt).toLocaleString('es-CL', {
+                      dateStyle: 'medium',
+                      timeStyle: 'short',
+                    })}
+                  </p>
+                )}
               </div>
               <div>
                 <h5 className="font-semibold mb-1">Envío / Entrega</h5>
                 <p>{describeDelivery(order.delivery)}</p>
                 {order.delivery.addressLine && <p>{order.delivery.addressLine}</p>}
-                {formatPlace(order.delivery) !== '' && <p>{formatPlace(order.delivery)}</p>}
+                {formatPlace(order.delivery) !== '' && (
+                  <p>{formatPlace(order.delivery)}</p>
+                )}
               </div>
             </div>
 

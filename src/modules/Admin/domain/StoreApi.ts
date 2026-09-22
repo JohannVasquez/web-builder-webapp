@@ -62,6 +62,7 @@ export const StoreSettingsSchema = z.object({
   freeShippingThresholdCents: z.number().nullable(),
   paymentProvider: z.enum(['none', 'transfer', 'flow']),
   notificationEmail: z.string().nullable(),
+  termsPageSlug: z.string().nullable().default(null),
   hasPaymentCredentials: z.boolean(),
 });
 
@@ -122,6 +123,9 @@ export const OrderSchema = z.object({
   paymentProvider: z.string().nullable(),
   paidAt: z.string().nullable(),
   createdAt: z.string(),
+  // Constancia de los términos de compra aceptados; nulos si la tienda no los exigía.
+  termsAcceptedAt: z.string().nullable().default(null),
+  termsVersion: z.string().nullable().default(null),
 });
 
 export type Order = z.infer<typeof OrderSchema>;

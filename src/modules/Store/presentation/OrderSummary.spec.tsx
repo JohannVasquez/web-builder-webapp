@@ -18,6 +18,7 @@ const baseQuote: QuoteResponse = {
   availableShipping: [],
   taxIncluded: true,
   taxRatePercent: 19,
+  termsPageSlug: null,
 };
 
 describe('OrderSummary', () => {

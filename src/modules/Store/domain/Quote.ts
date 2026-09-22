@@ -59,6 +59,8 @@ export const QuoteResponseSchema = z.object({
   availableShipping: z.array(ShippingOptionSchema),
   taxIncluded: z.boolean(),
   taxRatePercent: z.number(),
+  // Página de términos que hay que aceptar para comprar; nula si la tienda no los exige.
+  termsPageSlug: z.string().nullable().default(null),
 });
 
 export type QuoteResponse = z.infer<typeof QuoteResponseSchema>;
