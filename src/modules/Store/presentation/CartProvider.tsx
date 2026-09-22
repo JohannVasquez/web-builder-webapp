@@ -18,11 +18,11 @@ export interface CartContextValue {
   readonly count: number;
   readonly add: (item: CartItem) => void;
   readonly setQuantity: (
-    productId: number,
+    productId: string,
     variant: CartVariant,
     quantity: number,
   ) => void;
-  readonly remove: (productId: number, variant: CartVariant) => void;
+  readonly remove: (productId: string, variant: CartVariant) => void;
   readonly clear: () => void;
 }
 
@@ -44,12 +44,12 @@ export function CartProvider({ storage, children }: CartProviderProps): ReactEle
 
   const add = useCallback((item: CartItem): void => store.add(item), [store]);
   const setQuantity = useCallback(
-    (productId: number, variant: CartVariant, quantity: number): void =>
+    (productId: string, variant: CartVariant, quantity: number): void =>
       store.setQuantity(productId, variant, quantity),
     [store],
   );
   const remove = useCallback(
-    (productId: number, variant: CartVariant): void => store.remove(productId, variant),
+    (productId: string, variant: CartVariant): void => store.remove(productId, variant),
     [store],
   );
   const clear = useCallback((): void => store.clear(), [store]);

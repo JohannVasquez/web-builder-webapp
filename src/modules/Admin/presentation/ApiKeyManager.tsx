@@ -65,7 +65,7 @@ export function ApiKeyManager(): ReactElement {
   const [name, setName] = useState('');
   const [permission, setPermission] = useState<ApiKey['permission']>('write');
   const [scopeMode, setScopeMode] = useState<'all' | 'selected'>('all');
-  const [selectedTenantIds, setSelectedTenantIds] = useState<Set<number>>(new Set());
+  const [selectedTenantIds, setSelectedTenantIds] = useState<Set<string>>(new Set());
   const [expiryMode, setExpiryMode] = useState<'days' | 'never'>('days');
   const [expiryDays, setExpiryDays] = useState(DEFAULT_EXPIRY_DAYS);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,9 +76,9 @@ export function ApiKeyManager(): ReactElement {
 
   const [revealed, setRevealed] = useState<Revealed | null>(null);
   const [copied, setCopied] = useState(false);
-  const [pendingActionId, setPendingActionId] = useState<number | null>(null);
+  const [pendingActionId, setPendingActionId] = useState<string | null>(null);
 
-  const toggleTenant = (id: number): void => {
+  const toggleTenant = (id: string): void => {
     setSelectedTenantIds((current) => {
       const next = new Set(current);
       if (next.has(id)) {

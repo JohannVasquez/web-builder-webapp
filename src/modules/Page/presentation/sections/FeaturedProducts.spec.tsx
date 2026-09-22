@@ -5,7 +5,7 @@ import type { StoreService } from '@/modules/Store/application/StoreService';
 import { FeaturedProducts } from './FeaturedProducts';
 
 const product = (index: number): ProductView => ({
-  id: index,
+  id: String(index),
   slug: `producto-${index}`,
   name: `Producto ${index}`,
   description: 'Una descripción',

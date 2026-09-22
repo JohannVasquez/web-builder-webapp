@@ -67,11 +67,11 @@ const labelFor = (type: string): string => findBlockCatalogEntry(type)?.label ??
 
 export interface SectionListProps {
   readonly sections: readonly AdminSection[];
-  readonly editingId: number | null;
+  readonly editingId: string | null;
   readonly draft: string;
   readonly jsonError: string | null;
   readonly isBusy: boolean;
-  readonly dragOverId: number | null;
+  readonly dragOverId: string | null;
   readonly onDragStart: (section: AdminSection, event: DragEvent<HTMLLIElement>) => void;
   readonly onDragOver: (section: AdminSection, event: DragEvent<HTMLLIElement>) => void;
   readonly onDrop: (section: AdminSection, event: DragEvent<HTMLLIElement>) => void;
@@ -273,14 +273,14 @@ export function PageEditor({ tenantId, pageId }: PageEditorProps): ReactElement 
   const base = `/api/admin/tenants/${tenantId}/pages/${pageId}`;
   const cacheKey = `admin:tenant:${tenantId}:page:${pageId}`;
 
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [isBusy, setIsBusy] = useState(false);
   const [showCatalog, setShowCatalog] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
-  const [draggedId, setDraggedId] = useState<number | null>(null);
-  const [dragOverId, setDragOverId] = useState<number | null>(null);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   const hasUnsavedChanges = editingId !== null;
   useUnsavedChangesGuard(hasUnsavedChanges);
@@ -326,7 +326,7 @@ export function PageEditor({ tenantId, pageId }: PageEditorProps): ReactElement 
   };
 
   // Restaurar reemplaza el borrador; el sitio no cambia hasta que se publica.
-  const restoreVersion = async (versionId: number): Promise<void> => {
+  const restoreVersion = async (versionId: string): Promise<void> => {
     await run(
       () =>
         api.post(
@@ -338,7 +338,7 @@ export function PageEditor({ tenantId, pageId }: PageEditorProps): ReactElement 
     );
   };
 
-  const reorder = async (sectionIds: number[]): Promise<void> => {
+  const reorder = async (sectionIds: string[]): Promise<void> => {
     await run(
       () => api.put(`${base}/sections/reorder`, { sectionIds }, AdminPageResponseSchema),
       'Orden actualizado.',
@@ -427,7 +427,7 @@ export function PageEditor({ tenantId, pageId }: PageEditorProps): ReactElement 
   const handleDrop = (
     section: AdminSection,
     event: DragEvent<HTMLLIElement>,
-    ids: readonly number[],
+    ids: readonly string[],
   ): void => {
     event.preventDefault();
     const rect = event.currentTarget.getBoundingClientRect();

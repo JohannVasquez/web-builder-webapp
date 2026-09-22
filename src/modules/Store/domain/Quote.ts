@@ -5,7 +5,7 @@ import { ShippingOptionSchema } from './StoreSettings';
 // Lo que viaja en el cuerpo de `POST /api/store/quote` y `/checkout`: nunca un precio, la
 // API es quien cotiza a partir del `productId`, la cantidad y la variante elegida.
 export const QuoteItemInputSchema = z.object({
-  productId: z.number(),
+  productId: z.string(),
   quantity: z.number().int().positive(),
   variant: CartVariantSchema.optional(),
 });
@@ -21,7 +21,7 @@ export const QuoteRequestSchema = z.object({
 export type QuoteRequest = z.infer<typeof QuoteRequestSchema>;
 
 export const QuoteLineSchema = z.object({
-  productId: z.number(),
+  productId: z.string(),
   name: z.string(),
   variant: CartVariantSchema,
   unitPriceCents: z.number(),

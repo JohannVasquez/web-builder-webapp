@@ -16,10 +16,10 @@ import { Button } from '@/shared/ui/button';
 import { CouponForm } from './CouponForm';
 
 export interface CouponManagerProps {
-  readonly tenantId: number;
+  readonly tenantId: string;
 }
 
-const COUPONS_CACHE_KEY = (tenantId: number): string => `admin:coupons:${tenantId}`;
+const COUPONS_CACHE_KEY = (tenantId: string): string => `admin:coupons:${tenantId}`;
 
 export const CouponManager = ({
   tenantId,

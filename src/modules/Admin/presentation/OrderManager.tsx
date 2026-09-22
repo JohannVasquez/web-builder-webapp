@@ -21,7 +21,7 @@ import {
 import { Input } from '@/shared/ui/input';
 
 export interface OrderManagerProps {
-  readonly tenantId: number;
+  readonly tenantId: string;
 }
 
 export const OrderManager = ({

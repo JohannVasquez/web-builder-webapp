@@ -4,7 +4,7 @@ import type { BlogPost } from '../domain/BlogApi';
 
 describe('PostList', () => {
   const basePost: BlogPost = {
-    id: 1,
+    id: '018f6f1a-0000-7000-8000-000000000001',
     slug: 'test',
     title: 'Test',
     excerpt: 'Test excerpt',
@@ -36,7 +36,7 @@ describe('PostList', () => {
   it('muestra un borrador', () => {
     const html = renderToStaticMarkup(
       <PostList
-        posts={[{ ...basePost, id: 1, title: 'Mi Borrador', status: 'draft' }]}
+        posts={[{ ...basePost, id: '018f6f1a-0000-7000-8000-000000000001', title: 'Mi Borrador', status: 'draft' }]}
         tenantId="1"
         pendingActionId={null}
         onDelete={() => {}}
@@ -53,7 +53,7 @@ describe('PostList', () => {
         posts={[
           {
             ...basePost,
-            id: 2,
+            id: '018f6f1a-0000-7000-8000-000000000002',
             title: 'Mi Publicación',
             status: 'published',
             publishedAt: '2026-09-16T19:00:00Z',
@@ -75,7 +75,7 @@ describe('PostList', () => {
         posts={[
           {
             ...basePost,
-            id: 3,
+            id: '018f6f1a-0000-7000-8000-000000000003',
             title: 'Mi Programada',
             status: 'scheduled',
             publishedAt: '2030-01-01T19:00:00Z', // fecha futura segura

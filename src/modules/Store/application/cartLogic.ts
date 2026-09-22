@@ -13,7 +13,7 @@ export const variantsMatch = (a: CartVariant, b: CartVariant): boolean => {
 
 const findIndex = (
   items: readonly CartItem[],
-  productId: number,
+  productId: string,
   variant: CartVariant,
 ): number =>
   items.findIndex(
@@ -38,7 +38,7 @@ export const addCartItem = (
 // Cantidad 0 o menor quita la línea, igual que el botón "Quitar".
 export const setCartItemQuantity = (
   items: readonly CartItem[],
-  productId: number,
+  productId: string,
   variant: CartVariant,
   quantity: number,
 ): CartItem[] => {
@@ -56,7 +56,7 @@ export const setCartItemQuantity = (
 
 export const removeCartItem = (
   items: readonly CartItem[],
-  productId: number,
+  productId: string,
   variant: CartVariant,
 ): CartItem[] =>
   items.filter(

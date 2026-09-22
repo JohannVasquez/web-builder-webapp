@@ -14,11 +14,11 @@ export interface CartStore {
   readonly getSnapshot: () => readonly CartItem[];
   readonly add: (item: CartItem) => void;
   readonly setQuantity: (
-    productId: number,
+    productId: string,
     variant: CartVariant,
     quantity: number,
   ) => void;
-  readonly remove: (productId: number, variant: CartVariant) => void;
+  readonly remove: (productId: string, variant: CartVariant) => void;
   readonly clear: () => void;
 }
 
@@ -52,10 +52,10 @@ export const createCartStore = (storage: CartStorage): CartStore => {
     add: (item: CartItem): void => {
       publish(addCartItem(snapshot ?? readItems(), item));
     },
-    setQuantity: (productId: number, variant: CartVariant, quantity: number): void => {
+    setQuantity: (productId: string, variant: CartVariant, quantity: number): void => {
       publish(setCartItemQuantity(snapshot ?? readItems(), productId, variant, quantity));
     },
-    remove: (productId: number, variant: CartVariant): void => {
+    remove: (productId: string, variant: CartVariant): void => {
       publish(removeCartItem(snapshot ?? readItems(), productId, variant));
     },
     clear: (): void => {

@@ -3,7 +3,7 @@ import { SectionList } from './PageEditor';
 import type { AdminSection } from '../domain/AdminApi';
 
 const visibleSection: AdminSection = {
-  id: 1,
+  id: '018f6f1a-0000-7000-8000-000000000001',
   type: 'Hero',
   position: 0,
   props: { title: 'Bienvenida' },
@@ -12,7 +12,7 @@ const visibleSection: AdminSection = {
 };
 
 const hiddenSection: AdminSection = {
-  id: 2,
+  id: '018f6f1a-0000-7000-8000-000000000002',
   type: 'Faq',
   position: 1,
   props: {},

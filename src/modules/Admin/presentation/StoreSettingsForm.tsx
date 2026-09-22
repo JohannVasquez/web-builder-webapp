@@ -16,10 +16,10 @@ import {
 } from '../domain/StoreApi';
 
 export interface StoreSettingsFormProps {
-  readonly tenantId: number;
+  readonly tenantId: string;
 }
 
-const SETTINGS_CACHE_KEY = (tenantId: number): string =>
+const SETTINGS_CACHE_KEY = (tenantId: string): string =>
   `admin:store-settings:${tenantId}`;
 
 export const StoreSettingsForm = ({
@@ -66,7 +66,7 @@ const SettingsEditor = ({
   settings,
   onSaved,
 }: {
-  readonly tenantId: number;
+  readonly tenantId: string;
   readonly settings: StoreSettings;
   readonly onSaved: () => void;
 }): import('react').ReactElement | null => {

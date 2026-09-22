@@ -3,10 +3,10 @@ import { ProductList } from './ProductList';
 import type { Product, ProductCategory } from '../domain/StoreApi';
 
 describe('ProductList', () => {
-  const dummyCategories: ProductCategory[] = [{ id: 1, name: 'Tortas', slug: 'tortas' }];
+  const dummyCategories: ProductCategory[] = [{ id: '018f6f1a-0000-7000-8000-000000000001', name: 'Tortas', slug: 'tortas' }];
 
   const baseProduct: Product = {
-    id: 1,
+    id: '018f6f1a-0000-7000-8000-000000000001',
     slug: 'torta-1',
     name: 'Torta de prueba',
     description: '',
@@ -14,7 +14,7 @@ describe('ProductList', () => {
     priceCents: 15000,
     salePriceCents: null,
     currency: 'CLP',
-    categoryId: 1,
+    categoryId: '018f6f1a-0000-7000-8000-000000000001',
     variants: [],
     isActive: true,
     featured: false,

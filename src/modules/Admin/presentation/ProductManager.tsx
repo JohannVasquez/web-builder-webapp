@@ -21,11 +21,11 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 
 export interface ProductManagerProps {
-  readonly tenantId: number;
+  readonly tenantId: string;
 }
 
-const PRODUCTS_CACHE_KEY = (tenantId: number): string => `admin:products:${tenantId}`;
-const CATEGORIES_CACHE_KEY = (tenantId: number): string => `admin:categories:${tenantId}`;
+const PRODUCTS_CACHE_KEY = (tenantId: string): string => `admin:products:${tenantId}`;
+const CATEGORIES_CACHE_KEY = (tenantId: string): string => `admin:categories:${tenantId}`;
 
 export const ProductManager = ({
   tenantId,

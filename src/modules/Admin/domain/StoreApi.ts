@@ -8,7 +8,7 @@ export const ProductVariantSchema = z.object({
 export type ProductVariant = z.infer<typeof ProductVariantSchema>;
 
 export const ProductSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   slug: z.string(),
   name: z.string(),
   description: z.string(),
@@ -16,7 +16,7 @@ export const ProductSchema = z.object({
   priceCents: z.number(),
   salePriceCents: z.number().nullable(),
   currency: z.string(),
-  categoryId: z.number().nullable(),
+  categoryId: z.string().nullable(),
   variants: z.array(ProductVariantSchema),
   isActive: z.boolean(),
   featured: z.boolean(),
@@ -32,7 +32,7 @@ export const ProductListResponseSchema = z.object({
 });
 
 export const ProductCategorySchema = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string(),
   slug: z.string(),
 });
@@ -73,7 +73,7 @@ export const StoreSettingsResponseSchema = z.object({
 });
 
 export const OrderItemSchema = z.object({
-  productId: z.number().nullable(),
+  productId: z.string().nullable(),
   name: z.string(),
   variant: z.record(z.string(), z.string()),
   unitPriceCents: z.number(),
@@ -95,7 +95,7 @@ export const OrderStatusSchema = z.enum([
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
 
 export const OrderSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   number: z.string(),
   status: OrderStatusSchema,
   statusLabel: z.string(),
@@ -142,7 +142,7 @@ export const OrderResponseSchema = z.object({
 });
 
 export const CouponSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   code: z.string(),
   discountType: z.enum(['percentage', 'amount']),
   value: z.number(),
@@ -167,7 +167,7 @@ export const ReportByDaySchema = z.object({
 });
 
 export const ReportTopProductSchema = z.object({
-  productId: z.number().nullable(),
+  productId: z.string().nullable(),
   name: z.string(),
   units: z.number(),
   totalCents: z.number(),

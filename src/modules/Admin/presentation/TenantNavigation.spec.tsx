@@ -9,7 +9,7 @@ const links: NavLinkDraft[] = [
 ];
 
 const page: AdminPage = {
-  id: 1,
+  id: '018f6f1a-0000-7000-8000-000000000001',
   slug: 'servicios',
   title: 'Servicios',
   description: null,

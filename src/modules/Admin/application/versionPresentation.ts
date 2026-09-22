@@ -1,5 +1,5 @@
 export interface PageVersionView {
-  readonly id: number;
+  readonly id: string;
   readonly summary: string;
   readonly actorType: string;
   readonly actorName: string;

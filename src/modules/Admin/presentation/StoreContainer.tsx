@@ -15,10 +15,10 @@ import { SalesReport } from './SalesReport';
 import { Button } from '@/shared/ui/button';
 
 export interface StoreContainerProps {
-  readonly tenantId: number;
+  readonly tenantId: string;
 }
 
-const SETTINGS_CACHE_KEY = (tenantId: number): string =>
+const SETTINGS_CACHE_KEY = (tenantId: string): string =>
   `admin:store-settings:${tenantId}`;
 
 export const StoreContainer = ({

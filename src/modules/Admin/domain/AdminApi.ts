@@ -8,7 +8,7 @@ export const TENANT_STATUSES = ['active', 'paused', 'building'] as const;
 export const TenantStatusSchema = z.enum(TENANT_STATUSES);
 
 export const TenantSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string(),
   slug: z.string(),
   name: z.string(),
   primaryDomain: z.string().nullable(),
@@ -39,7 +39,7 @@ export const DomainInstructionSchema = z.object({
 });
 
 const TenantDomainBaseSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string(),
   domain: z.string(),
   isPrimary: z.boolean(),
   isVerified: z.boolean(),
@@ -62,7 +62,7 @@ export const AddDomainResponseSchema = z.object({
 });
 
 export const AdminSectionSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string(),
   type: z.string(),
   position: z.number().int(),
   props: z.record(z.string(), z.unknown()),
@@ -71,7 +71,7 @@ export const AdminSectionSchema = z.object({
 });
 
 export const AdminPageSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string(),
   slug: z.string(),
   title: z.string(),
   description: z.string().nullable(),
@@ -89,7 +89,7 @@ export const AdminPageResponseSchema = z.object({ page: AdminPageSchema });
 
 // Historial del borrador: cada cambio guarda una foto antes de aplicarse (SPEC 9.4).
 export const PageVersionSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string(),
   summary: z.string(),
   actorType: z.string(),
   actorName: z.string(),
@@ -100,12 +100,12 @@ export const PageVersionSchema = z.object({
 export const PageVersionsSchema = z.object({ versions: z.array(PageVersionSchema) });
 
 export const ApiKeySchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string(),
   name: z.string(),
   prefix: z.string(),
   permission: z.enum(['read', 'write', 'full']),
   scopeAllTenants: z.boolean(),
-  tenantIds: z.array(z.number()),
+  tenantIds: z.array(z.string()),
   rateLimitPerMinute: z.number(),
   expiresAt: z.string().nullable(),
   lastUsedAt: z.string().nullable(),
@@ -123,8 +123,8 @@ export const CreatedApiKeySchema = z.object({
 });
 
 export const ActivityEntrySchema = z.object({
-  id: z.number(),
-  tenantId: z.number().nullable(),
+  id: z.string(),
+  tenantId: z.string().nullable(),
   actorType: z.enum(['admin', 'apiKey']),
   actorName: z.string(),
   action: z.string(),
@@ -140,7 +140,7 @@ export const ActivitySchema = z.object({
 });
 
 export const ContactMessageSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string(),
   email: z.string(),
   phone: z.string().nullable(),
@@ -215,7 +215,7 @@ export const AssetUsageSchema = z.object({
 export const DeleteMediaResponseSchema = z.object({ usage: z.array(AssetUsageSchema) });
 
 export const SubscriberSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   email: z.string(),
   unsubscribedAt: z.string().nullable(),
   createdAt: z.string(),
@@ -224,13 +224,13 @@ export const SubscriberSchema = z.object({
 // Cuentas del panel (SPEC 9.2): distinta de `AdminUser` en el módulo Auth, que describe
 // a quien inició sesión, no a cualquier fila de la lista de personas con acceso.
 export const UserAccountSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string(),
   email: z.string(),
   name: z.string(),
   role: AdminRoleSchema,
   disabled: z.boolean(),
   // `null` = alcanza a todos los clientes. Solo el rol `client` trae una lista.
-  tenantScope: z.array(z.number().int().positive()).nullable(),
+  tenantScope: z.array(z.string()).nullable(),
 });
 
 export const UserAccountsSchema = z.object({ users: z.array(UserAccountSchema) });

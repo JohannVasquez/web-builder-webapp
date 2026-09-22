@@ -7,7 +7,7 @@ export const CartVariantSchema = z.record(z.string(), z.string());
 export type CartVariant = z.infer<typeof CartVariantSchema>;
 
 export const CartItemSchema = z.object({
-  productId: z.number(),
+  productId: z.string(),
   quantity: z.number().int().positive(),
   variant: CartVariantSchema,
 });

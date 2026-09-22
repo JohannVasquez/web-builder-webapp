@@ -39,9 +39,9 @@ const STATUS_BADGE_CLASSES: Record<'active' | 'disabled', string> = {
 
 export interface UserListProps {
   readonly users: readonly UserAccount[];
-  readonly pendingActionId: number | null;
+  readonly pendingActionId: string | null;
   // Nombre de cada cliente, para poder decir a cuáles alcanza una persona sin mostrar ids.
-  readonly tenantNames: ReadonlyMap<number, string>;
+  readonly tenantNames: ReadonlyMap<string, string>;
   readonly onRoleChange: (user: UserAccount, nextRole: AdminRole) => void;
   readonly onStatusChange: (user: UserAccount, disabled: boolean) => void;
 }
@@ -153,9 +153,9 @@ export function UserList({
 }
 
 interface TenantPickerProps {
-  readonly tenants: readonly { id: number; name: string }[];
-  readonly selected: readonly number[];
-  readonly onToggle: (tenantId: number) => void;
+  readonly tenants: readonly { id: string; name: string }[];
+  readonly selected: readonly string[];
+  readonly onToggle: (tenantId: string) => void;
 }
 
 // Sin hooks propios, para poder renderizarlo en pruebas igual que `UserList`.
@@ -203,13 +203,13 @@ export function UserManager(): ReactElement {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState<AdminRole>('editor');
-  const [scope, setScope] = useState<readonly number[]>([]);
+  const [scope, setScope] = useState<readonly string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<{
     message: string;
     issues: readonly { path: string; message: string }[];
   } | null>(null);
-  const [pendingActionId, setPendingActionId] = useState<number | null>(null);
+  const [pendingActionId, setPendingActionId] = useState<string | null>(null);
   const [pendingRoleChange, setPendingRoleChange] = useState<{
     user: UserAccount;
     nextRole: AdminRole;
@@ -232,7 +232,7 @@ export function UserManager(): ReactElement {
     setFormError(null);
   };
 
-  const toggleScope = (tenantId: number): void => {
+  const toggleScope = (tenantId: string): void => {
     setScope((current) =>
       current.includes(tenantId)
         ? current.filter((id) => id !== tenantId)
@@ -308,7 +308,7 @@ export function UserManager(): ReactElement {
   const handleRoleChange = async (
     user: UserAccount,
     nextRole: AdminRole,
-    nextScope: readonly number[],
+    nextScope: readonly string[],
   ): Promise<void> => {
     const confirmed = window.confirm(
       `Vas a cambiar el rol de ${user.name} a "${roleLabel(nextRole)}". ¿Continuar?`,

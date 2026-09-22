@@ -20,7 +20,7 @@ const quoteResponse: QuoteResponse = {
   termsPageSlug: null,
 };
 
-const request: QuoteRequest = { items: [{ productId: 1, quantity: 1 }] };
+const request: QuoteRequest = { items: [{ productId: '018f6f1a-0000-7000-8000-000000000001', quantity: 1 }] };
 
 const jsonResponse = (status: number, body: unknown): Response =>
   ({
@@ -71,7 +71,7 @@ describe('StoreOrderService', () => {
   it('posts to /api/store/checkout for checkout', async () => {
     const order = {
       order: {
-        id: 1,
+        id: '018f6f1a-0000-7000-8000-000000000001',
         number: '0001',
         status: 'pending',
         statusLabel: 'Pendiente de pago',
@@ -103,7 +103,7 @@ describe('StoreOrderService', () => {
     const service = new StoreOrderService('http://api.local', undefined, fetchFn);
 
     const result = await service.checkout({
-      items: [{ productId: 1, quantity: 1 }],
+      items: [{ productId: '018f6f1a-0000-7000-8000-000000000001', quantity: 1 }],
       customer: { name: 'Ana', email: 'ana@test.cl', phone: '+56911112222' },
       delivery: { method: 'pickup' },
     });

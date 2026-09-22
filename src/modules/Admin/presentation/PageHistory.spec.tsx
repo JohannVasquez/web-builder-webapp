@@ -4,7 +4,7 @@ import type { PageVersion } from '../domain/AdminApi';
 
 describe('VersionList', () => {
   const version = (overrides: Partial<PageVersion> = {}): PageVersion => ({
-    id: 1,
+    id: '018f6f1a-0000-7000-8000-000000000001',
     summary: 'Editó un bloque',
     actorType: 'admin',
     actorName: 'Johann',
@@ -30,7 +30,7 @@ describe('VersionList', () => {
   });
 
   it('ofrece restaurar las versiones anteriores', () => {
-    const html = render([version(), version({ id: 2, summary: 'Agregó el bloque Hero' })]);
+    const html = render([version(), version({ id: '018f6f1a-0000-7000-8000-000000000002', summary: 'Agregó el bloque Hero' })]);
 
     expect(html).toContain('Restaurar');
     expect(html).toContain('Agregó el bloque Hero');
@@ -39,7 +39,7 @@ describe('VersionList', () => {
   it('marca cuando el cambio lo hizo un agente', () => {
     const html = render([
       version(),
-      version({ id: 2, actorType: 'apiKey', actorName: 'Agente MCP' }),
+      version({ id: '018f6f1a-0000-7000-8000-000000000002', actorType: 'apiKey', actorName: 'Agente MCP' }),
     ]);
 
     expect(html).toContain('Agente MCP (agente)');

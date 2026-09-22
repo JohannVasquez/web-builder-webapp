@@ -19,13 +19,13 @@ import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
 
 export interface ProductFormProps {
-  readonly tenantId: number;
+  readonly tenantId: string;
   readonly product: Product | null;
   readonly categories: readonly ProductCategory[];
   readonly onClose: () => void;
 }
 
-const PRODUCTS_CACHE_KEY = (tenantId: number): string => `admin:products:${tenantId}`;
+const PRODUCTS_CACHE_KEY = (tenantId: string): string => `admin:products:${tenantId}`;
 
 export function ProductForm({
   tenantId,

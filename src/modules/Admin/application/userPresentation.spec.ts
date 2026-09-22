@@ -38,8 +38,8 @@ describe('canManageUsers', () => {
 
 describe('alcance del rol cliente', () => {
   const tenantNames = new Map([
-    [40, 'Pastelería Luna'],
-    [9, 'ElectroAndes'],
+    ['018f6f1a-0000-7000-8000-000000000040', 'Pastelería Luna'],
+    ['018f6f1a-0000-7000-8000-000000000009', 'ElectroAndes'],
   ]);
 
   it('solo el rol cliente necesita clientes asignados', () => {
@@ -56,7 +56,7 @@ describe('alcance del rol cliente', () => {
 
   it('nombra los clientes de una persona en vez de mostrar ids', () => {
     expect(
-      describeUserScope({ role: 'client', tenantScope: [40, 9] }, tenantNames),
+      describeUserScope({ role: 'client', tenantScope: ['018f6f1a-0000-7000-8000-000000000040', '018f6f1a-0000-7000-8000-000000000009'] }, tenantNames),
     ).toBe('Pastelería Luna, ElectroAndes');
   });
 
@@ -68,7 +68,7 @@ describe('alcance del rol cliente', () => {
 
   it('no se rompe si el cliente ya no existe', () => {
     expect(
-      describeUserScope({ role: 'client', tenantScope: [999] }, tenantNames),
-    ).toBe('Cliente 999');
+      describeUserScope({ role: 'client', tenantScope: ['018f6f1a-0000-7000-8000-000000000999'] }, tenantNames),
+    ).toBe('Cliente 018f6f1a-0000-7000-8000-000000000999');
   });
 });

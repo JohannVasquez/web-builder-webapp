@@ -33,7 +33,7 @@ export const needsTenantScope = (role: AdminRole): boolean => role === 'client';
 
 export const describeUserScope = (
   user: Pick<UserAccount, 'role' | 'tenantScope'>,
-  tenantNames: ReadonlyMap<number, string>,
+  tenantNames: ReadonlyMap<string, string>,
 ): string => {
   if (user.role !== 'client' || user.tenantScope === null) {
     return 'Todos los clientes';

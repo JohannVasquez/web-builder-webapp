@@ -14,7 +14,7 @@ jest.mock('./useAdminApi', () => ({
 describe('CouponForm', () => {
   it('renders form and displays initial values', () => {
     const coupon: Coupon = {
-      id: 1,
+      id: '018f6f1a-0000-7000-8000-000000000001',
       code: 'PROMO10',
       discountType: 'percentage',
       value: 10,
@@ -27,7 +27,7 @@ describe('CouponForm', () => {
     };
 
     const html = renderToStaticMarkup(
-      <CouponForm tenantId={1} coupon={coupon} onClose={() => {}} />,
+      <CouponForm tenantId={'018f6f1a-0000-7000-8000-000000000001'} coupon={coupon} onClose={() => {}} />,
     );
 
     expect(html).toContain('Editar Cupón');
@@ -37,7 +37,7 @@ describe('CouponForm', () => {
 
   it('renders empty form for new coupon', () => {
     const html = renderToStaticMarkup(
-      <CouponForm tenantId={1} coupon={null} onClose={() => {}} />,
+      <CouponForm tenantId={'018f6f1a-0000-7000-8000-000000000001'} coupon={null} onClose={() => {}} />,
     );
 
     expect(html).toContain('Crear Cupón');

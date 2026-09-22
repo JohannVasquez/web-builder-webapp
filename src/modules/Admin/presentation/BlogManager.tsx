@@ -19,7 +19,7 @@ const POSTS_CACHE_KEY = 'admin:blog-posts';
 
 export function BlogManager({ tenantId }: BlogManagerProps): ReactElement {
   const api = useAdminApi();
-  const [pendingActionId, setPendingActionId] = useState<number | null>(null);
+  const [pendingActionId, setPendingActionId] = useState<string | null>(null);
 
   const cacheKey = `${POSTS_CACHE_KEY}:${tenantId}`;
   const posts = useAsyncData(cacheKey, () =>
@@ -88,7 +88,7 @@ export function BlogManager({ tenantId }: BlogManagerProps): ReactElement {
 export interface PostListProps {
   readonly posts: readonly BlogPost[];
   readonly tenantId: string;
-  readonly pendingActionId: number | null;
+  readonly pendingActionId: string | null;
   readonly onDelete: (post: BlogPost) => void;
 }
 

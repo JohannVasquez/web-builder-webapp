@@ -7,7 +7,7 @@ import {
 
 describe('versionPresentation', () => {
   const version = (overrides: Partial<PageVersionView> = {}): PageVersionView => ({
-    id: 1,
+    id: '018f6f1a-0000-7000-8000-000000000001',
     summary: 'Editó un bloque',
     actorType: 'admin',
     actorName: 'Johann',

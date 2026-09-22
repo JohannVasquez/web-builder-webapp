@@ -15,7 +15,7 @@ export default async function TenantStorePage({
         <h1 className="text-3xl font-bold tracking-tight">Tienda</h1>
         <p className="text-muted-foreground">Administra los productos, pedidos y ajustes de la tienda.</p>
       </div>
-      <StoreContainer tenantId={parseInt(tenantId, 10)} />
+      <StoreContainer tenantId={tenantId} />
     </div>
   );
 }

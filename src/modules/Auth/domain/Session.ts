@@ -7,7 +7,7 @@ export const AdminRoleSchema = z.enum(ADMIN_ROLES);
 export type AdminRole = z.infer<typeof AdminRoleSchema>;
 
 export const AdminUserSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string(),
   email: z.string(),
   name: z.string(),
   role: AdminRoleSchema,
@@ -24,7 +24,7 @@ export type Session = z.infer<typeof SessionSchema>;
 
 // `/api/admin/me` no devuelve `email`: esquema propio en vez de `SessionSchema.shape.user`.
 export const MeUserSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.string(),
   name: z.string(),
   role: AdminRoleSchema,
 });

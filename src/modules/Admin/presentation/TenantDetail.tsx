@@ -76,8 +76,8 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
   const tenant = tenants.data?.find((item) => String(item.id) === tenantId) ?? null;
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingPageId, setEditingPageId] = useState<number | null>(null);
-  const [pendingActionId, setPendingActionId] = useState<number | null>(null);
+  const [editingPageId, setEditingPageId] = useState<string | null>(null);
+  const [pendingActionId, setPendingActionId] = useState<string | null>(null);
 
   const reloadPages = (): void => refreshAsyncData(pagesKey);
 
@@ -590,7 +590,7 @@ interface TogglePublishButtonProps {
   readonly tenantId: string;
   readonly page: AdminPage;
   readonly isPending: boolean;
-  readonly onPending: (id: number | null) => void;
+  readonly onPending: (id: string | null) => void;
   readonly onDone: () => void;
 }
 
@@ -656,7 +656,7 @@ interface DeletePageButtonProps {
   readonly tenantId: string;
   readonly page: AdminPage;
   readonly isPending: boolean;
-  readonly onPending: (id: number | null) => void;
+  readonly onPending: (id: string | null) => void;
   readonly onDone: () => void;
 }
 

@@ -11,7 +11,7 @@ import { Button } from '@/shared/ui/button';
 interface VersionListProps {
   readonly versions: readonly PageVersion[];
   readonly isBusy: boolean;
-  readonly onRestore: (versionId: number) => void;
+  readonly onRestore: (versionId: string) => void;
 }
 
 // Puro y exportado para poder probarlo con `renderToStaticMarkup`, sin red ni sesión.
@@ -62,7 +62,7 @@ interface PageHistoryProps {
   readonly tenantId: string;
   readonly pageId: string;
   readonly isBusy: boolean;
-  readonly onRestore: (versionId: number) => Promise<void>;
+  readonly onRestore: (versionId: string) => Promise<void>;
 }
 
 export function PageHistory({
@@ -83,7 +83,7 @@ export function PageHistory({
     return list;
   });
 
-  const restore = (versionId: number): void => {
+  const restore = (versionId: string): void => {
     // Restaurar reemplaza el borrador, no el sitio: por eso se avisa que hay que publicar.
     if (
       !window.confirm(

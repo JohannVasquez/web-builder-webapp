@@ -18,12 +18,12 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 
 export interface CouponFormProps {
-  readonly tenantId: number;
+  readonly tenantId: string;
   readonly coupon: Coupon | null;
   readonly onClose: () => void;
 }
 
-const COUPONS_CACHE_KEY = (tenantId: number): string => `admin:coupons:${tenantId}`;
+const COUPONS_CACHE_KEY = (tenantId: string): string => `admin:coupons:${tenantId}`;
 
 export function CouponForm({ tenantId, coupon, onClose }: CouponFormProps): ReactElement {
   const api = useAdminApi();

@@ -2,7 +2,7 @@ import { parseThanksData } from './thanksData';
 import type { Order } from '../domain/Checkout';
 
 const order: Order = {
-  id: 1,
+  id: '018f6f1a-0000-7000-8000-000000000001',
   number: '0001',
   status: 'pending',
   statusLabel: 'Pendiente de pago',

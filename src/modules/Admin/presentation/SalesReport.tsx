@@ -16,7 +16,7 @@ import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 
 export interface SalesReportProps {
-  readonly tenantId: number;
+  readonly tenantId: string;
 }
 
 export const SalesReport = ({

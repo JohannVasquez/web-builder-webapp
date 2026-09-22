@@ -44,7 +44,7 @@ export const OrderDeliverySchema = z.object({
 });
 
 export const OrderSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   number: z.string(),
   status: z.string(),
   statusLabel: z.string(),

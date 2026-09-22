@@ -3,7 +3,7 @@ import { UserList } from './UserManager';
 import type { UserAccount } from '../domain/AdminApi';
 
 const owner: UserAccount = {
-  id: 1,
+  id: '018f6f1a-0000-7000-8000-000000000001',
   email: 'ana@webbuilder.co',
   name: 'Ana',
   role: 'owner',
@@ -12,7 +12,7 @@ const owner: UserAccount = {
 };
 
 const disabledEditor: UserAccount = {
-  id: 2,
+  id: '018f6f1a-0000-7000-8000-000000000002',
   email: 'ben@webbuilder.co',
   name: 'Ben',
   role: 'editor',
@@ -26,8 +26,8 @@ const noop = (): void => {
 
 describe('UserList', () => {
   const tenantNames = new Map([
-    [40, 'Pastelería Luna'],
-    [9, 'ElectroAndes'],
+    ['018f6f1a-0000-7000-8000-000000000040', 'Pastelería Luna'],
+    ['018f6f1a-0000-7000-8000-000000000009', 'ElectroAndes'],
   ]);
 
   it('sin personas muestra el mensaje de lista vacía', () => {

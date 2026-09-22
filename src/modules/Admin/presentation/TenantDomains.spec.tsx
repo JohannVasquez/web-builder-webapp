@@ -3,7 +3,7 @@ import { DomainList } from './TenantDomains';
 import type { TenantDomain } from '../domain/AdminApi';
 
 const unverified: TenantDomain = {
-  id: 1,
+  id: '018f6f1a-0000-7000-8000-000000000001',
   domain: 'nueva-tienda.cl',
   isPrimary: false,
   isVerified: false,
@@ -25,7 +25,7 @@ const unverified: TenantDomain = {
 };
 
 const verifiedSecondary: TenantDomain = {
-  id: 2,
+  id: '018f6f1a-0000-7000-8000-000000000002',
   domain: 'verificado.cl',
   isPrimary: false,
   isVerified: true,
@@ -34,7 +34,7 @@ const verifiedSecondary: TenantDomain = {
 };
 
 const primary: TenantDomain = {
-  id: 3,
+  id: '018f6f1a-0000-7000-8000-000000000003',
   domain: 'principal.cl',
   isPrimary: true,
   isVerified: true,

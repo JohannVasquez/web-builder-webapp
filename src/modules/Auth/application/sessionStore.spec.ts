@@ -6,7 +6,7 @@ import type { SessionStorage } from '../domain/SessionStorage';
 describe('createSessionStore', () => {
   const session: Session = {
     token: 'tok',
-    user: { id: 1, email: 'admin@test.cl', name: 'Admin', role: 'owner' },
+    user: { id: '018f6f1a-0000-7000-8000-000000000001', email: 'admin@test.cl', name: 'Admin', role: 'owner' },
   };
 
   const buildStorage = (

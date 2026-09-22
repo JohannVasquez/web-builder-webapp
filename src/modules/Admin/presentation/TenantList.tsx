@@ -204,7 +204,7 @@ function CreateTenantForm({
   const [domain, setDomain] = useState('');
   const [mode, setMode] = useState<CreateTenantMode>('empty');
   const [templateId, setTemplateId] = useState<string | null>(null);
-  const [duplicateFromTenantId, setDuplicateFromTenantId] = useState<number | null>(null);
+  const [duplicateFromTenantId, setDuplicateFromTenantId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<AdminErrorMessage | null>(null);
 
@@ -441,8 +441,8 @@ function TemplatePicker({
 
 interface DuplicatePickerProps {
   readonly tenants: readonly Tenant[];
-  readonly selectedId: number | null;
-  readonly onSelect: (id: number) => void;
+  readonly selectedId: string | null;
+  readonly onSelect: (id: string) => void;
 }
 
 function DuplicatePicker({

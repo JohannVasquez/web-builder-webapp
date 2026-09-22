@@ -17,13 +17,13 @@ describe('buildActivityQuery', () => {
 
   it('agrega cada filtro que tiene valor', () => {
     const query = buildActivityQuery(
-      { tenantId: 7, actorType: 'apiKey', from: '2026-01-01', to: '2026-01-31' },
+      { tenantId: '018f6f1a-0000-7000-8000-000000000007', actorType: 'apiKey', from: '2026-01-01', to: '2026-01-31' },
       100,
     );
     expect(query).toEqual({
       limit: String(ACTIVITY_PAGE_SIZE),
       offset: '100',
-      tenantId: '7',
+      tenantId: '018f6f1a-0000-7000-8000-000000000007',
       actorType: 'apiKey',
       from: '2026-01-01',
       to: '2026-01-31',

@@ -3,7 +3,7 @@ import type { ProductView } from '../domain/Product';
 import { ProductCard } from './ProductCard';
 
 const baseProduct: ProductView = {
-  id: 1,
+  id: '018f6f1a-0000-7000-8000-000000000001',
   slug: 'torta-de-chocolate',
   name: 'Torta de chocolate',
   description: 'Bizcocho húmedo con manjar y nueces.',

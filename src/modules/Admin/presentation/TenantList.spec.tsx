@@ -3,7 +3,7 @@ import { TenantCards } from './TenantList';
 import type { Tenant } from '../domain/AdminApi';
 
 const active: Tenant = {
-  id: 1,
+  id: '018f6f1a-0000-7000-8000-000000000001',
   slug: 'acme',
   name: 'Acme',
   primaryDomain: 'acme.cl',
@@ -11,7 +11,7 @@ const active: Tenant = {
 };
 
 const paused: Tenant = {
-  id: 2,
+  id: '018f6f1a-0000-7000-8000-000000000002',
   slug: 'electrica',
   name: 'Eléctrica del Sur',
   primaryDomain: null,
@@ -19,7 +19,7 @@ const paused: Tenant = {
 };
 
 const building: Tenant = {
-  id: 3,
+  id: '018f6f1a-0000-7000-8000-000000000003',
   slug: 'pasteleria-luna',
   name: 'Pastelería Luna',
   primaryDomain: null,

@@ -7,39 +7,39 @@ import {
 } from './sectionOrdering';
 
 describe('sectionOrdering', () => {
-  const ids = [10, 20, 30, 40];
+  const ids = ['018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000030', '018f6f1a-0000-7000-8000-000000000040'];
 
   it('sube un bloque intercambiándolo con el anterior', () => {
-    expect(moveSectionUp(ids, 30)).toEqual([10, 30, 20, 40]);
+    expect(moveSectionUp(ids, '018f6f1a-0000-7000-8000-000000000030')).toEqual(['018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000030', '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000040']);
   });
 
   it('baja un bloque intercambiándolo con el siguiente', () => {
-    expect(moveSectionDown(ids, 20)).toEqual([10, 30, 20, 40]);
+    expect(moveSectionDown(ids, '018f6f1a-0000-7000-8000-000000000020')).toEqual(['018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000030', '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000040']);
   });
 
   it('subir el primero no hace nada', () => {
-    expect(moveSectionUp(ids, 10)).toEqual(ids);
+    expect(moveSectionUp(ids, '018f6f1a-0000-7000-8000-000000000010')).toEqual(ids);
   });
 
   it('bajar el último no hace nada', () => {
-    expect(moveSectionDown(ids, 40)).toEqual(ids);
+    expect(moveSectionDown(ids, '018f6f1a-0000-7000-8000-000000000040')).toEqual(ids);
   });
 
   it('un id que no está en la lista no hace nada', () => {
-    expect(moveSectionUp(ids, 999)).toEqual(ids);
-    expect(moveSectionDown(ids, 999)).toEqual(ids);
+    expect(moveSectionUp(ids, '018f6f1a-0000-7000-8000-000000000999')).toEqual(ids);
+    expect(moveSectionDown(ids, '018f6f1a-0000-7000-8000-000000000999')).toEqual(ids);
   });
 
   it('duplicar inserta el nuevo id justo después del original', () => {
-    expect(insertDuplicateAfter(ids, 20, 99)).toEqual([10, 20, 99, 30, 40]);
+    expect(insertDuplicateAfter(ids, '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000099')).toEqual(['018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000099', '018f6f1a-0000-7000-8000-000000000030', '018f6f1a-0000-7000-8000-000000000040']);
   });
 
   it('duplicar el último lo inserta al final', () => {
-    expect(insertDuplicateAfter(ids, 40, 99)).toEqual([10, 20, 30, 40, 99]);
+    expect(insertDuplicateAfter(ids, '018f6f1a-0000-7000-8000-000000000040', '018f6f1a-0000-7000-8000-000000000099')).toEqual(['018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000030', '018f6f1a-0000-7000-8000-000000000040', '018f6f1a-0000-7000-8000-000000000099']);
   });
 
   it('duplicar un id inexistente agrega el nuevo al final', () => {
-    expect(insertDuplicateAfter(ids, 999, 99)).toEqual([10, 20, 30, 40, 99]);
+    expect(insertDuplicateAfter(ids, '018f6f1a-0000-7000-8000-000000000999', '018f6f1a-0000-7000-8000-000000000099')).toEqual(['018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000030', '018f6f1a-0000-7000-8000-000000000040', '018f6f1a-0000-7000-8000-000000000099']);
   });
 });
 
@@ -56,26 +56,26 @@ describe('dropPlacement', () => {
 });
 
 describe('reorderByDrag', () => {
-  const ids = [10, 20, 30, 40];
+  const ids = ['018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000030', '018f6f1a-0000-7000-8000-000000000040'];
 
   it('arrastrar un bloque antes de otro lo deja justo delante', () => {
-    expect(reorderByDrag(ids, 40, 20, 'before')).toEqual([10, 40, 20, 30]);
+    expect(reorderByDrag(ids, '018f6f1a-0000-7000-8000-000000000040', '018f6f1a-0000-7000-8000-000000000020', 'before')).toEqual(['018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000040', '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000030']);
   });
 
   it('arrastrar un bloque después de otro lo deja justo detrás', () => {
-    expect(reorderByDrag(ids, 10, 30, 'after')).toEqual([20, 30, 10, 40]);
+    expect(reorderByDrag(ids, '018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000030', 'after')).toEqual(['018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000030', '018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000040']);
   });
 
   it('soltar un bloque sobre sí mismo no cambia el orden', () => {
-    expect(reorderByDrag(ids, 20, 20, 'before')).toEqual(ids);
+    expect(reorderByDrag(ids, '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000020', 'before')).toEqual(ids);
   });
 
   it('un id que no está en la lista no cambia el orden', () => {
-    expect(reorderByDrag(ids, 999, 20, 'before')).toEqual(ids);
-    expect(reorderByDrag(ids, 20, 999, 'before')).toEqual(ids);
+    expect(reorderByDrag(ids, '018f6f1a-0000-7000-8000-000000000999', '018f6f1a-0000-7000-8000-000000000020', 'before')).toEqual(ids);
+    expect(reorderByDrag(ids, '018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000999', 'before')).toEqual(ids);
   });
 
   it('arrastrar el primero después del último lo manda al final', () => {
-    expect(reorderByDrag(ids, 10, 40, 'after')).toEqual([20, 30, 40, 10]);
+    expect(reorderByDrag(ids, '018f6f1a-0000-7000-8000-000000000010', '018f6f1a-0000-7000-8000-000000000040', 'after')).toEqual(['018f6f1a-0000-7000-8000-000000000020', '018f6f1a-0000-7000-8000-000000000030', '018f6f1a-0000-7000-8000-000000000040', '018f6f1a-0000-7000-8000-000000000010']);
   });
 });

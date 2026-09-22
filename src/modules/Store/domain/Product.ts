@@ -13,7 +13,7 @@ export type ProductVariantGroup = z.infer<typeof ProductVariantGroupSchema>;
 // `price` es el monto a pagar hoy; cuando `hasDiscount` es true, `salePrice` es el monto
 // anterior, para mostrarlo tachado junto al de ahora.
 export const ProductViewSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   slug: z.string(),
   name: z.string(),
   description: z.string(),
@@ -25,7 +25,7 @@ export const ProductViewSchema = z.object({
   salePrice: z.string().nullable(),
   hasDiscount: z.boolean(),
   variants: z.array(ProductVariantGroupSchema),
-  categoryId: z.number().nullable(),
+  categoryId: z.string().nullable(),
   stock: z.number().nullable(),
   isSoldOut: z.boolean(),
   whatsappOrderUrl: z.string().nullable(),
@@ -49,7 +49,7 @@ export const FeaturedProductsResponseSchema = z.object({
 export const ProductResponseSchema = z.object({ product: ProductViewSchema });
 
 export const ProductCategorySchema = z.object({
-  id: z.number(),
+  id: z.string(),
   slug: z.string(),
   name: z.string(),
   position: z.number(),

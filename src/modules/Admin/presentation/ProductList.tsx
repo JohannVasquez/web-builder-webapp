@@ -18,7 +18,7 @@ export const ProductList = ({
   onEdit,
   onDelete,
 }: ProductListProps): import('react').ReactElement | null => {
-  const getCategoryName = (id: number | null): string => {
+  const getCategoryName = (id: string | null): string => {
     if (id === null) return 'Sin categoría';
     return categories.find((c) => c.id === id)?.name ?? 'Desconocida';
   };

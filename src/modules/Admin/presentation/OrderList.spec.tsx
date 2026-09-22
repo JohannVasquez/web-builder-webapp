@@ -4,7 +4,7 @@ import type { Order } from '../domain/StoreApi';
 
 describe('OrderList', () => {
   const baseOrder: Order = {
-    id: 1,
+    id: '018f6f1a-0000-7000-8000-000000000001',
     number: 'ORD-001',
     status: 'pending',
     statusLabel: 'Pendiente',
@@ -23,7 +23,7 @@ describe('OrderList', () => {
     },
     items: [
       {
-        productId: 1,
+        productId: '018f6f1a-0000-7000-8000-000000000001',
         name: 'Torta de chocolate',
         variant: { tamaño: 'Grande' },
         unitPriceCents: 15000,

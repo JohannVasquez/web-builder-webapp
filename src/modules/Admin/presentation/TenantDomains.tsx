@@ -32,7 +32,7 @@ export function TenantDomains({ tenantId }: TenantDomainsProps): ReactElement {
   });
 
   const [isAddOpen, setIsAddOpen] = useState(false);
-  const [pendingId, setPendingId] = useState<number | null>(null);
+  const [pendingId, setPendingId] = useState<string | null>(null);
 
   const reload = (): void => refreshAsyncData(domainsKey);
 
@@ -216,7 +216,7 @@ function AddDomainForm({ tenantId, onAdded, onCancel }: AddDomainFormProps): Rea
 
 export interface DomainListProps {
   readonly domains: readonly TenantDomain[];
-  readonly pendingId: number | null;
+  readonly pendingId: string | null;
   readonly onVerify: (domain: TenantDomain) => void;
   readonly onSetPrimary: (domain: TenantDomain) => void;
   readonly onDelete: (domain: TenantDomain) => void;

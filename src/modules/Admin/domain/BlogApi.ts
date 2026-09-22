@@ -50,7 +50,7 @@ export const blogBlockSchema = z.discriminatedUnion('type', [
 export type BlogBlock = z.infer<typeof blogBlockSchema>;
 
 export const blogPostSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   slug: z.string(),
   title: z.string(),
   excerpt: z.string().nullable(),
