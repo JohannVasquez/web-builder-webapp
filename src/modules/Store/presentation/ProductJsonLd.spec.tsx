@@ -14,7 +14,7 @@ const STORE: StoreSettings = {
     {
       code: 'santiago',
       name: 'Despacho en Santiago',
-      priceCents: 350000,
+      priceCents: 3500,
       estimate: '2 a 3 días hábiles',
       requiresAddress: true,
     },
@@ -31,7 +31,7 @@ const PRODUCT: ProductView = {
   name: 'Torta de chocolate',
   description: 'Ocho porciones',
   imageUrls: ['https://bucket.example.com/torta.jpg'],
-  priceCents: 2999000,
+  priceCents: 29990,
   salePriceCents: null,
   currency: 'CLP',
   price: '$29.990',
@@ -73,15 +73,16 @@ const offerOf = (product: ProductView, store: StoreSettings = STORE): ProductDat
 };
 
 describe('ProductJsonLd', () => {
-  it('el precio va en pesos, no en centavos', () => {
-    // Antes se emitía `priceCents` tal cual: una torta de $29.990 se ofrecía a $2.999.000.
+  it('el precio se emite tal cual lo guarda el catálogo', () => {
+    // Pese al nombre, `priceCents` guarda pesos enteros: en CLP la unidad mínima ES el peso
+    // (ver `money.ts`). Dividirlo por 100 convertiría $29.990 en $299,90.
     expect(offerOf(PRODUCT).offers.price).toBe(29990);
   });
 
   it('con descuento se ofrece el precio que se paga hoy', () => {
     const rebajada = {
       ...PRODUCT,
-      salePriceCents: 1999000,
+      salePriceCents: 19990,
       hasDiscount: true,
     };
 

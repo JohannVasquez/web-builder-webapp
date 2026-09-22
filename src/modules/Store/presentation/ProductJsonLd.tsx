@@ -23,9 +23,6 @@ const priceValidUntil = (): string => {
   return until.toISOString().slice(0, 10);
 };
 
-// Los montos del catálogo van en centavos; schema.org los quiere en la unidad de la moneda.
-const toAmount = (cents: number): number => cents / 100;
-
 const shippingDetails = (
   store: StoreSettings,
   siteUrl: string,
@@ -35,7 +32,7 @@ const shippingDetails = (
     name: option.name,
     shippingRate: {
       '@type': 'MonetaryAmount',
-      value: toAmount(option.priceCents),
+      value: option.priceCents,
       currency: store.currency,
     },
     shippingDestination: { '@type': 'DefinedRegion', addressCountry: 'CL' },
@@ -64,10 +61,11 @@ export function ProductJsonLd({
       '@type': 'Offer',
       url: `${siteUrl}/tienda/${product.slug}`,
       priceCurrency: product.currency,
-      price: toAmount(
+      // Pese al nombre, `priceCents` guarda pesos enteros: en CLP la unidad mínima ES el
+      // peso (ver `money.ts`). Dividir por 100 aquí convertiría $29.990 en $299,90.
+      price:
         (product.hasDiscount ? product.salePriceCents : product.priceCents) ??
-          product.priceCents,
-      ),
+        product.priceCents,
       priceValidUntil: priceValidUntil(),
       availability: product.isSoldOut
         ? 'https://schema.org/OutOfStock'
