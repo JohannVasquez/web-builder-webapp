@@ -10,11 +10,13 @@ import {
   Loader2,
   Mail,
   Menu as MenuIcon,
+  Newspaper,
   Pause,
   Palette,
   Pencil,
   Play,
   Plus,
+  ShoppingBag,
   Trash2,
 } from 'lucide-react';
 import {
@@ -152,6 +154,16 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
         <Button asChild size="sm" variant="outline">
           <Link href={`/clientes/${tenantId}/menu`}>
             <MenuIcon className="size-4" /> Menú de navegación
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/blog`}>
+            <Newspaper className="size-4" /> Blog
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/tienda`}>
+            <ShoppingBag className="size-4" /> Tienda
           </Link>
         </Button>
       </div>

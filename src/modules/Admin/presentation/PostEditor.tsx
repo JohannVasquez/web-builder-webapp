@@ -11,11 +11,7 @@ import {
   generateSlugFromTitle,
   toLocalDateTimeInput,
 } from '../application/blogPresentation';
-import {
-  blogPostResponseSchema,
-  type BlogPost,
-  type BlogBlock,
-} from '../domain/BlogApi';
+import { blogPostResponseSchema, type BlogPost, type BlogBlock } from '../domain/BlogApi';
 import { toast } from 'sonner';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -62,13 +58,7 @@ export function PostEditor({ tenantId, postId }: PostEditorProps): ReactElement 
 
   const initialPost = isEditing && postData.data !== null ? postData.data.post : null;
 
-  return (
-    <PostForm
-      tenantId={tenantId}
-      postId={postId}
-      initialPost={initialPost}
-    />
-  );
+  return <PostForm tenantId={tenantId} postId={postId} initialPost={initialPost} />;
 }
 
 interface PostFormProps {
@@ -87,12 +77,18 @@ function PostForm({ tenantId, postId, initialPost }: PostFormProps): ReactElemen
   const [slugEdited, setSlugEdited] = useState(isEditing);
   const [excerpt, setExcerpt] = useState(initialPost?.excerpt ?? '');
   const [authorName, setAuthorName] = useState(initialPost?.authorName ?? '');
-  const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>(initialPost?.status ?? 'draft');
-  const [publishedAt, setPublishedAt] = useState(toLocalDateTimeInput(initialPost?.publishedAt ?? null));
+  const [status, setStatus] = useState<'draft' | 'published' | 'scheduled'>(
+    initialPost?.status ?? 'draft',
+  );
+  const [publishedAt, setPublishedAt] = useState(
+    toLocalDateTimeInput(initialPost?.publishedAt ?? null),
+  );
   const [tags, setTags] = useState(initialPost?.tags.join(', ') ?? '');
   const [seoTitle, setSeoTitle] = useState(initialPost?.seoTitle ?? '');
   const [seoDescription, setSeoDescription] = useState(initialPost?.seoDescription ?? '');
-  const [content, setContent] = useState<readonly BlogBlock[]>(initialPost?.content ?? []);
+  const [content, setContent] = useState<readonly BlogBlock[]>(
+    initialPost?.content ?? [],
+  );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<{
@@ -121,7 +117,7 @@ function PostForm({ tenantId, postId, initialPost }: PostFormProps): ReactElemen
   const moveBlock = (index: number, direction: 'up' | 'down'): void => {
     if (direction === 'up' && index === 0) return;
     if (direction === 'down' && index === content.length - 1) return;
-    
+
     const next = [...content];
     const swapWith = direction === 'up' ? index - 1 : index + 1;
     const temp = next[index];
@@ -180,7 +176,10 @@ function PostForm({ tenantId, postId, initialPost }: PostFormProps): ReactElemen
       authorName,
       status,
       publishedAt: publishedAt === '' ? null : new Date(publishedAt).toISOString(),
-      tags: tags.split(',').map((t) => t.trim()).filter((t) => t.length > 0),
+      tags: tags
+        .split(',')
+        .map((t) => t.trim())
+        .filter((t) => t.length > 0),
       seoTitle: seoTitle === '' ? null : seoTitle,
       seoDescription: seoDescription === '' ? null : seoDescription,
       content,
@@ -239,7 +238,10 @@ function PostForm({ tenantId, postId, initialPost }: PostFormProps): ReactElemen
       </div>
 
       {formError !== null && (
-        <div role="alert" className="text-destructive bg-destructive/10 rounded-md p-4 text-sm">
+        <div
+          role="alert"
+          className="text-destructive bg-destructive/10 rounded-md p-4 text-sm"
+        >
           <p className="font-medium">{formError.message}</p>
           {formError.issues.length > 0 && (
             <ul className="mt-2 list-disc pl-5">
@@ -281,62 +283,83 @@ function PostForm({ tenantId, postId, initialPost }: PostFormProps): ReactElemen
                 rows={3}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label>Contenido (Bloques)</Label>
               <div className="space-y-4">
                 {content.map((block, index) => (
-                  <div key={index} className="flex gap-3 items-start border rounded-md p-4 bg-muted/30">
+                  <div
+                    key={index}
+                    className="flex gap-3 items-start border rounded-md p-4 bg-muted/30"
+                  >
                     <div className="flex-1 space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs font-semibold uppercase text-muted-foreground">{block.type}</span>
+                        <span className="text-xs font-semibold uppercase text-muted-foreground">
+                          {block.type}
+                        </span>
                       </div>
-                      
+
                       {block.type === 'paragraph' && (
                         <Textarea
+                          aria-label={`Texto del bloque ${String(index + 1)}`}
                           value={block.text}
-                          onChange={(e) => handleBlockChange(index, { ...block, text: e.target.value })}
+                          onChange={(e) =>
+                            handleBlockChange(index, { ...block, text: e.target.value })
+                          }
                           placeholder="Texto del párrafo..."
                           rows={4}
                         />
                       )}
-                      
+
                       {block.type === 'heading' && (
                         <div className="flex gap-2">
                           <select
+                            aria-label={`Nivel del encabezado del bloque ${String(index + 1)}`}
                             className="ui-input h-10 w-24 px-3"
                             value={block.level}
-                            onChange={(e) => handleBlockChange(index, { ...block, level: parseInt(e.target.value, 10) })}
+                            onChange={(e) =>
+                              handleBlockChange(index, {
+                                ...block,
+                                level: parseInt(e.target.value, 10),
+                              })
+                            }
                           >
                             <option value={2}>H2</option>
                             <option value={3}>H3</option>
                             <option value={4}>H4</option>
                           </select>
                           <Input
+                            aria-label={`Texto del bloque ${String(index + 1)}`}
                             className="flex-1"
                             value={block.text}
-                            onChange={(e) => handleBlockChange(index, { ...block, text: e.target.value })}
+                            onChange={(e) =>
+                              handleBlockChange(index, { ...block, text: e.target.value })
+                            }
                             placeholder="Texto del encabezado"
                           />
                         </div>
                       )}
-                      
+
                       {block.type === 'quote' && (
                         <Textarea
+                          aria-label={`Texto del bloque ${String(index + 1)}`}
                           value={block.text}
-                          onChange={(e) => handleBlockChange(index, { ...block, text: e.target.value })}
+                          onChange={(e) =>
+                            handleBlockChange(index, { ...block, text: e.target.value })
+                          }
                           placeholder="Texto de la cita..."
                           className="border-l-4 border-l-primary"
                           rows={3}
                         />
                       )}
-                      
+
                       {block.type === 'list' && (
                         <div className="space-y-2">
                           {block.items.map((item, itemIndex) => (
                             <div key={itemIndex} className="flex gap-2">
                               <span className="mt-2 text-muted-foreground">•</span>
                               <Input
+                                aria-label={`Elemento ${String(itemIndex + 1)} de la lista`}
                                 value={item}
                                 onChange={(e) => {
                                   const newItems = [...block.items];
@@ -349,7 +372,9 @@ function PostForm({ tenantId, postId, initialPost }: PostFormProps): ReactElemen
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
-                                  const newItems = block.items.filter((_, i) => i !== itemIndex);
+                                  const newItems = block.items.filter(
+                                    (_, i) => i !== itemIndex,
+                                  );
                                   handleBlockChange(index, { ...block, items: newItems });
                                 }}
                               >
@@ -361,38 +386,58 @@ function PostForm({ tenantId, postId, initialPost }: PostFormProps): ReactElemen
                             type="button"
                             variant="outline"
                             size="sm"
-                            onClick={() => handleBlockChange(index, { ...block, items: [...block.items, ''] })}
+                            onClick={() =>
+                              handleBlockChange(index, {
+                                ...block,
+                                items: [...block.items, ''],
+                              })
+                            }
                           >
                             Agregar elemento
                           </Button>
                         </div>
                       )}
-                      
+
                       {block.type === 'image' && (
                         <div className="space-y-2">
                           <Input
+                            aria-label={`Imagen del bloque ${String(index + 1)}: key de la biblioteca`}
                             value={block.key}
-                            onChange={(e) => handleBlockChange(index, { ...block, key: e.target.value })}
+                            onChange={(e) =>
+                              handleBlockChange(index, { ...block, key: e.target.value })
+                            }
                             placeholder="Llave de la imagen (ej. images/foto.jpg)"
                           />
                           <Input
+                            aria-label={`Texto alternativo de la imagen del bloque ${String(index + 1)}`}
                             value={block.alt}
-                            onChange={(e) => handleBlockChange(index, { ...block, alt: e.target.value })}
+                            onChange={(e) =>
+                              handleBlockChange(index, { ...block, alt: e.target.value })
+                            }
                             placeholder="Texto alternativo"
                           />
                         </div>
                       )}
-                      
+
                       {block.type === 'video' && (
                         <div className="space-y-2">
                           <Input
+                            aria-label={`Dirección del video del bloque ${String(index + 1)}`}
                             value={block.url}
-                            onChange={(e) => handleBlockChange(index, { ...block, url: e.target.value })}
+                            onChange={(e) =>
+                              handleBlockChange(index, { ...block, url: e.target.value })
+                            }
                             placeholder="URL del video (ej. YouTube)"
                           />
                           <Input
+                            aria-label={`Leyenda del video del bloque ${String(index + 1)}`}
                             value={block.caption}
-                            onChange={(e) => handleBlockChange(index, { ...block, caption: e.target.value })}
+                            onChange={(e) =>
+                              handleBlockChange(index, {
+                                ...block,
+                                caption: e.target.value,
+                              })
+                            }
                             placeholder="Leyenda del video"
                           />
                         </div>
@@ -438,14 +483,65 @@ function PostForm({ tenantId, postId, initialPost }: PostFormProps): ReactElemen
                 ))}
 
                 <div className="flex flex-wrap gap-2 pt-2">
-                  <span className="text-sm text-muted-foreground w-full block mb-1">Agregar bloque:</span>
-                  <Button type="button" variant="outline" size="sm" onClick={() => addBlock('paragraph')}>Párrafo</Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => addBlock('heading')}>Encabezado</Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => addBlock('quote')}>Cita</Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => addBlock('list')}>Lista</Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => addBlock('image')}>Imagen</Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => addBlock('video')}>Video</Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => addBlock('divider')}>Separador</Button>
+                  <span className="text-sm text-muted-foreground w-full block mb-1">
+                    Agregar bloque:
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addBlock('paragraph')}
+                  >
+                    Párrafo
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addBlock('heading')}
+                  >
+                    Encabezado
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addBlock('quote')}
+                  >
+                    Cita
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addBlock('list')}
+                  >
+                    Lista
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addBlock('image')}
+                  >
+                    Imagen
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addBlock('video')}
+                  >
+                    Video
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addBlock('divider')}
+                  >
+                    Separador
+                  </Button>
                 </div>
               </div>
             </div>
@@ -482,7 +578,7 @@ function PostForm({ tenantId, postId, initialPost }: PostFormProps): ReactElemen
         <div className="space-y-6">
           <section className="ui-card space-y-4 p-5">
             <h2 className="ui-heading text-lg">Configuración</h2>
-            
+
             <div className="space-y-2">
               <Label htmlFor="post-status">Estado</Label>
               <select
