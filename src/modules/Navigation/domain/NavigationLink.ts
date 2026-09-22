@@ -6,7 +6,8 @@ import { z } from 'zod';
  * (`/#caracteristicas`), lo que permite estructurar el sitio como
  * multi-página o como one-page sin tocar el código.
  */
-export const NavigationLinkSchema = z.strictObject({
+// Tolerante con campos nuevos de la API, igual que `PageSchema`.
+export const NavigationLinkSchema = z.object({
   label: z.string(),
   href: z.string(),
 });

@@ -7,6 +7,7 @@ describe('PageService', () => {
     slug: 'nosotros',
     title: 'Nosotros',
     description: 'Quiénes somos',
+    visualStyle: null,
     sections: [{ type: 'Hero', position: 1, props: { title: 'Hola' }, anchor: null }],
   };
 

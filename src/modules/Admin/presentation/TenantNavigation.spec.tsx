@@ -14,6 +14,7 @@ const page: AdminPage = {
   title: 'Servicios',
   description: null,
   isPublished: true,
+  visualStyle: null,
   sections: [],
 };
 

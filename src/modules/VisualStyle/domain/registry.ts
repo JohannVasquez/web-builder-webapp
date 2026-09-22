@@ -7,6 +7,11 @@ import { softUi } from './styles/softUi';
 import { bento } from './styles/bento';
 import { editorial } from './styles/editorial';
 import { aurora } from './styles/aurora';
+import { skeuomorphism } from './styles/skeuomorphism';
+import { claymorphism } from './styles/claymorphism';
+import { maximalism } from './styles/maximalism';
+import { liquidGlass } from './styles/liquidGlass';
+import { spatialUi } from './styles/spatialUi';
 
 // Agregar un estilo es agregar un archivo y una línea aquí. Ningún bloque cambia.
 export const VISUAL_STYLES: readonly VisualStyleDefinition[] = [
@@ -18,6 +23,11 @@ export const VISUAL_STYLES: readonly VisualStyleDefinition[] = [
   bento,
   editorial,
   aurora,
+  skeuomorphism,
+  claymorphism,
+  maximalism,
+  liquidGlass,
+  spatialUi,
 ];
 
 export const DEFAULT_VISUAL_STYLE_ID = 'classic';

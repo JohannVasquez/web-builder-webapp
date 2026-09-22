@@ -39,6 +39,8 @@ import { formatProps, parseProps } from '../application/propsEditor';
 import { useAdminApi } from './useAdminApi';
 import { BlockThumbnail } from './BlockThumbnail';
 import { PageHistory } from './PageHistory';
+import { VISUAL_STYLES } from '@/modules/VisualStyle/domain/registry';
+import { Label } from '@/shared/ui/label';
 import { PagePreview } from './PagePreview';
 import { useAsyncData, refreshAsyncData } from '@/shared/lib/useAsyncData';
 import { useUnsavedChangesGuard } from './useUnsavedChangesGuard';
@@ -486,6 +488,31 @@ export function PageEditor({ tenantId, pageId }: PageEditorProps): ReactElement 
             {sections.length} {sections.length === 1 ? 'bloque' : 'bloques'}
             {page.data.isPublished ? '' : ' · sin publicar'}
           </p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <Label htmlFor="page-visual-style" className="text-muted-foreground text-sm">
+              Estilo de esta página
+            </Label>
+            <select
+              id="page-visual-style"
+              className="ui-input h-9 px-2 text-sm"
+              value={page.data.visualStyle ?? ''}
+              disabled={isBusy}
+              onChange={(event) => {
+                const next = event.target.value === '' ? null : event.target.value;
+                void run(
+                  () => api.patch(base, { visualStyle: next }, AdminPageResponseSchema),
+                  'Estilo actualizado. Publica la página para que se vea en el sitio.',
+                );
+              }}
+            >
+              <option value="">Igual que el sitio</option>
+              {VISUAL_STYLES.map((style) => (
+                <option key={style.id} value={style.id}>
+                  {style.label}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {tenant?.primaryDomain != null && (

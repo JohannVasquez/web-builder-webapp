@@ -44,12 +44,35 @@ describe('registro de estilos visuales', () => {
     expect(glass.css).toContain('@supports not');
   });
 
-  it('trae los ocho estilos de la segunda entrega', () => {
-    expect(VISUAL_STYLES.length).toBe(8);
+  it('trae los trece estilos, incluidas las nueve estéticas pedidas para armar páginas', () => {
+    expect(VISUAL_STYLES.length).toBe(13);
     const ids = VISUAL_STYLES.map((style) => style.id);
     expect(ids).toEqual(
-      expect.arrayContaining(['soft-ui', 'bento', 'editorial', 'aurora']),
+      expect.arrayContaining([
+        'skeuomorphism',
+        'soft-ui',
+        'glassmorphism',
+        'claymorphism',
+        'minimal',
+        'maximalism',
+        'neo-brutalism',
+        'liquid-glass',
+        'spatial-ui',
+      ]),
     );
+  });
+
+  // Mismo formato que valida la API (`BrandSchema.visualStyle`): un id en camelCase se vería
+  // bien acá pero la API rechazaría guardarlo como estilo del sitio.
+  it('todos los ids tienen el formato que acepta la API', () => {
+    for (const style of VISUAL_STYLES) {
+      expect(style.id).toMatch(/^[a-z0-9-]+$/);
+    }
+  });
+
+  it('no repite ids: dos estilos con el mismo id se pisarían en silencio', () => {
+    const ids = VISUAL_STYLES.map((style) => style.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 
   // Un estilo no puede traer su propia paleta: todo color sale de var(--background),

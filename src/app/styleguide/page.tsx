@@ -342,7 +342,12 @@ export default function StyleguidePage(): ReactElement {
     <>
       <VisualStyleTokens styleId="classic" />
       {VISUAL_STYLES.map((style) => (
-        <section key={style.id} data-visual-style={style.id} className="border-b">
+        <section
+          key={style.id}
+          data-visual-style={style.id}
+          data-backdrop="local"
+          className="ui-page-backdrop border-b"
+        >
           <header className="mx-auto max-w-5xl px-6 pt-10">
             <h2 className="text-2xl font-bold">{style.label}</h2>
             <p className="text-muted-foreground mt-1">{style.description}</p>

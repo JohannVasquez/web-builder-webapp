@@ -224,6 +224,17 @@
     background: var(--ui-page-bg, none);
   }
 
+  /* Acotado a su contenedor en vez de a toda la pantalla: para mostrar varios estilos juntos
+     sin que sus fondos se encimen (página de muestra). */
+  .ui-page-backdrop[data-backdrop='local'] {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .ui-page-backdrop[data-backdrop='local']::before {
+    position: absolute;
+  }
+
   /* El estado inicial oculto vive bajo [data-js='on'], que marca un script antes del primer
      pintado: sin JS el contenido nunca se esconde y siempre se lee. */
   [data-js='on'] .reveal-fade {

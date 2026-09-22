@@ -1,4 +1,4 @@
-import { mix, parseHex, toHex, type Rgb } from '@/shared/lib/color';
+import { contrastRatio, mix, parseHex, toHex, type Rgb } from '@/shared/lib/color';
 
 // Nombres de token CSS, ej. "--background"; los valores viven en un mapa ya resuelto a hex.
 export type CssVars = Readonly<Record<string, string>>;
@@ -66,4 +66,41 @@ export const resolveToken = (value: string, vars: CssVars): string | null => {
 export const resolveTokenRgb = (value: string, vars: CssVars): Rgb | null => {
   const hex = resolveToken(value, vars);
   return hex === null ? null : parseHex(hex);
+};
+
+// Superficies con texto encima que cualquier bloque puede usar (`.ui-card`, `.ui-nav`, etc.);
+// ninguna define su propio color de texto, así que todas leen `--foreground` (Spec 6.3, AA).
+export const SURFACE_TOKENS = [
+  '--ui-card-bg',
+  '--ui-input-bg',
+  '--ui-nav-bg',
+  '--ui-surface-bg',
+] as const;
+
+export interface ContrastFinding {
+  readonly token: string;
+  // `null` si el valor no se pudo resolver a un color: un degradado en una superficie con
+  // texto es un error en sí mismo, porque no hay forma de garantizar el contraste.
+  readonly ratio: number | null;
+}
+
+// Mide cada superficie de un estilo contra `--foreground` con los tokens ya resueltos.
+export const auditSurfaces = (vars: CssVars): ContrastFinding[] => {
+  const foreground = parseHex(vars['--foreground'] ?? '');
+  return SURFACE_TOKENS.flatMap((token) => {
+    const rawValue = vars[token];
+    if (rawValue === undefined) {
+      return [];
+    }
+    const surface = resolveTokenRgb(rawValue, vars);
+    return [
+      {
+        token,
+        ratio:
+          foreground === null || surface === null
+            ? null
+            : contrastRatio(foreground, surface),
+      },
+    ];
+  });
 };

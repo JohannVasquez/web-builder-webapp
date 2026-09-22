@@ -41,11 +41,23 @@ export default async function DynamicPage({
     notFound();
   }
 
-  return (
+  const sections = (
     <SectionRenderer
       sections={page.sections}
       blogService={createBlogService(tenantDomain)}
       storeService={createStoreService(tenantDomain)}
     />
+  );
+
+  // Una página con estilo propio lo aplica a su contenido; el menú y el pie siguen con el del
+  // sitio, que es lo que une a todas las páginas. `ui-page-backdrop` pinta el fondo decorativo
+  // del estilo de la página (manchas, patrones) en vez del del sitio.
+  if (page.visualStyle === null) {
+    return sections;
+  }
+  return (
+    <div data-visual-style={page.visualStyle} className="ui-page-backdrop isolate">
+      {sections}
+    </div>
   );
 }

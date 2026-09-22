@@ -76,6 +76,8 @@ export const AdminPageSchema = z.object({
   title: z.string(),
   description: z.string().nullable(),
   isPublished: z.boolean(),
+  // Estilo propio de la página; nulo = hereda el del sitio.
+  visualStyle: z.string().nullable().default(null),
   sections: z.array(AdminSectionSchema),
 });
 
