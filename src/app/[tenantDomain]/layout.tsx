@@ -12,6 +12,9 @@ import { resolveFontPairing } from '@/modules/Brand/presentation/fonts';
 import { VisualStyleTokens } from '@/modules/VisualStyle/presentation/VisualStyleTokens';
 import { LocalBusinessJsonLd } from '@/modules/GlobalSettings/presentation/LocalBusinessJsonLd';
 import { Analytics } from '@/modules/Analytics/presentation/Analytics';
+import { CookieNotice } from '@/modules/Consent/presentation/CookieNotice';
+import { COOKIE_POLICY_SLUG } from '@/modules/Consent/domain/Consent';
+import { createPageService } from '@/modules/Page/infrastructure/pageServiceFactory';
 import { readAnalyticsConfig } from '@/modules/Analytics/domain/Analytics';
 import { Toaster } from '@/shared/ui/sonner';
 import { TenantProviders } from './providers';
@@ -62,11 +65,16 @@ export default async function TenantLayout({
   params,
 }: TenantLayoutProps): Promise<ReactElement> {
   const { tenantDomain } = await params;
-  const [settings, links, store] = await Promise.all([
+  const [settings, links, store, publishedPages] = await Promise.all([
     createGlobalSettingsService(tenantDomain).getSettings(),
     createNavigationService(tenantDomain).getLinks(),
     createStoreService(tenantDomain).getStoreSettings(),
+    createPageService(tenantDomain).getPublishedPages(),
   ]);
+  // Solo se enlaza si existe: mandar a un 404 desde un aviso legal es peor que no enlazar.
+  const cookiePolicyHref = publishedPages.some((page) => page.slug === COOKIE_POLICY_SLUG)
+    ? `/${COOKIE_POLICY_SLUG}`
+    : null;
   const pairing = resolveFontPairing(settings.brand.typography.pairing);
 
   return (
@@ -96,6 +104,7 @@ export default async function TenantLayout({
       <Footer settings={settings} />
       <WhatsAppButton whatsappNumber={settings.whatsappNumber} />
       <Analytics config={readAnalyticsConfig(settings)} />
+      <CookieNotice policyHref={cookiePolicyHref} />
       <Toaster position="top-center" richColors />
     </TenantProviders>
   );

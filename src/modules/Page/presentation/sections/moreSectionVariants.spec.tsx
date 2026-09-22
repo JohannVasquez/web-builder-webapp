@@ -1,4 +1,11 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+import { renderToStaticMarkup as render } from 'react-dom/server';
+import type { ReactElement } from 'react';
+import { ConsentProvider } from '@/modules/Consent/presentation/ConsentProvider';
+
+// El pie y el formulario de contacto llevan controles de consentimiento (reconfigurar
+// cookies, autorizar el tratamiento de datos), así que necesitan su contexto.
+const renderToStaticMarkup = (element: ReactElement): string =>
+  render(<ConsentProvider>{element}</ConsentProvider>);
 import { Stats } from './Stats';
 import { ServiceCards } from './ServiceCards';
 import { ContactFormSection } from './ContactFormSection';
