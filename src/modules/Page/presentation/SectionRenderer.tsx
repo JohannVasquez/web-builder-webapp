@@ -30,6 +30,9 @@ const dataProps = (
   return {};
 };
 
+// La primera sección de la página es su `h1`; el resto es `h2` (Spec 6.3, un solo `h1`).
+const headingLevelFor = (index: number): 1 | 2 => (index === 0 ? 1 : 2);
+
 // Itera las secciones dictadas por la base de datos y renderiza cada bloque usando el
 // diccionario de componentes. Los tipos desconocidos se ignoran en silencio (AC1.5). Las
 // secciones con `anchor` se envuelven con un id para poder enlazarlas como `/slug#ancla`.
@@ -42,21 +45,33 @@ export function SectionRenderer({
 
   return (
     <>
-      {ordered.map((section) => {
+      {ordered.map((section, index) => {
         const Component = resolveSectionComponent(section.type);
         if (Component === undefined) {
           return null;
         }
         const key = `${section.type}-${section.position}`;
         const extra = dataProps(section.type, blogService, storeService);
+        const headingLevel = headingLevelFor(index);
         if (section.anchor !== null && section.anchor !== '') {
           return (
             <div key={key} id={section.anchor} className="scroll-mt-16">
-              <Component sectionProps={section.props} {...extra} />
+              <Component
+                sectionProps={section.props}
+                headingLevel={headingLevel}
+                {...extra}
+              />
             </div>
           );
         }
-        return <Component key={key} sectionProps={section.props} {...extra} />;
+        return (
+          <Component
+            key={key}
+            sectionProps={section.props}
+            headingLevel={headingLevel}
+            {...extra}
+          />
+        );
       })}
     </>
   );

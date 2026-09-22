@@ -13,6 +13,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const FAQ_VARIANTS = ['accordion', 'list'] as const;
@@ -44,7 +45,11 @@ const FaqPropsSchema = z.object({
 
 // `<details>`/`<summary>` nativos: el contenido queda en el HTML aunque no haya JS, y el
 // navegador da el toggle, el foco y el estado accesible gratis.
-export function Faq({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Faq({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = FaqPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -88,14 +93,14 @@ export function Faq({ sectionProps }: SectionComponentProps): ReactElement | nul
           </p>
         )}
         {title !== '' && (
-          <h2
+          <Heading
             className={cn(
               'ui-heading mb-8 text-3xl md:text-4xl',
               hasBackgroundImage && 'text-white',
             )}
           >
             {title}
-          </h2>
+          </Heading>
         )}
         <div className="flex flex-col gap-4">
           {items.map((item, index) => (

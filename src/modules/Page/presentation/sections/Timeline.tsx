@@ -12,6 +12,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const TIMELINE_VARIANTS = ['vertical', 'horizontal'] as const;
@@ -47,7 +48,12 @@ const TimelinePropsSchema = z.object({
 
 type TimelineStep = z.infer<typeof TimelinePropsSchema>['steps'][number];
 
-export function Timeline({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Timeline({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
+  const SubHeading = HEADING_TAGS[subHeadingLevel(headingLevel)];
   const parsed = TimelinePropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -74,14 +80,14 @@ export function Timeline({ sectionProps }: SectionComponentProps): ReactElement 
         </p>
       )}
       {title !== '' && (
-        <h2
+        <Heading
           className={cn(
             'ui-heading text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
           )}
         >
           {title}
-        </h2>
+        </Heading>
       )}
     </div>
   );
@@ -113,11 +119,11 @@ export function Timeline({ sectionProps }: SectionComponentProps): ReactElement 
             {step.label}
           </p>
         )}
-        <h3
+        <SubHeading
           className={cn('mt-1 text-lg font-semibold', hasBackgroundImage && 'text-white')}
         >
           {step.title}
-        </h3>
+        </SubHeading>
         <p
           className={cn(
             'mt-1 text-sm leading-relaxed',

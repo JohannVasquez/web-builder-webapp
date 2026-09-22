@@ -99,26 +99,32 @@ export function Navbar({
       <header className="ui-nav sticky top-0 z-50" data-variant={resolvedVariant}>
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6 md:justify-center md:gap-6">
           <Logo settings={settings} className="md:hidden" />
-          <div className="hidden md:flex md:flex-1 md:items-center md:justify-end md:gap-1">
+          <nav
+            aria-label="Principal"
+            className="hidden md:flex md:flex-1 md:items-center md:justify-end md:gap-1"
+          >
             {leftLinks.map((link) => (
               <NavLink key={link.href} link={link} />
             ))}
-          </div>
+          </nav>
           <Logo settings={settings} className="hidden shrink-0 md:block" />
-          <nav className="flex items-center gap-1 md:hidden">
+          <nav aria-label="Principal" className="flex items-center gap-1 md:hidden">
             {links.map((link) => (
               <NavLink key={link.href} link={link} />
             ))}
             {showCart && <CartIndicator />}
             {settings.brand.colorMode === 'system' && <ThemeToggle />}
           </nav>
-          <div className="hidden md:flex md:flex-1 md:items-center md:gap-1">
+          <nav
+            aria-label="Principal"
+            className="hidden md:flex md:flex-1 md:items-center md:gap-1"
+          >
             {rightLinks.map((link) => (
               <NavLink key={link.href} link={link} />
             ))}
             {showCart && <CartIndicator />}
             {settings.brand.colorMode === 'system' && <ThemeToggle />}
-          </div>
+          </nav>
         </div>
       </header>
     );

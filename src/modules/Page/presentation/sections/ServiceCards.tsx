@@ -36,6 +36,7 @@ import {
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS, subHeadingLevel, type HeadingLevel } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const SERVICE_CARDS_VARIANTS = ['grid', 'carousel', 'accordion'] as const;
@@ -173,25 +174,28 @@ function SectionHeader({
   title,
   subtitle,
   hasBackgroundImage,
+  headingLevel,
 }: {
   readonly title: string;
   readonly subtitle: string | undefined;
   readonly hasBackgroundImage: boolean;
+  readonly headingLevel: HeadingLevel;
 }): ReactElement | null {
   if (title === '' && subtitle === undefined) {
     return null;
   }
+  const Heading = HEADING_TAGS[headingLevel];
   return (
     <div className="mx-auto mb-14 max-w-2xl text-center">
       {title !== '' && (
-        <h2
+        <Heading
           className={cn(
             'ui-heading text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
           )}
         >
           {title}
-        </h2>
+        </Heading>
       )}
       {subtitle !== undefined && (
         <p
@@ -238,7 +242,9 @@ function ViewAllLink({
 
 export function ServiceCards({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
+  const SubHeading = HEADING_TAGS[subHeadingLevel(headingLevel)];
   const parsed = ServiceCardsPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -265,6 +271,7 @@ export function ServiceCards({
             title={title}
             subtitle={subtitle}
             hasBackgroundImage={hasBackgroundImage}
+            headingLevel={headingLevel}
           />
           <div
             tabIndex={0}
@@ -277,9 +284,9 @@ export function ServiceCards({
                 className="ui-card flex w-[85%] shrink-0 snap-start flex-col p-7 md:w-[45%] lg:w-[30%]"
               >
                 <ServiceIconBadge item={item} accentColor={accentColor} />
-                <h3 className="mt-5 text-base font-bold tracking-wide uppercase">
+                <SubHeading className="mt-5 text-base font-bold tracking-wide uppercase">
                   {item.title}
-                </h3>
+                </SubHeading>
                 <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
                   {item.description}
                 </p>
@@ -311,6 +318,7 @@ export function ServiceCards({
             title={title}
             subtitle={subtitle}
             hasBackgroundImage={hasBackgroundImage}
+            headingLevel={headingLevel}
           />
           <div className="space-y-3">
             {items.map((item) => (
@@ -359,14 +367,15 @@ export function ServiceCards({
           title={title}
           subtitle={subtitle}
           hasBackgroundImage={hasBackgroundImage}
+          headingLevel={headingLevel}
         />
         <div className={cn('grid gap-6', gridColumns)}>
           {items.map((item) => (
             <div key={item.title} className="ui-card flex flex-col p-7">
               <ServiceIconBadge item={item} accentColor={accentColor} />
-              <h3 className="mt-5 text-base font-bold tracking-wide uppercase">
+              <SubHeading className="mt-5 text-base font-bold tracking-wide uppercase">
                 {item.title}
-              </h3>
+              </SubHeading>
               <p className="text-muted-foreground mt-3 text-sm leading-relaxed">
                 {item.description}
               </p>

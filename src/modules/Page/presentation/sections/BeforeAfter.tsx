@@ -15,6 +15,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -52,7 +53,9 @@ const SLIDER_THUMB_CLASSES = cn(
 
 export function BeforeAfter({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const [value, setValue] = useState(50);
   const parsed = BeforeAfterPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
@@ -86,14 +89,14 @@ export function BeforeAfter({
           {eyebrow}
         </p>
       )}
-      <h2
+      <Heading
         className={cn(
           'ui-heading text-3xl md:text-4xl',
           hasBackgroundImage && 'text-white',
         )}
       >
         {title}
-      </h2>
+      </Heading>
     </div>
   );
 

@@ -11,6 +11,7 @@ import {
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
 import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -24,7 +25,11 @@ const TextBlockPropsSchema = z.object({
   ...SectionLayoutPropsSchema.shape,
 });
 
-export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function TextBlock({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = TextBlockPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -53,14 +58,14 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
       >
         <div>
           {title !== undefined && (
-            <h2
+            <Heading
               className={cn(
                 'ui-heading mb-6 text-3xl',
                 hasBackgroundImage && 'text-white',
               )}
             >
               {title}
-            </h2>
+            </Heading>
           )}
           <p
             className={cn(

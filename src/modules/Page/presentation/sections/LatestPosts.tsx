@@ -12,6 +12,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import { BlogPostCard } from '@/modules/Blog/presentation/BlogPostCard';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -45,7 +46,9 @@ const LatestPostsPropsSchema = z.object({
 export async function LatestPosts({
   sectionProps,
   blogService,
+  headingLevel = 2,
 }: SectionComponentProps): Promise<ReactElement | null> {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = LatestPostsPropsSchema.safeParse(sectionProps);
   if (!parsed.success || blogService === undefined) {
     return null;
@@ -85,14 +88,14 @@ export async function LatestPosts({
           </p>
         )}
         {title !== '' && (
-          <h2
+          <Heading
             className={cn(
               'ui-heading mb-8 text-3xl md:text-4xl',
               hasBackgroundImage && 'text-white',
             )}
           >
             {title}
-          </h2>
+          </Heading>
         )}
         <div
           className={cn(

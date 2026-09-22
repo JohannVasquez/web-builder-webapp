@@ -19,6 +19,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const NEWSLETTER_VARIANTS = ['inline', 'card'] as const;
@@ -73,7 +74,11 @@ async function submitNewsletter(email: string, website: string): Promise<void> {
   }
 }
 
-export function Newsletter({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Newsletter({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = NewsletterPropsSchema.safeParse(sectionProps);
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState('');
@@ -121,14 +126,14 @@ export function Newsletter({ sectionProps }: SectionComponentProps): ReactElemen
           {eyebrow}
         </p>
       )}
-      <h2
+      <Heading
         className={cn(
           'ui-heading text-3xl md:text-4xl',
           hasBackgroundImage && 'text-white',
         )}
       >
         {title}
-      </h2>
+      </Heading>
       {subtitle !== undefined && (
         <p
           className={cn(

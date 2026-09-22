@@ -15,6 +15,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const GALLERY_VARIANTS = ['grid', 'masonry'] as const;
@@ -59,12 +60,22 @@ function GalleryImg({
   readonly className: string;
 }): ReactElement {
   return (
+    // Sin `imageLoading()`: ese helper liga "eager" a `fetchPriority: high`, reservado para el hero.
     // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-    <img src={src} alt={alt} loading={eager ? undefined : 'lazy'} className={className} />
+    <img
+      src={src}
+      alt={alt}
+      loading={eager ? undefined : 'lazy'}
+      decoding="async"
+      className={className}
+    />
   );
 }
 
-export function Gallery({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Gallery({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
   const parsed = GalleryPropsSchema.safeParse(sectionProps);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -72,6 +83,7 @@ export function Gallery({ sectionProps }: SectionComponentProps): ReactElement |
   if (!parsed.success) {
     return null;
   }
+  const Heading = HEADING_TAGS[headingLevel];
   const { eyebrow, title, images, variant } = parsed.data;
   if (images.length === 0) {
     return null;
@@ -121,14 +133,14 @@ export function Gallery({ sectionProps }: SectionComponentProps): ReactElement |
           </p>
         )}
         {title !== '' && (
-          <h2
+          <Heading
             className={cn(
               'ui-heading mb-8 text-3xl md:text-4xl',
               hasBackgroundImage && 'text-white',
             )}
           >
             {title}
-          </h2>
+          </Heading>
         )}
         <div
           className={cn(
@@ -165,6 +177,9 @@ export function Gallery({ sectionProps }: SectionComponentProps): ReactElement |
         ref={dialogRef}
         onClose={() => setActiveIndex(null)}
         onKeyDown={onDialogKeyDown}
+        aria-label={
+          active?.alt !== undefined && active.alt !== '' ? active.alt : 'Imagen ampliada'
+        }
         className="ui-card m-auto max-w-3xl bg-transparent p-0 backdrop:bg-black/80"
       >
         {active !== null && (

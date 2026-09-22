@@ -30,6 +30,7 @@ import {
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
 import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -79,7 +80,10 @@ const ICONS: Readonly<Record<string, LucideIcon>> = {
 
 export function SplitHighlights({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
+  const SubHeading = HEADING_TAGS[subHeadingLevel(headingLevel)];
   const parsed = SplitHighlightsPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -103,7 +107,7 @@ export function SplitHighlights({
         </p>
       )}
       {title !== '' && (
-        <h2
+        <Heading
           className={cn(
             'ui-heading relative inline-block pb-3 text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
@@ -114,7 +118,7 @@ export function SplitHighlights({
             className="absolute bottom-0 left-0 h-1 w-16 rounded-full"
             style={{ backgroundColor: accentColor ?? 'var(--brand-accent)' }}
           />
-        </h2>
+        </Heading>
       )}
       <ul className="mt-8 space-y-6">
         {items.map((item) => {
@@ -135,9 +139,11 @@ export function SplitHighlights({
                 <Icon className="size-5" />
               </div>
               <div>
-                <h3 className={cn('font-semibold', hasBackgroundImage && 'text-white')}>
+                <SubHeading
+                  className={cn('font-semibold', hasBackgroundImage && 'text-white')}
+                >
                   {item.title}
-                </h3>
+                </SubHeading>
                 <p
                   className={cn(
                     'mt-1 text-sm leading-relaxed',

@@ -15,6 +15,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const TESTIMONIALS_VARIANTS = ['carousel', 'grid', 'featured', 'masonry'] as const;
@@ -53,7 +54,9 @@ type TestimonialItem = z.infer<typeof TestimonialsPropsSchema>['items'][number];
 
 export function Testimonials({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = TestimonialsPropsSchema.safeParse(sectionProps);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -74,7 +77,7 @@ export function Testimonials({
   const layout = sectionLayoutClasses(parsed.data, TESTIMONIALS_LAYOUT_DEFAULTS[variant]);
 
   const header = title !== '' && (
-    <h2
+    <Heading
       className={cn(
         'ui-heading relative mx-auto mb-14 inline-block w-full pb-3 text-center text-3xl md:text-4xl',
         hasBackgroundImage && 'text-white',
@@ -85,7 +88,7 @@ export function Testimonials({
         className="absolute bottom-0 left-1/2 h-1 w-16 -translate-x-1/2 rounded-full"
         style={{ backgroundColor: accent }}
       />
-    </h2>
+    </Heading>
   );
 
   const renderStars = (rating: number, size: string): ReactElement => (
@@ -220,7 +223,11 @@ export function Testimonials({
     >
       <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {header}
-        <div className="ui-card relative p-8 md:p-10">
+        <div
+          className="ui-card relative p-8 md:p-10"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {current.badgeLabel !== undefined && (
             <span
               className="mb-4 inline-block rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
@@ -276,12 +283,13 @@ export function Testimonials({
               >
                 <ChevronLeft className="size-4" />
               </button>
-              <div className="flex gap-1.5">
+              <div className="flex gap-1.5" role="group" aria-label="Elegir testimonio">
                 {items.map((item, index) => (
                   <button
                     key={item.authorName}
                     type="button"
                     aria-label={`Ir al testimonio ${index + 1}`}
+                    aria-current={index === activeIndex}
                     onClick={() => setActiveIndex(index)}
                     className={cn(
                       'size-2 rounded-full transition-all',

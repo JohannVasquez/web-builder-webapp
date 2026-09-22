@@ -31,6 +31,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -85,7 +86,12 @@ const ICONS: Readonly<Record<string, LucideIcon>> = {
   wrench: Wrench,
 };
 
-export function Features({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Features({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
+  const SubHeading = HEADING_TAGS[subHeadingLevel(headingLevel)];
   const parsed = FeaturesPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -107,14 +113,14 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
           {eyebrow}
         </p>
       )}
-      <h2
+      <Heading
         className={cn(
           'ui-heading mb-12 text-center text-3xl md:text-4xl',
           hasBackgroundImage && 'text-white',
         )}
       >
         {title}
-      </h2>
+      </Heading>
     </>
   );
 
@@ -157,14 +163,14 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
                     </div>
                   )}
                   <div className="flex flex-col gap-1">
-                    <h3
+                    <SubHeading
                       className={cn(
                         'text-xl font-semibold',
                         hasBackgroundImage && 'text-white',
                       )}
                     >
                       {item.title}
-                    </h3>
+                    </SubHeading>
                     <p
                       className={cn(
                         'text-sm',
@@ -227,7 +233,7 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
                       <Icon className="size-6" />
                     </div>
                   )}
-                  <h3 className="text-xl font-semibold">{item.title}</h3>
+                  <SubHeading className="text-xl font-semibold">{item.title}</SubHeading>
                   <p className="text-muted-foreground text-sm">{item.description}</p>
                 </div>
               );
@@ -281,14 +287,14 @@ export function Features({ sectionProps }: SectionComponentProps): ReactElement 
                     <Icon className="size-6" />
                   </div>
                 )}
-                <h3
+                <SubHeading
                   className={cn(
                     'text-xl font-semibold',
                     variant === 'plain' && hasBackgroundImage && 'text-white',
                   )}
                 >
                   {item.title}
-                </h3>
+                </SubHeading>
                 <p
                   className={cn(
                     'text-sm',

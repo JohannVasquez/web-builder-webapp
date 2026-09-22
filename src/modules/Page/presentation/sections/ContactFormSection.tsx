@@ -15,6 +15,7 @@ import {
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS, type HeadingLevel } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const CONTACT_FORM_SECTION_VARIANTS = ['channels', 'form', 'map'] as const;
@@ -40,21 +41,24 @@ function SectionHeading({
   title,
   subtitle,
   hasBackgroundImage,
+  headingLevel,
 }: {
   readonly title: string;
   readonly subtitle: string | undefined;
   readonly hasBackgroundImage: boolean;
+  readonly headingLevel: HeadingLevel;
 }): ReactElement {
+  const Heading = HEADING_TAGS[headingLevel];
   return (
     <div className="mb-10 text-center">
-      <h2
+      <Heading
         className={cn(
           'ui-heading text-3xl md:text-4xl',
           hasBackgroundImage && 'text-white',
         )}
       >
         {title}
-      </h2>
+      </Heading>
       {subtitle !== undefined && (
         <p
           className={cn(
@@ -71,6 +75,7 @@ function SectionHeading({
 
 export function ContactFormSection({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
   const parsed = ContactFormSectionPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
@@ -109,6 +114,7 @@ export function ContactFormSection({
             title={title}
             subtitle={subtitle}
             hasBackgroundImage={hasBackgroundImage}
+            headingLevel={headingLevel}
           />
           <div className="grid gap-8 md:grid-cols-2">
             <div className="ui-card p-6 md:p-8">
@@ -164,6 +170,7 @@ export function ContactFormSection({
             title={title}
             subtitle={subtitle}
             hasBackgroundImage={hasBackgroundImage}
+            headingLevel={headingLevel}
           />
           {hasBackgroundImage ? (
             <div className="ui-card p-6 md:p-8">
@@ -195,6 +202,7 @@ export function ContactFormSection({
           title={title}
           subtitle={subtitle}
           hasBackgroundImage={hasBackgroundImage}
+          headingLevel={headingLevel}
         />
         {hasChannels ? (
           <div className="grid gap-8 md:grid-cols-[7fr_3fr]">

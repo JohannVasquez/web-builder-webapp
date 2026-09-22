@@ -11,6 +11,7 @@ import {
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import { ProductCard } from '@/modules/Store/presentation/ProductCard';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -32,7 +33,9 @@ const FeaturedProductsPropsSchema = z.object({
 export async function FeaturedProducts({
   sectionProps,
   storeService,
+  headingLevel = 2,
 }: SectionComponentProps): Promise<ReactElement | null> {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = FeaturedProductsPropsSchema.safeParse(sectionProps);
   if (!parsed.success || storeService === undefined) {
     return null;
@@ -69,14 +72,14 @@ export async function FeaturedProducts({
           </p>
         )}
         {title !== '' && (
-          <h2
+          <Heading
             className={cn(
               'ui-heading mb-8 text-3xl md:text-4xl',
               hasBackgroundImage && 'text-white',
             )}
           >
             {title}
-          </h2>
+          </Heading>
         )}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {products.map((product) => (

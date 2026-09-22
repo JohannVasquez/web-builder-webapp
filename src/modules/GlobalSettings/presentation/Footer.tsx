@@ -59,11 +59,19 @@ function FooterLogo({ settings }: { readonly settings: GlobalSettings }): ReactE
       <img
         src={logoLight}
         alt={settings.siteName}
+        loading="lazy"
+        decoding="async"
         className={logoDark !== undefined ? 'h-9 w-auto dark:hidden' : 'h-9 w-auto'}
       />
       {logoDark !== undefined && (
         // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-        <img src={logoDark} alt={settings.siteName} className="hidden h-9 w-auto dark:block" />
+        <img
+          src={logoDark}
+          alt={settings.siteName}
+          loading="lazy"
+          decoding="async"
+          className="hidden h-9 w-auto dark:block"
+        />
       )}
     </>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { preload } from 'react-dom';
 import { useEffect, useState, type ReactElement } from 'react';
 import { z } from 'zod';
 import { cn } from '@/shared/lib/utils';
@@ -12,6 +13,8 @@ import {
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import { ContactForm } from '@/modules/Contact/presentation/ContactForm';
+import { HEADING_TAGS } from '@/shared/lib/heading';
+import { imageLoading } from '@/shared/lib/imageLoading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const HERO_VARIANTS = ['centered', 'split', 'minimal', 'form'] as const;
@@ -56,9 +59,13 @@ const DEFAULT_ACCENT = 'var(--brand-accent)';
 const DEFAULT_ACCENT_TEXT = 'var(--brand-accent-text)';
 const CAROUSEL_INTERVAL_MS = 5000;
 
-export function Hero({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Hero({
+  sectionProps,
+  headingLevel = 1,
+}: SectionComponentProps): ReactElement | null {
   const parsed = HeroPropsSchema.safeParse(sectionProps);
   const [activeSlide, setActiveSlide] = useState(0);
+  const Heading = HEADING_TAGS[headingLevel];
 
   const slides = parsed.success
     ? (parsed.data.images ??
@@ -116,7 +123,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
                 {eyebrow}
               </span>
             )}
-            <h1
+            <Heading
               className="text-4xl font-bold tracking-tight text-balance md:text-5xl"
               style={textColor !== undefined ? { color: textColor } : undefined}
             >
@@ -127,7 +134,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
                   <span style={{ color: accentText }}>{titleAccent}</span>
                 </>
               )}
-            </h1>
+            </Heading>
             {subtitle !== undefined && (
               <p
                 className="text-muted-foreground max-w-xl text-lg text-pretty md:text-xl"
@@ -157,6 +164,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
               src={slides[0]}
               alt=""
               className="aspect-4/3 w-full rounded-2xl object-cover md:order-2"
+              {...imageLoading(headingLevel === 1)}
             />
           )}
         </RevealOnScroll>
@@ -171,7 +179,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
           animation={parsed.data.animation}
           className={cn(container, 'flex flex-col items-center gap-8')}
         >
-          <h1
+          <Heading
             className="text-5xl font-bold tracking-tight text-balance md:text-7xl"
             style={textColor !== undefined ? { color: textColor } : undefined}
           >
@@ -182,7 +190,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
                 <span style={{ color: accentText }}>{titleAccent}</span>
               </>
             )}
-          </h1>
+          </Heading>
           {subtitle !== undefined && (
             <p
               className="text-muted-foreground max-w-2xl text-lg text-pretty md:text-xl"
@@ -223,7 +231,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
                 {eyebrow}
               </span>
             )}
-            <h1
+            <Heading
               className="text-4xl font-bold tracking-tight text-balance md:text-5xl"
               style={textColor !== undefined ? { color: textColor } : undefined}
             >
@@ -234,7 +242,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
                   <span style={{ color: accentText }}>{titleAccent}</span>
                 </>
               )}
-            </h1>
+            </Heading>
             {subtitle !== undefined && (
               <p
                 className="text-muted-foreground max-w-xl text-lg text-pretty md:text-xl"
@@ -264,6 +272,12 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
         </RevealOnScroll>
       </section>
     );
+  }
+
+  // Fondo por CSS: sin atributo `fetchPriority` posible, se lo pedimos al navegador con la API de precarga de React (Spec 6.2, LCP).
+  const firstSlide = slides[0];
+  if (headingLevel === 1 && firstSlide !== undefined) {
+    preload(firstSlide, { as: 'image', fetchPriority: 'high' });
   }
 
   return (
@@ -299,7 +313,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
             {eyebrow}
           </span>
         )}
-        <h1
+        <Heading
           className={cn(
             'text-4xl font-bold tracking-tight text-balance md:text-6xl',
             hasImage && 'text-white',
@@ -313,7 +327,7 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
               <span style={{ color: hasImage ? accent : accentText }}>{titleAccent}</span>
             </>
           )}
-        </h1>
+        </Heading>
         {subtitle !== undefined && (
           <p
             className={cn(
@@ -359,12 +373,17 @@ export function Hero({ sectionProps }: SectionComponentProps): ReactElement | nu
         )}
       </RevealOnScroll>
       {isCarousel && (
-        <div className="absolute inset-x-0 bottom-6 flex justify-center gap-2">
+        <div
+          className="absolute inset-x-0 bottom-6 flex justify-center gap-2"
+          role="group"
+          aria-label="Elegir imagen de fondo"
+        >
           {slides.map((slide, index) => (
             <button
               key={slide}
               type="button"
               aria-label={`Ir a la imagen ${index + 1}`}
+              aria-current={index === activeSlide}
               onClick={() => setActiveSlide(index)}
               className={cn(
                 'size-2 rounded-full transition-all',
