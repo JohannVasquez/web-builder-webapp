@@ -29,6 +29,9 @@ export const ProductViewSchema = z.object({
   stock: z.number().nullable(),
   isSoldOut: z.boolean(),
   whatsappOrderUrl: z.string().nullable(),
+  // Opcional porque las respuestas guardadas en caché desde antes de que la API lo enviara
+  // siguen siendo válidas; el sitemap simplemente omite el `lastmod` cuando falta.
+  updatedAt: z.string().optional(),
 });
 
 export type ProductView = z.infer<typeof ProductViewSchema>;

@@ -8,6 +8,7 @@ import { ProductCard } from '@/modules/Store/presentation/ProductCard';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { cn } from '@/shared/lib/utils';
+import { canonicalPaged, NO_INDEX, pagedTitle, parsePageParam } from '@/shared/lib/seo';
 
 const PER_PAGE = 12;
 
@@ -16,20 +17,24 @@ interface StoreIndexPageProps {
   readonly searchParams: Promise<{ q?: string; categoria?: string; page?: string }>;
 }
 
-const parsePage = (value: string | undefined): number => {
-  const page = Number(value);
-  return Number.isInteger(page) && page > 0 ? page : 1;
-};
-
 export async function generateMetadata({
   params,
-}: Pick<StoreIndexPageProps, 'params'>): Promise<Metadata> {
+  searchParams,
+}: StoreIndexPageProps): Promise<Metadata> {
   const { tenantDomain } = await params;
+  const { page: pageParam, categoria, q } = await searchParams;
+  const page = parsePageParam(pageParam);
   const settings = await createGlobalSettingsService(tenantDomain).getSettings();
 
+  // Una búsqueda es un listado distinto por cada término que alguien escriba: infinitas URLs
+  // de contenido pobre. Se muestran, pero no se indexan ni se declaran canónicas.
+  const searching = q !== undefined && q !== '';
+
   return {
-    title: 'Tienda',
+    title: pagedTitle('Tienda', page),
     description: `Productos de ${settings.siteName}`,
+    robots: searching ? NO_INDEX : undefined,
+    alternates: searching ? undefined : canonicalPaged('/tienda', page, { categoria }),
   };
 }
 
@@ -46,7 +51,7 @@ export default async function StoreIndexPage({
   }
 
   const { q, categoria, page: pageParam } = await searchParams;
-  const page = parsePage(pageParam);
+  const page = parsePageParam(pageParam);
 
   const [{ products, total, perPage }, categories] = await Promise.all([
     storeService.listProducts({
@@ -58,6 +63,12 @@ export default async function StoreIndexPage({
     storeService.listCategories(),
   ]);
   const totalPages = Math.max(1, Math.ceil(total / perPage));
+
+  // Una página fuera de rango es un listado vacío con URL propia: si responde 200, el
+  // buscador la indexa como contenido sin valor. Mejor que no exista.
+  if (page > totalPages) {
+    notFound();
+  }
 
   const pageHref = (targetPage: number): string => {
     const query = new URLSearchParams();

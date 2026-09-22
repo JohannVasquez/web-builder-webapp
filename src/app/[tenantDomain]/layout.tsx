@@ -33,11 +33,14 @@ export async function generateMetadata({
 
   // El canónico apunta al dominio principal del cliente, no a aquel por el que entró el
   // visitante: un tenant con dos dominios no puede competir consigo mismo en buscadores.
+  //
+  // Aquí se fija solo la base; el canónico concreto lo declara cada página con `canonical()`
+  // de `@/shared/lib/seo`. Ponerlo en este layout lo heredarían TODAS las rutas, y cada post
+  // y cada producto terminaría señalando a la portada como su versión buena.
   const canonicalHost = settings.primaryDomain ?? tenantDomain;
 
   return {
     metadataBase: new URL(`https://${canonicalHost}`),
-    alternates: { canonical: '/' },
     title: { default: settings.siteName, template: `%s | ${settings.siteName}` },
     description: settings.tagline,
     icons: favicon === undefined ? undefined : { icon: brandAsset('favicon') },

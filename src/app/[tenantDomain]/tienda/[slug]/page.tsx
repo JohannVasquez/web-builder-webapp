@@ -6,6 +6,7 @@ import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastruc
 import { ProductGallery } from '@/modules/Store/presentation/ProductGallery';
 import { AddToCartForm } from '@/modules/Store/presentation/AddToCartForm';
 import { ProductJsonLd } from '@/modules/Store/presentation/ProductJsonLd';
+import { canonical, NO_INDEX } from '@/shared/lib/seo';
 
 interface StoreProductPageProps {
   readonly params: Promise<{ tenantDomain: string; slug: string }>;
@@ -17,7 +18,7 @@ export async function generateMetadata({
   const { tenantDomain, slug } = await params;
   const product = await createStoreService(tenantDomain).getProduct(slug);
   if (product === null) {
-    return { title: 'Producto no encontrado' };
+    return { title: 'Producto no encontrado', robots: NO_INDEX };
   }
 
   const image = product.imageUrls[0];
@@ -25,6 +26,7 @@ export async function generateMetadata({
   return {
     title: product.name,
     description: product.description,
+    alternates: canonical(`/tienda/${slug}`),
     openGraph: {
       type: 'website',
       title: product.name,
