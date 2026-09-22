@@ -7,6 +7,7 @@ import { ProductGallery } from '@/modules/Store/presentation/ProductGallery';
 import { AddToCartForm } from '@/modules/Store/presentation/AddToCartForm';
 import { ProductJsonLd } from '@/modules/Store/presentation/ProductJsonLd';
 import { canonical, NO_INDEX } from '@/shared/lib/seo';
+import { Breadcrumbs } from '@/shared/ui/Breadcrumbs';
 
 interface StoreProductPageProps {
   readonly params: Promise<{ tenantDomain: string; slug: string }>;
@@ -62,7 +63,17 @@ export default async function StoreProductPage({
 
   return (
     <article className="mx-auto max-w-5xl px-6 py-16">
-      <ProductJsonLd product={product} siteUrl={siteUrl} />
+      <ProductJsonLd product={product} siteUrl={siteUrl} store={store} />
+      <div className="mb-8">
+        <Breadcrumbs
+          siteUrl={siteUrl}
+          crumbs={[
+            { label: 'Inicio', href: '/' },
+            { label: 'Tienda', href: '/tienda' },
+            { label: product.name },
+          ]}
+        />
+      </div>
 
       <div className="grid gap-10 md:grid-cols-2">
         <ProductGallery images={product.imageUrls} alt={product.name} />

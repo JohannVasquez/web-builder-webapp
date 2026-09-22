@@ -10,7 +10,7 @@ import { BrandStyle } from '@/modules/Brand/presentation/BrandStyle';
 import { ThemeScript } from '@/modules/Brand/presentation/ThemeScript';
 import { resolveFontPairing } from '@/modules/Brand/presentation/fonts';
 import { VisualStyleTokens } from '@/modules/VisualStyle/presentation/VisualStyleTokens';
-import { LocalBusinessJsonLd } from '@/modules/GlobalSettings/presentation/LocalBusinessJsonLd';
+import { SiteJsonLd } from '@/modules/GlobalSettings/presentation/SiteJsonLd';
 import { Analytics } from '@/modules/Analytics/presentation/Analytics';
 import { readAnalyticsConfig } from '@/modules/Analytics/domain/Analytics';
 import { Toaster } from '@/shared/ui/sonner';
@@ -75,9 +75,10 @@ export default async function TenantLayout({
   return (
     <TenantProviders>
       <ThemeScript colorMode={settings.brand.colorMode} />
-      <LocalBusinessJsonLd
+      <SiteJsonLd
         settings={settings}
         siteUrl={`https://${settings.primaryDomain ?? tenantDomain}`}
+        hasStore={store !== null}
       />
       <BrandStyle
         brand={settings.brand}
