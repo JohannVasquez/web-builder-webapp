@@ -22,6 +22,7 @@ export function WhatsAppButton({
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Escríbenos por WhatsApp"
+      // bg-[#25D366]: verde oficial de la marca WhatsApp, no del cliente.
       className="fixed right-6 bottom-6 z-50 flex size-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-transform hover:scale-105"
     >
       <FaWhatsapp className="size-7" />

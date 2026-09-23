@@ -20,11 +20,21 @@ import { NextResponse, type NextRequest } from 'next/server';
  * es direccionable desde fuera: pedir `/acme.localhost/nosotros` a mano se
  * convierte en `/<host>/acme.localhost/nosotros`, que no existe y da 404.
  */
+// Host reservado del panel de la agencia. No es un tenant: no se resuelve contra la base y
+// por eso se decide aquí, antes de meter el dominio en la ruta.
+const ADMIN_HOST_LABEL = 'admin';
+
 export function proxy(request: NextRequest): NextResponse {
   const host = request.headers.get('host') ?? request.nextUrl.hostname;
   const tenantDomain = host.split(':')[0]?.toLowerCase() ?? '';
 
   const url = request.nextUrl.clone();
+
+  if (tenantDomain.split('.')[0] === ADMIN_HOST_LABEL) {
+    url.pathname = `/admin${url.pathname === '/' ? '' : url.pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
   // Evita el `//` (y el redirect de trailing slash) cuando se pide la raíz.
   url.pathname = `/${tenantDomain}${url.pathname === '/' ? '' : url.pathname}`;
 
@@ -38,7 +48,8 @@ export const config = {
   // Ojo con el patrón habitual `(?!.*\\..*)` de excluir "rutas con punto":
   // aquí los tenants SON dominios y llevan puntos, así que ese patrón dejaba
   // pasar `/acme.localhost/...` sin reescribir y volvía direccionable desde
-  // fuera la forma interna de la ruta. Este proyecto no tiene `public/`, así
-  // que basta con excluir `_next/` y el favicon.
-  matcher: ['/((?!_next/|favicon\\.ico).*)'],
+  // fuera la forma interna de la ruta. Lo único que hay en `public/` son las
+  // imágenes de ejemplo de la guía de estilos, que ya quedan bajo `styleguide`.
+  // `api/revalidate` queda fuera: es endpoint del propio frontend (SPEC 0.2), no de tenant.
+  matcher: ['/((?!_next/|api/revalidate|api/catalog|styleguide|favicon\\.ico).*)'],
 };

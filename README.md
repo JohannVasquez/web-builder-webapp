@@ -47,6 +47,67 @@ src/
   (`/nosotros`) o el ancla de una sección (`/#caracteristicas`). La estructura del
   sitio se decide en la base de datos, no en el código (ver README de la API).
 
+## Identidad de marca y estilo visual
+
+Tres capas independientes que se combinan libremente:
+
+| Capa                   | Dónde vive                 | Qué decide                                          |
+| ---------------------- | -------------------------- | --------------------------------------------------- |
+| **Identidad de marca** | `settings.brand` (API)     | Colores, tipografía, logos, modo claro/oscuro       |
+| **Estilo visual**      | `src/modules/VisualStyle/` | Bordes, sombras, vidrio, botones, menú, separadores |
+| **Variante de bloque** | `props` de cada sección    | Cómo se ordena el contenido                         |
+
+### Colores
+
+`src/modules/Brand/domain/theme.ts` toma la paleta del cliente (hex) y deriva
+el tema completo: tonos claros y oscuros, superficies, bordes y —lo importante—
+el color de texto legible sobre cada color. `readableForeground` elige entre
+blanco y negro, y eso siempre supera 4.5:1 sobre cualquier fondo; hay un test
+que lo comprueba para una batería de paletas.
+
+Distinción que importa: `--primary`, `--secondary` y `--accent` son los tokens
+de superficie de shadcn (fondo de sección, hover del menú). Los colores 2 y 3
+de la marca viven aparte, en `--brand-secondary` y `--brand-accent`, cada uno
+con `-foreground`, `-soft`, `-strong` y `-text`. Pintar el pie de página con el
+índigo del cliente se ve peor, no mejor.
+
+Los colores de marca **no** se ajustan por contraste: son fondos de botón, y el
+contraste lo aporta su propio `-foreground`. La variante `-text` es la que sí
+se ajusta, para cuando el color se usa como texto sobre el fondo de la página.
+
+### Tipografía
+
+Las 17 fuentes del catálogo se declaran en el layout raíz, cada una aportando
+solo una variable CSS. `preload: false` es deliberado: como el módulo lo
+consume un layout, con `preload: true` Next precargaría las 17 en todas las
+rutas. El anti-salto lo da `adjustFontFallback`, que ajusta la métrica de la
+fuente de respaldo. El archivo se descarga solo si el pairing elegido lo usa.
+
+### Estilos visuales
+
+Para agregar uno, ver [docs/agregar-un-estilo-visual.md](docs/agregar-un-estilo-visual.md).
+Son dos pasos: un archivo con los tokens y una línea en el registro. Ningún
+bloque cambia.
+
+## Caché del sitio publicado
+
+Las lecturas del sitio (página, settings, navegación) se cachean con una
+etiqueta por **dominio** de tenant: `t:<dominio>` (ver
+`src/shared/lib/cacheTags.ts`). Que la clave sea el dominio y no un id es lo
+que garantiza que el contenido de un cliente nunca aparezca en el sitio de
+otro: el frontend nunca ve ids, solo el host de la visita.
+
+`POST /api/revalidate` invalida esas etiquetas. Lo llama la API después de
+cada escritura de administración o de un agente, por la red interna y con el
+secreto compartido `REVALIDATE_SECRET`. Entrando por Caddy, `/api/*` lo
+atiende la API, así que este endpoint no es alcanzable desde internet.
+
+Usa `revalidateTag(tag, { expire: 0 })` y no el perfil `'max'`: con
+stale-while-revalidate el primer visitante después de guardar seguiría viendo
+la versión vieja, y lo que se busca es que el cambio se vea de inmediato.
+
+Para invalidar a mano (por ejemplo, después de `make seed`): `make revalidate`.
+
 ## Puesta en marcha
 
 Requiere la [web-builder-api](../web-builder-api) corriendo (por defecto en

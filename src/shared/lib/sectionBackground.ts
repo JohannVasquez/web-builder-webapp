@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import { z } from 'zod';
+import { mix, parseHex, readableForeground, toHex, ensureContrast } from './color';
 
 /**
  * Fragmento de schema común para el fondo de un `<section>` completo.
@@ -25,13 +26,43 @@ export const SectionBackgroundPropsSchema = z.object({
 
 export type SectionBackgroundProps = z.infer<typeof SectionBackgroundPropsSchema>;
 
-const DEFAULT_BACKGROUND_OVERLAY = 'rgba(15, 23, 42, 0.55)';
+const DEFAULT_BACKGROUND_OVERLAY = 'var(--brand-overlay)';
+
+// Una sección con color propio se convierte en un mini-tema: si no, al pasar a modo oscuro
+// el texto seguiría el tema global y quedaría ilegible sobre ese fondo fijo.
+const surfaceTokens = (backgroundColor: string): CSSProperties => {
+  const background = parseHex(backgroundColor);
+  if (background === null) {
+    return {};
+  }
+  const text = readableForeground(background);
+  return {
+    '--background': toHex(background),
+    '--foreground': toHex(text),
+    '--card': toHex(mix(background, text, 0.04)),
+    '--card-foreground': toHex(text),
+    '--muted': toHex(mix(background, text, 0.06)),
+    '--muted-foreground': toHex(ensureContrast(mix(background, text, 0.55), background, 4.5)),
+    '--border': toHex(mix(background, text, 0.14)),
+    '--input': toHex(mix(background, text, 0.14)),
+    color: toHex(text),
+  } as CSSProperties;
+};
 
 /**
  * Estilo inline para el `<section>` raíz de cualquier bloque: imagen de
  * fondo con velo de contraste si hay `backgroundImageUrl`, si no el color
  * plano de `backgroundColor`, si no `undefined` (hereda el fondo del tema).
  */
+// `data-surface` en el <section> hace que los tokens del estilo se recalculen con los
+// colores locales; sin él, las tarjetas de una sección con color propio siguen el tema global.
+export const sectionSurfaceAttributes = (
+  props: SectionBackgroundProps,
+): { 'data-surface'?: '' } =>
+  props.backgroundColor !== undefined && parseHex(props.backgroundColor) !== null
+    ? { 'data-surface': '' }
+    : {};
+
 export function sectionBackgroundStyle({
   backgroundColor,
   backgroundImageUrl,
@@ -46,7 +77,7 @@ export function sectionBackgroundStyle({
     };
   }
   if (backgroundColor !== undefined) {
-    return { backgroundColor };
+    return { backgroundColor, ...surfaceTokens(backgroundColor) };
   }
   return undefined;
 }

@@ -14,6 +14,8 @@ import { toast } from 'sonner';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { getPublicApiBaseUrl } from '@/shared/config/api';
+import { SessionExpiredError } from '@/modules/Auth/domain/Session';
+import { useOptionalSession } from '@/modules/Auth/presentation/SessionProvider';
 import {
   ALLOWED_MIME_TYPES,
   MAX_FILE_SIZE_MB,
@@ -53,9 +55,12 @@ export function ImageUploader({
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const sessionContext = useOptionalSession();
+  const token = sessionContext?.token ?? null;
+  // Se recrea al cambiar el token: así el siguiente intento usa el token nuevo sin remontar.
   const fileStorageService = useMemo(
-    () => new FileStorageService(getPublicApiBaseUrl()),
-    [],
+    () => new FileStorageService(getPublicApiBaseUrl(), undefined, () => token),
+    [token],
   );
 
   useEffect(() => {
@@ -87,12 +92,15 @@ export function ImageUploader({
       setStatus('success');
       toast.success('Archivo subido correctamente.');
       onUploaded(uploaded.key);
-    } catch {
+    } catch (error) {
+      // Sesión caducada y fallo de servidor se arreglan distinto: mensajes separados (SPEC 0.1).
+      const message =
+        error instanceof SessionExpiredError
+          ? error.message
+          : 'No pudimos subir el archivo. Inténtalo nuevamente en unos minutos.';
       setStatus('error');
-      setErrorMessage(
-        'No pudimos subir el archivo. Inténtalo nuevamente en unos minutos.',
-      );
-      toast.error('No pudimos subir el archivo. Inténtalo nuevamente en unos minutos.');
+      setErrorMessage(message);
+      toast.error(message);
     }
   };
 

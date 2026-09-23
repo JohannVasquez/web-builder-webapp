@@ -5,13 +5,21 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import {
+  SectionLayoutPropsSchema,
+  sectionLayoutClasses,
+} from '@/shared/lib/sectionLayout';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const LocationMapPropsSchema = z.object({
   title: z.string().optional(),
   subtitle: z.string().optional(),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   accentColor: z.string().optional(),
   /**
    * Dirección en texto libre (ej. "Av. Vicuña Mackenna 2890, Ñuñoa,
@@ -39,7 +47,9 @@ const LocationMapPropsSchema = z.object({
  */
 export function LocationMap({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = LocationMapPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -55,21 +65,30 @@ export function LocationMap({
   const embedSrc = `https://www.google.com/maps?q=${encodedQuery}&output=embed`;
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedQuery}`;
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'normal',
+    contentWidth: 'wide',
+    textAlign: 'left',
+  });
 
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div className="mx-auto max-w-6xl px-6 py-20">
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {(title !== undefined || subtitle !== undefined) && (
           <div className="mb-10 text-center">
             {title !== undefined && (
-              <h2
+              <Heading
                 className={cn(
-                  'text-3xl font-bold tracking-tight md:text-4xl',
+                  'ui-heading text-3xl md:text-4xl',
                   hasBackgroundImage && 'text-white',
                 )}
               >
                 {title}
-              </h2>
+              </Heading>
             )}
             {subtitle !== undefined && (
               <p
@@ -83,7 +102,7 @@ export function LocationMap({
             )}
           </div>
         )}
-        <div className="overflow-hidden rounded-2xl border shadow-sm">
+        <div className="ui-card overflow-hidden">
           <iframe
             src={embedSrc}
             title={title ?? 'Ubicación en el mapa'}
@@ -92,7 +111,7 @@ export function LocationMap({
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           />
-          <div className="bg-card flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
             {address !== undefined && (
               <p className="text-muted-foreground text-sm">{address}</p>
             )}
@@ -108,7 +127,7 @@ export function LocationMap({
             </a>
           </div>
         </div>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

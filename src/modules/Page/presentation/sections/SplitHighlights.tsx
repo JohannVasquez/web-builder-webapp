@@ -23,7 +23,15 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import {
+  SectionLayoutPropsSchema,
+  sectionLayoutClasses,
+} from '@/shared/lib/sectionLayout';
+import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const SplitHighlightsPropsSchema = z.object({
@@ -31,6 +39,7 @@ const SplitHighlightsPropsSchema = z.object({
   eyebrow: z.string().optional(),
   title: z.string().default(''),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   accentColor: z.string().optional(),
   /**
    * Foto que acompaña la lista (a un costado), no confundir con
@@ -71,7 +80,10 @@ const ICONS: Readonly<Record<string, LucideIcon>> = {
 
 export function SplitHighlights({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
+  const SubHeading = HEADING_TAGS[subHeadingLevel(headingLevel)];
   const parsed = SplitHighlightsPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -95,18 +107,18 @@ export function SplitHighlights({
         </p>
       )}
       {title !== '' && (
-        <h2
+        <Heading
           className={cn(
-            'relative inline-block pb-3 text-3xl font-bold tracking-tight md:text-4xl',
+            'ui-heading relative inline-block pb-3 text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
           )}
         >
           {title}
           <span
             className="absolute bottom-0 left-0 h-1 w-16 rounded-full"
-            style={{ backgroundColor: accentColor ?? '#fbbf24' }}
+            style={{ backgroundColor: accentColor ?? 'var(--brand-accent)' }}
           />
-        </h2>
+        </Heading>
       )}
       <ul className="mt-8 space-y-6">
         {items.map((item) => {
@@ -127,9 +139,11 @@ export function SplitHighlights({
                 <Icon className="size-5" />
               </div>
               <div>
-                <h3 className={cn('font-semibold', hasBackgroundImage && 'text-white')}>
+                <SubHeading
+                  className={cn('font-semibold', hasBackgroundImage && 'text-white')}
+                >
                   {item.title}
-                </h3>
+                </SubHeading>
                 <p
                   className={cn(
                     'mt-1 text-sm leading-relaxed',
@@ -146,12 +160,23 @@ export function SplitHighlights({
     </div>
   );
 
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'normal',
+    contentWidth: hasImage ? 'wide' : 'narrow',
+    textAlign: 'left',
+  });
+
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll
+        animation={parsed.data.animation}
         className={cn(
-          'mx-auto max-w-6xl px-6 py-20',
-          hasImage ? 'grid items-center gap-12 md:grid-cols-2' : 'max-w-3xl',
+          layout.container,
+          hasImage && 'grid items-center gap-12 md:grid-cols-2',
         )}
       >
         {hasImage && (
@@ -163,10 +188,11 @@ export function SplitHighlights({
               'aspect-4/3 w-full rounded-2xl object-cover shadow-sm',
               imagePosition === 'right' && 'md:order-2',
             )}
+            {...imageLoading()}
           />
         )}
         {content}
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

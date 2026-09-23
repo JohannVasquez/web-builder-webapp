@@ -1,7 +1,13 @@
-import { PageSchema, type Page } from '../domain/Page';
+import {
+  PageSchema,
+  PublishedPagesSchema,
+  type Page,
+  type PublishedPageSummary,
+} from '../domain/Page';
 import type { PageRepository } from '../domain/PageRepository';
 
 import { TENANT_DOMAIN_HEADER } from '@/shared/config/tenant';
+import { siteCacheOptions } from '@/shared/lib/cacheTags';
 
 export class ApiPageRepository implements PageRepository {
   constructor(
@@ -13,7 +19,7 @@ export class ApiPageRepository implements PageRepository {
     const response = await fetch(
       `${this.baseUrl}/api/pages/${encodeURIComponent(slug)}`,
       {
-        cache: 'no-store',
+        ...siteCacheOptions(this.tenantDomain),
         headers:
           this.tenantDomain === undefined
             ? undefined
@@ -34,5 +40,20 @@ export class ApiPageRepository implements PageRepository {
 
     const payload: unknown = await response.json();
     return PageSchema.parse(payload);
+  }
+
+  public async findAllPublished(): Promise<PublishedPageSummary[]> {
+    const response = await fetch(`${this.baseUrl}/api/pages`, {
+      ...siteCacheOptions(this.tenantDomain),
+      headers:
+        this.tenantDomain === undefined
+          ? undefined
+          : { [TENANT_DOMAIN_HEADER]: this.tenantDomain },
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to list pages: HTTP ${response.status}`);
+    }
+    const payload: unknown = await response.json();
+    return PublishedPagesSchema.parse(payload).pages;
   }
 }

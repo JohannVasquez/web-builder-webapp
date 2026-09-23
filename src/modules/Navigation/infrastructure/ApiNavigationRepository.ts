@@ -2,6 +2,7 @@ import { NavigationSchema, type NavigationLink } from '../domain/NavigationLink'
 import type { NavigationRepository } from '../domain/NavigationRepository';
 
 import { TENANT_DOMAIN_HEADER } from '@/shared/config/tenant';
+import { siteCacheOptions } from '@/shared/lib/cacheTags';
 
 export class ApiNavigationRepository implements NavigationRepository {
   constructor(
@@ -11,7 +12,7 @@ export class ApiNavigationRepository implements NavigationRepository {
 
   public async findAll(): Promise<NavigationLink[]> {
     const response = await fetch(`${this.baseUrl}/api/navigation`, {
-      cache: 'no-store',
+      ...siteCacheOptions(this.tenantDomain),
       headers:
         this.tenantDomain === undefined
           ? undefined

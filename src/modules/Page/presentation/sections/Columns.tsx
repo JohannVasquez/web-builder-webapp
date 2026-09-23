@@ -4,7 +4,15 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import {
+  SectionLayoutPropsSchema,
+  sectionLayoutClasses,
+} from '@/shared/lib/sectionLayout';
+import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const ColumnItemSchema = z.object({
@@ -21,6 +29,7 @@ const ColumnsPropsSchema = z.object({
   title: z.string().optional(),
   subtitle: z.string().optional(),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
   accentColor: z.string().optional(),
   /**
    * 1 a 4 columnas; cada una es una foto, texto, o ambos (foto arriba +
@@ -38,7 +47,12 @@ const GRID_COLUMNS_CLASS: Readonly<Record<number, string>> = {
   4: 'md:grid-cols-4',
 };
 
-export function Columns({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Columns({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
+  const SubHeading = HEADING_TAGS[subHeadingLevel(headingLevel)];
   const parsed = ColumnsPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -49,21 +63,30 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
   }
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
   const gridColumns = GRID_COLUMNS_CLASS[columns.length] ?? 'md:grid-cols-3';
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'normal',
+    contentWidth: 'wide',
+    textAlign: 'left',
+  });
 
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div className="mx-auto max-w-6xl px-6 py-20">
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {(title !== undefined || subtitle !== undefined) && (
           <div className="mx-auto mb-14 max-w-2xl text-center">
             {title !== undefined && (
-              <h2
+              <Heading
                 className={cn(
-                  'text-3xl font-bold tracking-tight md:text-4xl',
+                  'ui-heading text-3xl md:text-4xl',
                   hasBackgroundImage && 'text-white',
                 )}
               >
                 {title}
-              </h2>
+              </Heading>
             )}
             {subtitle !== undefined && (
               <p
@@ -92,6 +115,7 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
                     src={column.imageUrl}
                     alt={column.imageAlt ?? ''}
                     className="aspect-4/3 w-full rounded-xl object-cover shadow-sm"
+                    {...imageLoading()}
                   />
                 )}
                 {hasText && (
@@ -112,14 +136,14 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
                       </p>
                     )}
                     {column.title !== undefined && (
-                      <h3
+                      <SubHeading
                         className={cn(
                           'text-lg font-semibold',
                           hasBackgroundImage && 'text-white',
                         )}
                       >
                         {column.title}
-                      </h3>
+                      </SubHeading>
                     )}
                     {column.content !== undefined && (
                       <p
@@ -137,7 +161,7 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
             );
           })}
         </div>
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

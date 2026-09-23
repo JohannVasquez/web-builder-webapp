@@ -4,7 +4,15 @@ import { cn } from '@/shared/lib/utils';
 import {
   SectionBackgroundPropsSchema,
   sectionBackgroundStyle,
+  sectionSurfaceAttributes,
 } from '@/shared/lib/sectionBackground';
+import {
+  SectionLayoutPropsSchema,
+  sectionLayoutClasses,
+} from '@/shared/lib/sectionLayout';
+import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS } from '@/shared/lib/heading';
+import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const TextBlockPropsSchema = z.object({
@@ -14,9 +22,14 @@ const TextBlockPropsSchema = z.object({
   imageUrl: z.string().optional(),
   imageAlt: z.string().optional(),
   ...SectionBackgroundPropsSchema.shape,
+  ...SectionLayoutPropsSchema.shape,
 });
 
-export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function TextBlock({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = TextBlockPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -24,25 +37,35 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
   const { title, content, imageUrl, imageAlt } = parsed.data;
   const hasImage = imageUrl !== undefined;
   const hasBackgroundImage = parsed.data.backgroundImageUrl !== undefined;
+  const layout = sectionLayoutClasses(parsed.data, {
+    paddingY: 'compact',
+    contentWidth: hasImage ? 'normal' : 'narrow',
+    textAlign: 'left',
+  });
 
   return (
-    <section style={sectionBackgroundStyle(parsed.data)}>
-      <div
+    <section
+      className={layout.section}
+      style={sectionBackgroundStyle(parsed.data)}
+      {...sectionSurfaceAttributes(parsed.data)}
+    >
+      <RevealOnScroll
+        animation={parsed.data.animation}
         className={cn(
-          'mx-auto px-6 py-16',
-          hasImage ? 'grid max-w-5xl items-center gap-10 md:grid-cols-2' : 'max-w-3xl',
+          layout.container,
+          hasImage && 'grid items-center gap-10 md:grid-cols-2',
         )}
       >
         <div>
           {title !== undefined && (
-            <h2
+            <Heading
               className={cn(
-                'mb-6 text-3xl font-bold tracking-tight',
+                'ui-heading mb-6 text-3xl',
                 hasBackgroundImage && 'text-white',
               )}
             >
               {title}
-            </h2>
+            </Heading>
           )}
           <p
             className={cn(
@@ -59,9 +82,10 @@ export function TextBlock({ sectionProps }: SectionComponentProps): ReactElement
             src={imageUrl}
             alt={imageAlt ?? ''}
             className="w-full rounded-xl shadow-sm"
+            {...imageLoading()}
           />
         )}
-      </div>
+      </RevealOnScroll>
     </section>
   );
 }

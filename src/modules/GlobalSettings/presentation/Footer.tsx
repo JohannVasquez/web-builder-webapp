@@ -1,55 +1,199 @@
-import type { ReactElement } from 'react';
-import { Mail, MapPin, Phone } from 'lucide-react';
+'use client';
+
+import type { ComponentType, FormEvent, ReactElement } from 'react';
+import { useState } from 'react';
+import { CookiePreferencesButton } from '@/modules/Consent/presentation/CookiePreferencesButton';
+import { Link as LinkIcon, Mail, MapPin, Phone } from 'lucide-react';
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaLinkedinIn,
+  FaTiktok,
+  FaXTwitter,
+  FaYoutube,
+} from 'react-icons/fa6';
+import { cn } from '@/shared/lib/utils';
 import type { GlobalSettings } from '../domain/GlobalSettings';
 
-function InstagramIcon({ className }: { readonly className?: string }): ReactElement {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-    </svg>
-  );
-}
-
-function FacebookIcon({ className }: { readonly className?: string }): ReactElement {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  );
-}
+const FOOTER_VARIANTS = ['simple', 'columns', 'newsletter'] as const;
+type FooterVariant = (typeof FOOTER_VARIANTS)[number];
 
 interface FooterProps {
   readonly settings: GlobalSettings;
+  // `simple`: una fila con logo, redes y copyright. `columns` (default): lo actual. `newsletter`: `columns` más una columna de suscripción.
+  readonly variant?: FooterVariant;
+  // Sin este callback, la columna de suscripción solo explica que se activa con el bloque de novedades.
+  readonly onSubscribe?: (email: string) => void | Promise<void>;
 }
 
-export function Footer({ settings }: FooterProps): ReactElement {
-  const year = new Date().getFullYear();
+// Tipa el ícono por lo único que usamos: lucide y react-icons no comparten tipo, pero sí `className`.
+interface SocialLink {
+  readonly url: string;
+  readonly label: string;
+  readonly Icon: ComponentType<{ className?: string }>;
+}
+
+function socialLinksOf(settings: GlobalSettings): readonly SocialLink[] {
+  return [
+    { url: settings.instagramUrl, label: 'Instagram', Icon: FaInstagram },
+    { url: settings.facebookUrl, label: 'Facebook', Icon: FaFacebookF },
+    { url: settings.tiktokUrl, label: 'TikTok', Icon: FaTiktok },
+    { url: settings.linkedinUrl, label: 'LinkedIn', Icon: FaLinkedinIn },
+    { url: settings.youtubeUrl, label: 'YouTube', Icon: FaYoutube },
+    { url: settings.xUrl, label: 'X', Icon: FaXTwitter },
+    {
+      url: settings.customLinkUrl,
+      label: settings.customLinkLabel !== '' ? settings.customLinkLabel : 'Enlace',
+      Icon: LinkIcon,
+    },
+  ].filter((social) => social.url !== '');
+}
+
+function FooterLogo({ settings }: { readonly settings: GlobalSettings }): ReactElement {
+  const { logoLight, logoDark } = settings.brand.assets;
+  if (logoLight === undefined) {
+    return <p className="text-lg font-bold">{settings.siteName}</p>;
+  }
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image */}
+      <img
+        src={logoLight}
+        alt={settings.siteName}
+        loading="lazy"
+        decoding="async"
+        className={logoDark !== undefined ? 'h-9 w-auto dark:hidden' : 'h-9 w-auto'}
+      />
+      {logoDark !== undefined && (
+        // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
+        <img
+          src={logoDark}
+          alt={settings.siteName}
+          loading="lazy"
+          decoding="async"
+          className="hidden h-9 w-auto dark:block"
+        />
+      )}
+    </>
+  );
+}
+
+function SocialIcons({
+  items,
+}: {
+  readonly items: readonly SocialLink[];
+}): ReactElement | null {
+  if (items.length === 0) {
+    return null;
+  }
+  return (
+    <div className="flex flex-wrap gap-3">
+      {items.map(({ url, label, Icon }) => (
+        <a
+          key={label}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={label}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          <Icon className="size-5" />
+        </a>
+      ))}
+    </div>
+  );
+}
+
+function NewsletterColumn({
+  onSubscribe,
+}: {
+  readonly onSubscribe: ((email: string) => void | Promise<void>) | undefined;
+}): ReactElement {
+  const [status, setStatus] = useState<'idle' | 'sent'>('idle');
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    if (onSubscribe === undefined) {
+      return;
+    }
+    const email = new FormData(event.currentTarget).get('email');
+    if (typeof email === 'string' && email !== '') {
+      void onSubscribe(email);
+      setStatus('sent');
+    }
+  };
 
   return (
-    <footer className="bg-secondary/40 border-t">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 md:grid-cols-3">
+    <div className="space-y-3 text-sm">
+      <p className="font-semibold">Novedades</p>
+      {onSubscribe === undefined ? (
+        <p className="text-muted-foreground">
+          La suscripción se activa junto con el bloque de novedades.
+        </p>
+      ) : status === 'sent' ? (
+        <p className="text-muted-foreground">Gracias por suscribirte.</p>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <input
+            type="email"
+            name="email"
+            required
+            placeholder="Tu correo"
+            aria-label="Correo electrónico"
+            className="ui-input min-w-0 flex-1 px-3 py-2 text-sm"
+          />
+          <button
+            type="submit"
+            className="ui-button bg-primary text-primary-foreground px-4 py-2 text-sm"
+          >
+            Suscribirme
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}
+
+export function Footer({
+  settings,
+  variant = 'columns',
+  onSubscribe,
+}: FooterProps): ReactElement {
+  const resolvedVariant: FooterVariant = FOOTER_VARIANTS.includes(variant)
+    ? variant
+    : 'columns';
+  const year = new Date().getFullYear();
+  const socialLinks = socialLinksOf(settings);
+
+  if (resolvedVariant === 'simple') {
+    return (
+      <footer className="bg-secondary/40 border-t" data-variant={resolvedVariant}>
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
+          <FooterLogo settings={settings} />
+          <SocialIcons items={socialLinks} />
+          <p className="text-muted-foreground flex flex-wrap items-center justify-center gap-x-2 text-xs">
+            <span>
+              © {year} {settings.siteName}. Todos los derechos reservados.
+            </span>
+            <CookiePreferencesButton />
+          </p>
+        </div>
+      </footer>
+    );
+  }
+
+  const isNewsletter = resolvedVariant === 'newsletter';
+
+  return (
+    <footer className="bg-secondary/40 border-t" data-variant={resolvedVariant}>
+      <div
+        className={cn(
+          'mx-auto grid max-w-6xl gap-10 px-6 py-12',
+          isNewsletter ? 'md:grid-cols-4' : 'md:grid-cols-3',
+        )}
+      >
         <div>
-          <p className="text-lg font-bold">{settings.siteName}</p>
+          <FooterLogo settings={settings} />
           {settings.tagline !== '' && (
             <p className="text-muted-foreground mt-2 text-sm">{settings.tagline}</p>
           )}
@@ -75,37 +219,20 @@ export function Footer({ settings }: FooterProps): ReactElement {
             </p>
           )}
         </div>
-        <div className="space-y-3 text-sm">
-          <p className="font-semibold">Síguenos</p>
-          <div className="flex gap-3">
-            {settings.instagramUrl !== '' && (
-              <a
-                href={settings.instagramUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <InstagramIcon className="size-5" />
-              </a>
-            )}
-            {settings.facebookUrl !== '' && (
-              <a
-                href={settings.facebookUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Facebook"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <FacebookIcon className="size-5" />
-              </a>
-            )}
+        {socialLinks.length > 0 && (
+          <div className="space-y-3 text-sm">
+            <p className="font-semibold">Síguenos</p>
+            <SocialIcons items={socialLinks} />
           </div>
-        </div>
+        )}
+        {isNewsletter && <NewsletterColumn onSubscribe={onSubscribe} />}
       </div>
       <div className="border-t py-4 text-center">
-        <p className="text-muted-foreground text-xs">
-          © {year} {settings.siteName}. Todos los derechos reservados.
+        <p className="text-muted-foreground flex flex-wrap items-center justify-center gap-x-2 text-xs">
+          <span>
+            © {year} {settings.siteName}. Todos los derechos reservados.
+          </span>
+          <CookiePreferencesButton />
         </p>
       </div>
     </footer>

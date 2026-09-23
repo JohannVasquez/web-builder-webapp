@@ -7,12 +7,14 @@ describe('PageService', () => {
     slug: 'nosotros',
     title: 'Nosotros',
     description: 'Quiénes somos',
+    visualStyle: null,
     sections: [{ type: 'Hero', position: 1, props: { title: 'Hola' }, anchor: null }],
   };
 
   it('delegates the lookup to the repository and returns the page', async () => {
     const repository: jest.Mocked<PageRepository> = {
       findBySlug: jest.fn().mockResolvedValue(page),
+      findAllPublished: jest.fn().mockResolvedValue([]),
     };
     const service = new PageService(repository);
 
@@ -25,6 +27,7 @@ describe('PageService', () => {
   it('returns null when the page does not exist', async () => {
     const repository: jest.Mocked<PageRepository> = {
       findBySlug: jest.fn().mockResolvedValue(null),
+      findAllPublished: jest.fn().mockResolvedValue([]),
     };
     const service = new PageService(repository);
 

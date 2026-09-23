@@ -11,7 +11,8 @@ interface ContactChannelsProps {
   readonly accentColor?: string;
 }
 
-const DEFAULT_ACCENT = '#f59e0b';
+const DEFAULT_ACCENT = 'var(--brand-accent)';
+// Verde oficial de la marca WhatsApp, no del cliente: no sale de los tokens.
 const WHATSAPP_COLOR = '#25D366';
 
 function IconBadge({
@@ -150,10 +151,7 @@ export function ContactChannels({
   return (
     <div className="space-y-4">
       {items.map((channel) => (
-        <div
-          key={channel.title}
-          className={cn('bg-card flex gap-4 rounded-xl border p-5')}
-        >
+        <div key={channel.title} className={cn('ui-card flex gap-4 p-5')}>
           <IconBadge color={channel.type === 'whatsapp' ? WHATSAPP_COLOR : accent}>
             {ICON_BY_TYPE[channel.type]}
           </IconBadge>
