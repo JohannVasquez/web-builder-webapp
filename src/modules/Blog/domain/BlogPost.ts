@@ -6,6 +6,8 @@ export const BlogPostSummarySchema = z.object({
   title: z.string(),
   excerpt: z.string(),
   coverImageUrl: z.string().nullable(),
+  // La misma portada como clave; la URL firmada caduca y no sirve para `next/image`.
+  coverImageKey: z.string().nullable().optional(),
   authorName: z.string(),
   publishedAt: z.string(),
   tags: z.array(z.string()),

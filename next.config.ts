@@ -61,8 +61,11 @@ const nextConfig: NextConfig = {
   // La versión de Next no es información que nadie necesite para visitar un sitio.
   poweredByHeader: false,
   images: {
-    // Las imágenes viven en el bucket privado y llegan como URLs firmadas; el host concreto
-    // depende del despliegue, así que se declara por variable en vez de fijarlo aquí.
+    /**
+     * `/api/media/<clave>` responde un 307 al bucket, así que el optimizador termina pidiendo
+     * ese host. Cuál es depende del despliegue (MinIO en local, R2 en producción), por eso no
+     * se fija aquí: lo acota la propia ruta, que solo firma claves del cliente que pregunta.
+     */
     remotePatterns: [
       { protocol: 'https', hostname: '**' },
       { protocol: 'http', hostname: 'localhost' },
