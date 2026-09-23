@@ -5,7 +5,6 @@ describe('readAnalyticsConfig', () => {
     googleAnalyticsId: '',
     metaPixelId: '',
     googleTagManagerId: '',
-    cookieBanner: '',
   };
 
   it('sin configuración no hay ningún rastreador', () => {
@@ -45,9 +44,9 @@ describe('readAnalyticsConfig', () => {
     expect(config.googleAnalyticsId).toBe('');
   });
 
-  it('el aviso de cookies se activa solo con el valor exacto "true"', () => {
-    expect(readAnalyticsConfig({ ...empty, cookieBanner: 'true' }).cookieBannerEnabled).toBe(true);
-    expect(readAnalyticsConfig({ ...empty, cookieBanner: 'si' }).cookieBannerEnabled).toBe(false);
-    expect(readAnalyticsConfig(empty).cookieBannerEnabled).toBe(false);
+  // El interruptor del aviso de cookies se eliminó a propósito: su estado por omisión dejaba
+  // los rastreadores corriendo sin consentimiento. Ahora quien decide es `ConsentProvider`.
+  it('la configuración ya no incluye un interruptor para el aviso', () => {
+    expect(readAnalyticsConfig(empty)).not.toHaveProperty('cookieBannerEnabled');
   });
 });

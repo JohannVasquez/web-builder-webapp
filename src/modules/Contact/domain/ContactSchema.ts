@@ -20,3 +20,22 @@ export const ContactSchema = z.strictObject({
 });
 
 export type ContactInput = z.infer<typeof ContactSchema>;
+
+/**
+ * Lo que valida el formulario. La casilla de privacidad vive aquí y NO en `ContactSchema`
+ * porque ese es el contrato con la API (`strictObject`: un campo de más lo rechaza). El
+ * permiso se registra por su propio camino, en el registro de consentimiento.
+ */
+export const ContactFormSchema = ContactSchema.extend({
+  acceptedPrivacy: z.literal(true, {
+    message: 'Necesitamos tu autorización para tratar tus datos',
+  }),
+});
+
+export type ContactFormInput = z.infer<typeof ContactFormSchema>;
+
+// Lo que viaja a la API: el formulario sin la casilla.
+export const toContactInput = ({
+  acceptedPrivacy: _acceptedPrivacy,
+  ...contact
+}: ContactFormInput): ContactInput => contact;
