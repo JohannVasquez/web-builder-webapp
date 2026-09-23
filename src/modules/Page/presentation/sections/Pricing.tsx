@@ -17,6 +17,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const PRICING_VARIANTS = ['cards', 'table'] as const;
@@ -149,7 +150,12 @@ function PlanCta({ plan }: { readonly plan: Plan }): ReactElement | null {
   );
 }
 
-export function Pricing({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Pricing({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
+  const SubHeading = HEADING_TAGS[subHeadingLevel(headingLevel)];
   const parsed = PricingPropsSchema.safeParse(sectionProps);
   const [billing, setBilling] = useState<Billing>('monthly');
 
@@ -176,14 +182,14 @@ export function Pricing({ sectionProps }: SectionComponentProps): ReactElement |
         </p>
       )}
       {title !== '' && (
-        <h2
+        <Heading
           className={cn(
             'ui-heading text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
           )}
         >
           {title}
-        </h2>
+        </Heading>
       )}
       {subtitle !== undefined && (
         <p
@@ -294,7 +300,7 @@ export function Pricing({ sectionProps }: SectionComponentProps): ReactElement |
                     Más popular
                   </span>
                 )}
-                <h3 className="text-xl font-bold">{plan.name}</h3>
+                <SubHeading className="text-xl font-bold">{plan.name}</SubHeading>
                 {plan.description !== undefined && (
                   <p className="text-muted-foreground mt-1 text-sm">{plan.description}</p>
                 )}

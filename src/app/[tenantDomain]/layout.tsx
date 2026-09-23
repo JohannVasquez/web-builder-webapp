@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactElement, ReactNode } from 'react';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { createNavigationService } from '@/modules/Navigation/infrastructure/navigationServiceFactory';
+import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { Navbar } from '@/modules/GlobalSettings/presentation/Navbar';
 import { Footer } from '@/modules/GlobalSettings/presentation/Footer';
 import { WhatsAppButton } from '@/modules/GlobalSettings/presentation/WhatsAppButton';
@@ -13,6 +14,7 @@ import { LocalBusinessJsonLd } from '@/modules/GlobalSettings/presentation/Local
 import { Analytics } from '@/modules/Analytics/presentation/Analytics';
 import { readAnalyticsConfig } from '@/modules/Analytics/domain/Analytics';
 import { Toaster } from '@/shared/ui/sonner';
+import { TenantProviders } from './providers';
 
 interface TenantLayoutProps {
   readonly children: ReactNode;
@@ -31,11 +33,14 @@ export async function generateMetadata({
 
   // El canónico apunta al dominio principal del cliente, no a aquel por el que entró el
   // visitante: un tenant con dos dominios no puede competir consigo mismo en buscadores.
+  //
+  // Aquí se fija solo la base; el canónico concreto lo declara cada página con `canonical()`
+  // de `@/shared/lib/seo`. Ponerlo en este layout lo heredarían TODAS las rutas, y cada post
+  // y cada producto terminaría señalando a la portada como su versión buena.
   const canonicalHost = settings.primaryDomain ?? tenantDomain;
 
   return {
     metadataBase: new URL(`https://${canonicalHost}`),
-    alternates: { canonical: '/' },
     title: { default: settings.siteName, template: `%s | ${settings.siteName}` },
     description: settings.tagline,
     icons: favicon === undefined ? undefined : { icon: brandAsset('favicon') },
@@ -60,14 +65,15 @@ export default async function TenantLayout({
   params,
 }: TenantLayoutProps): Promise<ReactElement> {
   const { tenantDomain } = await params;
-  const [settings, links] = await Promise.all([
+  const [settings, links, store] = await Promise.all([
     createGlobalSettingsService(tenantDomain).getSettings(),
     createNavigationService(tenantDomain).getLinks(),
+    createStoreService(tenantDomain).getStoreSettings(),
   ]);
   const pairing = resolveFontPairing(settings.brand.typography.pairing);
 
   return (
-    <>
+    <TenantProviders>
       <ThemeScript colorMode={settings.brand.colorMode} />
       <LocalBusinessJsonLd
         settings={settings}
@@ -86,7 +92,7 @@ export default async function TenantLayout({
       >
         Saltar al contenido
       </a>
-      <Navbar settings={settings} links={links} />
+      <Navbar settings={settings} links={links} showCart={store !== null} />
       <main id="contenido" tabIndex={-1} className="ui-page-backdrop flex-1">
         {children}
       </main>
@@ -94,6 +100,6 @@ export default async function TenantLayout({
       <WhatsAppButton whatsappNumber={settings.whatsappNumber} />
       <Analytics config={readAnalyticsConfig(settings)} />
       <Toaster position="top-center" richColors />
-    </>
+    </TenantProviders>
   );
 }

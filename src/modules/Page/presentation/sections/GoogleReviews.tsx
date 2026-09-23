@@ -13,6 +13,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -141,7 +142,9 @@ function ProfileLink({
 
 export function GoogleReviews({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = GoogleReviewsPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -170,14 +173,14 @@ export function GoogleReviews({
         </p>
       )}
       {title !== '' && (
-        <h2
+        <Heading
           className={cn(
             'ui-heading text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
           )}
         >
           {title}
-        </h2>
+        </Heading>
       )}
     </div>
   );

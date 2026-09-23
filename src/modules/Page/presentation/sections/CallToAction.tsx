@@ -14,6 +14,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const CALL_TO_ACTION_VARIANTS = ['banner', 'card', 'split'] as const;
@@ -41,11 +42,13 @@ const CallToActionPropsSchema = z.object({
 
 export function CallToAction({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
   const parsed = CallToActionPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
   }
+  const Heading = HEADING_TAGS[headingLevel];
   const {
     title,
     subtitle,
@@ -77,7 +80,7 @@ export function CallToAction({
             className="ui-card flex w-full flex-col items-center gap-4 p-8 text-center md:p-12"
             style={textColor !== undefined ? { color: textColor } : undefined}
           >
-            <h2 className="ui-heading text-3xl md:text-4xl">{title}</h2>
+            <Heading className="ui-heading text-3xl md:text-4xl">{title}</Heading>
             {subtitle !== undefined && (
               <p className="text-muted-foreground max-w-xl">{subtitle}</p>
             )}
@@ -111,7 +114,7 @@ export function CallToAction({
           )}
         >
           <div className="flex flex-col gap-2">
-            <h2 className="ui-heading text-3xl md:text-4xl">{title}</h2>
+            <Heading className="ui-heading text-3xl md:text-4xl">{title}</Heading>
             {subtitle !== undefined && (
               <p
                 className={
@@ -148,7 +151,7 @@ export function CallToAction({
         animation={parsed.data.animation}
         className={cn(layout.container, 'flex flex-col items-center gap-4')}
       >
-        <h2 className="ui-heading text-3xl md:text-4xl">{title}</h2>
+        <Heading className="ui-heading text-3xl md:text-4xl">{title}</Heading>
         {subtitle !== undefined && (
           <p
             className={

@@ -6,8 +6,8 @@ import {
 import type { Tenant } from '../domain/AdminApi';
 
 const tenants: Tenant[] = [
-  { id: 1, slug: 'acme', name: 'Acme', primaryDomain: null },
-  { id: 2, slug: 'globex', name: 'Globex', primaryDomain: null },
+  { id: '018f6f1a-0000-7000-8000-000000000001', slug: 'acme', name: 'Acme', primaryDomain: null, status: 'active' },
+  { id: '018f6f1a-0000-7000-8000-000000000002', slug: 'globex', name: 'Globex', primaryDomain: null, status: 'active' },
 ];
 
 describe('describeApiKeyScope', () => {
@@ -19,13 +19,13 @@ describe('describeApiKeyScope', () => {
 
   it('lista los nombres de los clientes del alcance', () => {
     expect(
-      describeApiKeyScope({ scopeAllTenants: false, tenantIds: [2, 1] }, tenants),
+      describeApiKeyScope({ scopeAllTenants: false, tenantIds: ['018f6f1a-0000-7000-8000-000000000002', '018f6f1a-0000-7000-8000-000000000001'] }, tenants),
     ).toBe('Globex, Acme');
   });
 
   it('marca como "Cliente eliminado" un id que ya no existe', () => {
     expect(
-      describeApiKeyScope({ scopeAllTenants: false, tenantIds: [1, 999] }, tenants),
+      describeApiKeyScope({ scopeAllTenants: false, tenantIds: ['018f6f1a-0000-7000-8000-000000000001', '018f6f1a-0000-7000-8000-000000000999'] }, tenants),
     ).toBe('Acme, Cliente eliminado');
   });
 

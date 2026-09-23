@@ -14,6 +14,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 import {
   DAY_ORDER,
@@ -102,7 +103,9 @@ function dayLine(entry: DayHours): string {
 
 export function OpeningHours({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = OpeningHoursPropsSchema.safeParse(sectionProps);
   const days = parsed.success ? parsed.data.days : [];
   const holidays = parsed.success ? parsed.data.holidays : undefined;
@@ -135,14 +138,14 @@ export function OpeningHours({
         </p>
       )}
       <div className="flex flex-wrap items-center gap-3">
-        <h2
+        <Heading
           className={cn(
             'ui-heading text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
           )}
         >
           {title}
-        </h2>
+        </Heading>
         {isOpen !== null && (
           <span
             className={cn(

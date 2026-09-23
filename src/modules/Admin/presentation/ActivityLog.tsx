@@ -64,7 +64,7 @@ export function ActivityLog(): ReactElement {
             value={filters.tenantId ?? ''}
             onChange={(event) =>
               updateFilters({
-                tenantId: event.target.value === '' ? null : Number(event.target.value),
+                tenantId: event.target.value === '' ? null : event.target.value,
               })
             }
           >

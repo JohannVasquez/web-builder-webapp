@@ -1,10 +1,18 @@
-import { SessionSchema, SessionExpiredError, type Session } from '../domain/Session';
+import {
+  SessionSchema,
+  SessionExpiredError,
+  MeUserSchema,
+  type Session,
+  type MeUser,
+} from '../domain/Session';
 
 type FetchLike = (input: string, init?: RequestInit) => Promise<Response>;
 
 export class InvalidCredentialsError extends Error {
-  constructor() {
-    super('Correo o contraseña incorrectos.');
+  // El servidor distingue "credenciales malas" de "cuenta desactivada" en este mismo mensaje;
+  // por eso se recibe como parámetro en vez de fijarlo aquí.
+  constructor(message = 'Correo o contraseña incorrectos.') {
+    super(message);
     this.name = 'InvalidCredentialsError';
   }
 }
@@ -32,7 +40,8 @@ export class AuthService {
     });
 
     if (response.status === 401) {
-      throw new InvalidCredentialsError();
+      const body = (await response.json().catch(() => ({}))) as { message?: string };
+      throw new InvalidCredentialsError(body.message);
     }
     if (response.status === 429) {
       const body = (await response.json().catch(() => ({}))) as { message?: string };
@@ -49,7 +58,8 @@ export class AuthService {
   }
 
   // Confirma que el token sigue vigente; lanza `SessionExpiredError` si no.
-  public async me(token: string): Promise<Session['user']> {
+  // `/api/admin/me` no devuelve `email`, así que usa su propio esquema y no el de la sesión.
+  public async me(token: string): Promise<MeUser> {
     const response = await this.fetchFn(`${this.baseUrl}/api/admin/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -62,6 +72,44 @@ export class AuthService {
     }
 
     const body = (await response.json()) as unknown;
-    return SessionSchema.shape.user.parse((body as { user: unknown }).user);
+    return MeUserSchema.parse((body as { user: unknown }).user);
+  }
+
+  // Siempre responde 200 con el mismo mensaje, exista o no la cuenta: así no se puede
+  // usar para averiguar qué correos están registrados.
+  public async forgotPassword(email: string): Promise<string> {
+    const response = await this.fetchFn(
+      `${this.baseUrl}/api/admin/auth/forgot-password`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      },
+    );
+    const body = (await response.json().catch(() => ({}))) as { message?: string };
+    return (
+      body.message ??
+      'Si ese correo tiene una cuenta, te llegará un enlace para cambiar la contraseña.'
+    );
+  }
+
+  public async resetPassword(token: string, password: string): Promise<string> {
+    const response = await this.fetchFn(`${this.baseUrl}/api/admin/auth/reset-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, password }),
+    });
+    const body = (await response.json().catch(() => ({}))) as {
+      message?: string;
+      issues?: { path: string; message: string }[];
+    };
+    if (!response.ok) {
+      throw new Error(
+        body.message ??
+          body.issues?.[0]?.message ??
+          'No pudimos actualizar tu contraseña. Inténtalo nuevamente.',
+      );
+    }
+    return body.message ?? 'Contraseña actualizada.';
   }
 }

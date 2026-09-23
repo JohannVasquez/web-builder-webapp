@@ -12,6 +12,7 @@ import {
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const LocationMapPropsSchema = z.object({
@@ -46,7 +47,9 @@ const LocationMapPropsSchema = z.object({
  */
 export function LocationMap({
   sectionProps,
+  headingLevel = 2,
 }: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = LocationMapPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -78,14 +81,14 @@ export function LocationMap({
         {(title !== undefined || subtitle !== undefined) && (
           <div className="mb-10 text-center">
             {title !== undefined && (
-              <h2
+              <Heading
                 className={cn(
                   'ui-heading text-3xl md:text-4xl',
                   hasBackgroundImage && 'text-white',
                 )}
               >
                 {title}
-              </h2>
+              </Heading>
             )}
             {subtitle !== undefined && (
               <p

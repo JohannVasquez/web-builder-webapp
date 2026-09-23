@@ -9,22 +9,32 @@ import {
   Image as ImageIcon,
   Loader2,
   Mail,
+  Menu as MenuIcon,
+  Newspaper,
+  Pause,
   Palette,
   Pencil,
+  Play,
   Plus,
+  ShoppingBag,
   Trash2,
 } from 'lucide-react';
 import {
   AdminPageResponseSchema,
   AdminPagesSchema,
+  TenantResponseSchema,
   TenantsSchema,
   type AdminPage,
+  type Tenant,
+  type TenantStatus,
 } from '../domain/AdminApi';
+import { describeTenantStatus } from '../application/tenantPresentation';
 import {
   describeAdminError,
   type AdminErrorMessage,
 } from '../application/adminErrorMessage';
 import { useAdminApi } from './useAdminApi';
+import { TenantDomains } from './TenantDomains';
 import { useAsyncData, refreshAsyncData } from '@/shared/lib/useAsyncData';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -66,8 +76,8 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
   const tenant = tenants.data?.find((item) => String(item.id) === tenantId) ?? null;
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingPageId, setEditingPageId] = useState<number | null>(null);
-  const [pendingActionId, setPendingActionId] = useState<number | null>(null);
+  const [editingPageId, setEditingPageId] = useState<string | null>(null);
+  const [pendingActionId, setPendingActionId] = useState<string | null>(null);
 
   const reloadPages = (): void => refreshAsyncData(pagesKey);
 
@@ -106,7 +116,10 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
         </Link>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="ui-heading text-2xl">{tenant.name}</h1>
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="ui-heading text-2xl">{tenant.name}</h1>
+              <TenantStatusBadge status={tenant.status} />
+            </div>
             <p className="text-muted-foreground text-sm">{tenant.slug}</p>
           </div>
           {tenant.primaryDomain !== null && (
@@ -138,7 +151,26 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
             <Mail className="size-4" /> Mensajes
           </Link>
         </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/menu`}>
+            <MenuIcon className="size-4" /> Menú de navegación
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/blog`}>
+            <Newspaper className="size-4" /> Blog
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/tienda`}>
+            <ShoppingBag className="size-4" /> Tienda
+          </Link>
+        </Button>
       </div>
+
+      <TenantStatusSection tenantId={tenantId} tenant={tenant} />
+
+      <TenantDomains tenantId={tenantId} />
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="ui-heading text-lg">Páginas</h2>
@@ -262,6 +294,108 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
             ),
           )}
         </ul>
+      )}
+    </div>
+  );
+}
+
+const STATUS_BADGE_CLASSES: Record<TenantStatus, string> = {
+  active: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300',
+  paused: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
+  building: 'bg-muted text-muted-foreground',
+};
+
+function TenantStatusBadge({ status }: { readonly status: TenantStatus }): ReactElement {
+  const description = describeTenantStatus(status);
+  return (
+    <span
+      className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_BADGE_CLASSES[status]}`}
+    >
+      {description.label}
+    </span>
+  );
+}
+
+interface TenantStatusSectionProps {
+  readonly tenantId: string;
+  readonly tenant: Tenant;
+}
+
+// Pausar no borra nada: el contenido sigue ahí y reactivar deja el sitio tal cual estaba
+// (SPEC 9.3). El cambio se confirma porque afecta de inmediato a quien visita el sitio.
+function TenantStatusSection({
+  tenantId,
+  tenant,
+}: TenantStatusSectionProps): ReactElement {
+  const api = useAdminApi();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = async (nextStatus: TenantStatus): Promise<void> => {
+    const confirmationMessage =
+      nextStatus === 'paused'
+        ? `Vas a pausar "${tenant.name}". El sitio dejará de responder a sus visitantes, pero no se borra nada: puedes reactivarlo cuando quieras y quedará tal cual estaba. ¿Continuar?`
+        : `Vas a reactivar "${tenant.name}". El sitio volverá a responder tal cual estaba antes de pausarlo. ¿Continuar?`;
+    const confirmed = window.confirm(confirmationMessage);
+    if (!confirmed) {
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      await api.patch(
+        `/api/admin/tenants/${tenantId}/status`,
+        { status: nextStatus },
+        TenantResponseSchema,
+      );
+      refreshAsyncData(TENANTS_CACHE_KEY);
+      toast.success(nextStatus === 'paused' ? 'Cliente pausado.' : 'Cliente reactivado.');
+    } catch (cause) {
+      toast.error(
+        describeAdminError(cause, 'No pudimos cambiar el estado. Inténtalo nuevamente.')
+          .message,
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="ui-card flex flex-wrap items-center justify-between gap-4 p-5">
+      <div>
+        <p className="font-medium">Estado del sitio</p>
+        <p className="text-muted-foreground text-sm">
+          {tenant.status === 'paused'
+            ? 'El sitio no responde a sus visitantes. Nada de su contenido se ha borrado.'
+            : 'Pausar no borra nada; reactivar deja el sitio tal cual estaba.'}
+        </p>
+      </div>
+      {tenant.status === 'paused' ? (
+        <Button
+          type="button"
+          variant="outline"
+          disabled={isSubmitting}
+          onClick={() => void handleChange('active')}
+        >
+          {isSubmitting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Play className="size-4" />
+          )}
+          Reactivar
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          variant="outline"
+          disabled={isSubmitting}
+          onClick={() => void handleChange('paused')}
+        >
+          {isSubmitting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Pause className="size-4" />
+          )}
+          Pausar
+        </Button>
       )}
     </div>
   );
@@ -456,7 +590,7 @@ interface TogglePublishButtonProps {
   readonly tenantId: string;
   readonly page: AdminPage;
   readonly isPending: boolean;
-  readonly onPending: (id: number | null) => void;
+  readonly onPending: (id: string | null) => void;
   readonly onDone: () => void;
 }
 
@@ -469,15 +603,28 @@ function TogglePublishButton({
 }: TogglePublishButtonProps): ReactElement {
   const api = useAdminApi();
 
+  // Publicar usa el endpoint dedicado, no un PATCH de `isPublished`: ese endpoint también
+  // toma una foto del borrador actual (`publishedContent`), que es lo que sirve el sitio
+  // público. Un PATCH a secas dejaría la página marcada como publicada pero sin nada (o con
+  // una foto vieja) detrás. Despublicar sí es un simple cambio de visibilidad.
   const handleClick = async (): Promise<void> => {
     onPending(page.id);
     try {
-      await api.patch(
-        `/api/admin/tenants/${tenantId}/pages/${String(page.id)}`,
-        { isPublished: !page.isPublished },
-        AdminPageResponseSchema,
-      );
-      toast.success(page.isPublished ? 'Página despublicada.' : 'Página publicada.');
+      if (page.isPublished) {
+        await api.patch(
+          `/api/admin/tenants/${tenantId}/pages/${String(page.id)}`,
+          { isPublished: false },
+          AdminPageResponseSchema,
+        );
+        toast.success('Página despublicada.');
+      } else {
+        await api.post(
+          `/api/admin/tenants/${tenantId}/pages/${String(page.id)}/publish`,
+          {},
+          AdminPageResponseSchema,
+        );
+        toast.success('Página publicada.');
+      }
       onDone();
     } catch (cause) {
       toast.error(
@@ -509,7 +656,7 @@ interface DeletePageButtonProps {
   readonly tenantId: string;
   readonly page: AdminPage;
   readonly isPending: boolean;
-  readonly onPending: (id: number | null) => void;
+  readonly onPending: (id: string | null) => void;
   readonly onDone: () => void;
 }
 

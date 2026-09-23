@@ -13,11 +13,16 @@ const declarations = (tokens: Partial<StyleTokens>): string =>
 
 const scopedRules = (style: VisualStyleDefinition): string => {
   const selector = `[data-visual-style='${style.id}']`;
+  // Una sección con color propio (`[data-surface]`) re-declara los tokens del estilo del SITIO
+  // para resolverlos contra sus colores locales. Dentro de una página o bloque con otro estilo
+  // eso la devolvería al estilo del sitio, así que también se repite la regla con este estilo,
+  // más específica que la genérica.
+  const surface = `${selector} [data-surface]`;
   const dark =
     style.darkTokens === undefined
       ? ''
-      : `.dark ${selector}{${declarations(style.darkTokens)}}`;
-  return `${selector}{${declarations(style.tokens)}}${dark}${style.css ?? ''}`;
+      : `.dark ${selector},.dark ${surface}{${declarations(style.darkTokens)}}`;
+  return `${selector},${surface}{${declarations(style.tokens)}}${dark}${style.css ?? ''}`;
 };
 
 // El estilo del sitio va en `:root`, pero además se emiten las reglas de TODOS los estilos

@@ -13,12 +13,14 @@ import { getPublicApiBaseUrl } from '@/shared/config/api';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
+import { ForgotPasswordForm } from './ForgotPasswordForm';
 
 export function LoginForm(): ReactElement {
   const { signIn } = useSession();
   const router = useRouter();
   const authService = useMemo(() => new AuthService(getPublicApiBaseUrl()), []);
 
+  const [mode, setMode] = useState<'login' | 'forgot-password'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +38,10 @@ export function LoginForm(): ReactElement {
       setIsSubmitting(false);
     }
   };
+
+  if (mode === 'forgot-password') {
+    return <ForgotPasswordForm onBackToLogin={() => setMode('login')} />;
+  }
 
   return (
     <form
@@ -61,7 +67,16 @@ export function LoginForm(): ReactElement {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Contraseña</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Contraseña</Label>
+          <button
+            type="button"
+            className="text-muted-foreground hover:text-foreground text-xs underline-offset-4 hover:underline"
+            onClick={() => setMode('forgot-password')}
+          >
+            ¿Olvidaste tu contraseña?
+          </button>
+        </div>
         <Input
           id="password"
           type="password"

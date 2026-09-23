@@ -1,16 +1,21 @@
 import { z } from 'zod';
 
-export const PageSectionSchema = z.strictObject({
+// Tolerante con campos nuevos: que la API agregue un dato es un cambio compatible, y un
+// esquema estricto lo convertía en un 500 en todas las páginas de todos los clientes.
+export const PageSectionSchema = z.object({
   type: z.string(),
   position: z.number(),
   props: z.record(z.string(), z.unknown()),
   anchor: z.string().nullable(),
 });
 
-export const PageSchema = z.strictObject({
+export const PageSchema = z.object({
   slug: z.string(),
   title: z.string(),
   description: z.string().nullable(),
+  // Estilo propio de la página; nulo = hereda el del sitio. Con default, una API que todavía
+  // no lo manda sigue siendo válida.
+  visualStyle: z.string().nullable().default(null),
   sections: z.array(PageSectionSchema),
 });
 

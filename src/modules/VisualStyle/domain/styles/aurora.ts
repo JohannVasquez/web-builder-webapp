@@ -16,16 +16,19 @@ export const aurora: VisualStyleDefinition = {
     '--ui-card-backdrop': 'none',
     '--ui-button-radius': '0.75rem',
     '--ui-button-border-width': '1px',
-    '--ui-button-border-color': 'color-mix(in srgb, var(--brand-accent) 45%, transparent)',
+    '--ui-button-border-color':
+      'color-mix(in srgb, var(--brand-accent) 45%, transparent)',
     '--ui-button-shadow': '0 0 24px color-mix(in srgb, var(--primary) 32%, transparent)',
-    '--ui-button-active-shadow': '0 0 10px color-mix(in srgb, var(--primary) 32%, transparent)',
+    '--ui-button-active-shadow':
+      '0 0 10px color-mix(in srgb, var(--primary) 32%, transparent)',
     '--ui-button-active-translate': '1px',
     '--ui-button-weight': '600',
     '--ui-input-bg': 'color-mix(in srgb, var(--background) 92%, var(--primary) 8%)',
     '--ui-input-radius': '0.75rem',
     '--ui-input-border-width': '1px',
     '--ui-input-border-color': 'color-mix(in srgb, var(--primary) 28%, transparent)',
-    '--ui-input-shadow': 'inset 0 1px 2px color-mix(in srgb, var(--foreground) 8%, transparent)',
+    '--ui-input-shadow':
+      'inset 0 1px 2px color-mix(in srgb, var(--foreground) 8%, transparent)',
     '--ui-nav-bg': 'color-mix(in srgb, var(--background) 82%, transparent)',
     '--ui-nav-border': '1px solid color-mix(in srgb, var(--primary) 24%, transparent)',
     '--ui-nav-backdrop': 'blur(14px)',
@@ -39,7 +42,7 @@ export const aurora: VisualStyleDefinition = {
     // Capa decorativa (sin texto encima): la única parte que se permite ser "oscura por naturaleza"
     // sin pelearse con el modo claro/oscuro que elija el cliente para el resto del sitio.
     '--ui-page-bg':
-      "radial-gradient(60rem 42rem at 12% -8%, color-mix(in srgb, var(--primary) 38%, transparent), transparent 60%), radial-gradient(55rem 44rem at 88% 4%, color-mix(in srgb, var(--brand-accent) 34%, transparent), transparent 62%), radial-gradient(65rem 52rem at 50% 116%, color-mix(in srgb, var(--primary) 26%, transparent), transparent 66%), linear-gradient(180deg, color-mix(in srgb, var(--foreground) 6%, transparent), color-mix(in srgb, var(--foreground) 6%, transparent))",
+      'radial-gradient(60rem 42rem at 12% -8%, color-mix(in srgb, var(--primary) 38%, transparent), transparent 60%), radial-gradient(55rem 44rem at 88% 4%, color-mix(in srgb, var(--brand-accent) 34%, transparent), transparent 62%), radial-gradient(65rem 52rem at 50% 116%, color-mix(in srgb, var(--primary) 26%, transparent), transparent 66%), linear-gradient(180deg, color-mix(in srgb, var(--foreground) 6%, transparent), color-mix(in srgb, var(--foreground) 6%, transparent))',
   },
   // Con el cliente ya en modo oscuro, las superficies pueden ser más profundas y el brillo más intenso.
   darkTokens: {

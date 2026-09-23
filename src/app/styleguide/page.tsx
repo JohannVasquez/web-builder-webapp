@@ -308,6 +308,21 @@ const SAMPLE_PROPS: Readonly<Record<string, Readonly<Record<string, unknown>>>> 
       },
     ],
   },
+  // Sin `tenantDomain` (esta página no tiene un tenant real) el bloque no pide datos y no se
+  // muestra: es el mismo comportamiento que tendría un sitio sin publicaciones todavía.
+  LatestPosts: {
+    eyebrow: 'Blog',
+    title: 'Últimas publicaciones',
+    count: 3,
+    variant: 'grid',
+  },
+  // Sin `storeService` (esta página no tiene una tienda real) el bloque no pide datos y no
+  // se muestra: mismo comportamiento que `LatestPosts` sin `blogService`.
+  FeaturedProducts: {
+    eyebrow: 'Tienda',
+    title: 'Productos destacados',
+    limit: 4,
+  },
 };
 
 function SampleRow(): ReactElement {
@@ -327,7 +342,12 @@ export default function StyleguidePage(): ReactElement {
     <>
       <VisualStyleTokens styleId="classic" />
       {VISUAL_STYLES.map((style) => (
-        <section key={style.id} data-visual-style={style.id} className="border-b">
+        <section
+          key={style.id}
+          data-visual-style={style.id}
+          data-backdrop="local"
+          className="ui-page-backdrop border-b"
+        >
           <header className="mx-auto max-w-5xl px-6 pt-10">
             <h2 className="text-2xl font-bold">{style.label}</h2>
             <p className="text-muted-foreground mt-1">{style.description}</p>

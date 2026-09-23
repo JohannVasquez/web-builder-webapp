@@ -11,6 +11,7 @@ import {
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
 import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -46,7 +47,12 @@ const GRID_COLUMNS_CLASS: Readonly<Record<number, string>> = {
   4: 'md:grid-cols-4',
 };
 
-export function Columns({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Columns({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
+  const SubHeading = HEADING_TAGS[subHeadingLevel(headingLevel)];
   const parsed = ColumnsPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -73,14 +79,14 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
         {(title !== undefined || subtitle !== undefined) && (
           <div className="mx-auto mb-14 max-w-2xl text-center">
             {title !== undefined && (
-              <h2
+              <Heading
                 className={cn(
                   'ui-heading text-3xl md:text-4xl',
                   hasBackgroundImage && 'text-white',
                 )}
               >
                 {title}
-              </h2>
+              </Heading>
             )}
             {subtitle !== undefined && (
               <p
@@ -130,14 +136,14 @@ export function Columns({ sectionProps }: SectionComponentProps): ReactElement |
                       </p>
                     )}
                     {column.title !== undefined && (
-                      <h3
+                      <SubHeading
                         className={cn(
                           'text-lg font-semibold',
                           hasBackgroundImage && 'text-white',
                         )}
                       >
                         {column.title}
-                      </h3>
+                      </SubHeading>
                     )}
                     {column.content !== undefined && (
                       <p

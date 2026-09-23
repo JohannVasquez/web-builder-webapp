@@ -15,6 +15,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 import { parseVideoUrl } from './videoUrl';
 
@@ -40,12 +41,16 @@ const VideoBlockPropsSchema = z.object({
   variant: z.enum(VIDEO_BLOCK_VARIANTS).default('contained').catch('contained'),
 });
 
-export function VideoBlock({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function VideoBlock({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
   const parsed = VideoBlockPropsSchema.safeParse(sectionProps);
   const [started, setStarted] = useState(false);
   if (!parsed.success) {
     return null;
   }
+  const Heading = HEADING_TAGS[headingLevel];
   const { eyebrow, title, videoUrl, posterUrl, caption, variant } = parsed.data;
   if (videoUrl === undefined || videoUrl.trim() === '') {
     return null;
@@ -70,7 +75,9 @@ export function VideoBlock({ sectionProps }: SectionComponentProps): ReactElemen
                 {eyebrow}
               </p>
             )}
-            {title !== '' && <h2 className="ui-heading text-3xl md:text-4xl">{title}</h2>}
+            {title !== '' && (
+              <Heading className="ui-heading text-3xl md:text-4xl">{title}</Heading>
+            )}
           </div>
         )}
         <div

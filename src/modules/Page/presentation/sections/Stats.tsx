@@ -14,6 +14,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS } from '@/shared/lib/heading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const STATS_VARIANTS = ['row', 'cards', 'counter'] as const;
@@ -133,7 +134,11 @@ function CounterValue({ value }: CounterValueProps): ReactElement {
   return <span ref={ref}>{formatCounterValue(parsed, current)}</span>;
 }
 
-export function Stats({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Stats({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
   const parsed = StatsPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -162,7 +167,9 @@ export function Stats({ sectionProps }: SectionComponentProps): ReactElement | n
       >
         <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
           {title !== undefined && (
-            <h2 className="ui-heading mb-10 text-center text-3xl md:text-4xl">{title}</h2>
+            <Heading className="ui-heading mb-10 text-center text-3xl md:text-4xl">
+              {title}
+            </Heading>
           )}
           <dl className={cn('grid grid-cols-2 gap-6 text-center', gridColumns)}>
             {items.map((item) => (
@@ -192,7 +199,9 @@ export function Stats({ sectionProps }: SectionComponentProps): ReactElement | n
       >
         <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
           {title !== undefined && (
-            <h2 className="ui-heading mb-10 text-center text-3xl md:text-4xl">{title}</h2>
+            <Heading className="ui-heading mb-10 text-center text-3xl md:text-4xl">
+              {title}
+            </Heading>
           )}
           <dl className={cn('grid grid-cols-2 gap-10 text-center', gridColumns)}>
             {items.map((item) => (
@@ -221,7 +230,9 @@ export function Stats({ sectionProps }: SectionComponentProps): ReactElement | n
     >
       <RevealOnScroll animation={parsed.data.animation} className={layout.container}>
         {title !== undefined && (
-          <h2 className="ui-heading mb-10 text-center text-3xl md:text-4xl">{title}</h2>
+          <Heading className="ui-heading mb-10 text-center text-3xl md:text-4xl">
+            {title}
+          </Heading>
         )}
         <dl className={cn('grid grid-cols-2 gap-10 text-center', gridColumns)}>
           {items.map((item) => (

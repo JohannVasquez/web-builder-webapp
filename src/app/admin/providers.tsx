@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactElement, ReactNode } from 'react';
+import { toast } from 'sonner';
 import { SessionProvider } from '@/modules/Auth/presentation/SessionProvider';
 import { LocalSessionStorage } from '@/modules/Auth/infrastructure/LocalSessionStorage';
 
@@ -9,8 +10,16 @@ import { LocalSessionStorage } from '@/modules/Auth/infrastructure/LocalSessionS
 // es el único lugar donde presentation y infrastructure pueden encontrarse.
 const storage = new LocalSessionStorage();
 
+const notifyInactivityLogout = (): void => {
+  toast('Cerramos tu sesión por inactividad.');
+};
+
 export function AdminProviders({
   children,
 }: Readonly<{ children: ReactNode }>): ReactElement {
-  return <SessionProvider storage={storage}>{children}</SessionProvider>;
+  return (
+    <SessionProvider storage={storage} onInactivityLogout={notifyInactivityLogout}>
+      {children}
+    </SessionProvider>
+  );
 }

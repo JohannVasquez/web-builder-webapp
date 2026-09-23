@@ -12,6 +12,8 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
+import { HEADING_TAGS, type HeadingLevel } from '@/shared/lib/heading';
+import { imageLoading } from '@/shared/lib/imageLoading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const LOGO_CLOUD_VARIANTS = ['row', 'marquee'] as const;
@@ -43,14 +45,17 @@ const LogoCloudPropsSchema = z.object({
 
 type Logo = z.infer<typeof LogoCloudPropsSchema>['logos'][number];
 
+// Caja de ancho y alto fijos: no conocemos la proporción real del logo hasta que carga (Spec 6.2, CLS).
 function LogoImage({ logo }: { readonly logo: Logo }): ReactElement {
   const image = (
     // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
     <img
       src={logo.url}
       alt={logo.alt}
-      loading="lazy"
-      className="h-9 w-auto shrink-0 object-contain opacity-70 grayscale transition-opacity hover:opacity-100 hover:grayscale-0"
+      width={96}
+      height={36}
+      className="h-9 w-24 shrink-0 object-contain opacity-70 grayscale transition-opacity hover:opacity-100 hover:grayscale-0"
+      {...imageLoading()}
     />
   );
   if (logo.href === undefined) {
@@ -67,14 +72,17 @@ function LogoCloudHeader({
   eyebrow,
   title,
   hasBackgroundImage,
+  headingLevel,
 }: {
   readonly eyebrow: string | undefined;
   readonly title: string;
   readonly hasBackgroundImage: boolean;
+  readonly headingLevel: HeadingLevel;
 }): ReactElement | null {
   if (eyebrow === undefined && title === '') {
     return null;
   }
+  const Heading = HEADING_TAGS[headingLevel];
   return (
     <div className="mb-8 text-center">
       {eyebrow !== undefined && (
@@ -88,14 +96,14 @@ function LogoCloudHeader({
         </p>
       )}
       {title !== '' && (
-        <h2
+        <Heading
           className={cn(
             'ui-heading mt-2 text-2xl md:text-3xl',
             hasBackgroundImage && 'text-white',
           )}
         >
           {title}
-        </h2>
+        </Heading>
       )}
     </div>
   );
@@ -105,7 +113,10 @@ function LogoCloudHeader({
 // no deben compartir keyframes si alguna vez difieren en velocidad.
 const MARQUEE_KEYFRAMES_NAME = 'logocloud-marquee';
 
-export function LogoCloud({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function LogoCloud({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
   const parsed = LogoCloudPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -136,6 +147,7 @@ export function LogoCloud({ sectionProps }: SectionComponentProps): ReactElement
             eyebrow={eyebrow}
             title={title}
             hasBackgroundImage={hasBackgroundImage}
+            headingLevel={headingLevel}
           />
         </RevealOnScroll>
         <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
@@ -164,6 +176,7 @@ export function LogoCloud({ sectionProps }: SectionComponentProps): ReactElement
           eyebrow={eyebrow}
           title={title}
           hasBackgroundImage={hasBackgroundImage}
+          headingLevel={headingLevel}
         />
         <div className="flex flex-wrap items-center justify-center gap-x-14 gap-y-8">
           {logos.map((logo, index) => (

@@ -23,6 +23,8 @@ import { BeforeAfter } from './sections/BeforeAfter';
 import { OpeningHours } from './sections/OpeningHours';
 import { Newsletter } from './sections/Newsletter';
 import { GoogleReviews } from './sections/GoogleReviews';
+import { LatestPosts } from './sections/LatestPosts';
+import { FeaturedProducts } from './sections/FeaturedProducts';
 
 export type SectionComponent = ComponentType<SectionComponentProps>;
 
@@ -53,6 +55,8 @@ export const COMPONENT_MAP: Readonly<Record<string, SectionComponent>> = {
   OpeningHours,
   Newsletter,
   GoogleReviews,
+  LatestPosts,
+  FeaturedProducts,
 };
 
 export const resolveSectionComponent = (type: string): SectionComponent | undefined => {

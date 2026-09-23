@@ -21,6 +21,7 @@ import {
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
 import { imageLoading } from '@/shared/lib/imageLoading';
+import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
@@ -152,7 +153,12 @@ function SocialRow({
   );
 }
 
-export function Team({ sectionProps }: SectionComponentProps): ReactElement | null {
+export function Team({
+  sectionProps,
+  headingLevel = 2,
+}: SectionComponentProps): ReactElement | null {
+  const Heading = HEADING_TAGS[headingLevel];
+  const SubHeading = HEADING_TAGS[subHeadingLevel(headingLevel)];
   const parsed = TeamPropsSchema.safeParse(sectionProps);
   if (!parsed.success) {
     return null;
@@ -179,14 +185,14 @@ export function Team({ sectionProps }: SectionComponentProps): ReactElement | nu
         </p>
       )}
       {title !== '' && (
-        <h2
+        <Heading
           className={cn(
             'ui-heading text-3xl md:text-4xl',
             hasBackgroundImage && 'text-white',
           )}
         >
           {title}
-        </h2>
+        </Heading>
       )}
     </div>
   );
@@ -206,14 +212,14 @@ export function Team({ sectionProps }: SectionComponentProps): ReactElement | nu
               <div key={member.name} className="flex items-start gap-5 text-left">
                 <Avatar member={member} accent={accent} size="size-16 text-lg" />
                 <div>
-                  <h3
+                  <SubHeading
                     className={cn(
                       'text-lg font-semibold',
                       hasBackgroundImage && 'text-white',
                     )}
                   >
                     {member.name}
-                  </h3>
+                  </SubHeading>
                   <p
                     className={cn(
                       'text-sm',
@@ -259,7 +265,7 @@ export function Team({ sectionProps }: SectionComponentProps): ReactElement | nu
             >
               <Avatar member={member} accent={accent} size="size-20 text-lg" />
               <div>
-                <h3 className="text-lg font-semibold">{member.name}</h3>
+                <SubHeading className="text-lg font-semibold">{member.name}</SubHeading>
                 <p className="text-muted-foreground text-sm">{member.role}</p>
               </div>
               {member.bio !== undefined && (

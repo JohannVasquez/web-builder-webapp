@@ -1,7 +1,7 @@
 export const ACTIVITY_PAGE_SIZE = 50;
 
 export interface ActivityFilters {
-  readonly tenantId: number | null;
+  readonly tenantId: string | null;
   readonly actorType: 'admin' | 'apiKey' | null;
   readonly from: string;
   readonly to: string;
