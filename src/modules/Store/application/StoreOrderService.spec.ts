@@ -20,7 +20,9 @@ const quoteResponse: QuoteResponse = {
   termsPageSlug: null,
 };
 
-const request: QuoteRequest = { items: [{ productId: '018f6f1a-0000-7000-8000-000000000001', quantity: 1 }] };
+const request: QuoteRequest = {
+  items: [{ productId: '018f6f1a-0000-7000-8000-000000000001', quantity: 1 }],
+};
 
 const jsonResponse = (status: number, body: unknown): Response =>
   ({

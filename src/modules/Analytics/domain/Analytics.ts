@@ -1,9 +1,13 @@
+/**
+ * Ya no hay interruptor para el aviso de cookies. Lo había (`cookieBanner`, un campo de texto
+ * por tenant) y su estado por omisión dejaba los rastreadores corriendo sin consentimiento,
+ * que es justo lo que sanciona la Ley 21.719. Pedir permiso no es una preferencia del
+ * cliente: sin él, ningún rastreador carga.
+ */
 export interface AnalyticsConfig {
   readonly googleAnalyticsId: string;
   readonly metaPixelId: string;
   readonly googleTagManagerId: string;
-  // Con el aviso activo, ningún script de terceros carga hasta que el visitante acepta.
-  readonly cookieBannerEnabled: boolean;
 }
 
 const GA_PATTERN = /^G-[A-Z0-9]{4,20}$/i;
@@ -16,7 +20,6 @@ export const readAnalyticsConfig = (settings: {
   googleAnalyticsId: string;
   metaPixelId: string;
   googleTagManagerId: string;
-  cookieBanner: string;
 }): AnalyticsConfig => ({
   googleAnalyticsId: GA_PATTERN.test(settings.googleAnalyticsId)
     ? settings.googleAnalyticsId
@@ -25,7 +28,6 @@ export const readAnalyticsConfig = (settings: {
   googleTagManagerId: GTM_PATTERN.test(settings.googleTagManagerId)
     ? settings.googleTagManagerId
     : '',
-  cookieBannerEnabled: settings.cookieBanner === 'true',
 });
 
 export const hasAnyTracker = (config: AnalyticsConfig): boolean =>

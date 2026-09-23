@@ -1,12 +1,17 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactElement } from 'react';
 import { parseThanksData } from '@/modules/Store/presentation/thanksData';
 import { formatClp } from '@/modules/Store/presentation/money';
 import { Button } from '@/shared/ui/button';
+import { NO_INDEX } from '@/shared/lib/seo';
 
 interface ThanksPageProps {
   readonly searchParams: Promise<{ data?: string }>;
 }
+
+// El detalle del pedido viaja en `?data=`: esta URL no puede terminar en un buscador.
+export const metadata: Metadata = { robots: NO_INDEX };
 
 // No depende de ningún estado del navegador (carrito, sesión): todo lo que muestra viaja en
 // `?data=`, puesto ahí por `/tienda/comprar` justo después de comprar. Entrar directo, sin ese

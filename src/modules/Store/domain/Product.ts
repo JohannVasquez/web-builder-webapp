@@ -29,8 +29,8 @@ export const ProductViewSchema = z.object({
   stock: z.number().nullable(),
   isSoldOut: z.boolean(),
   whatsappOrderUrl: z.string().nullable(),
-  // Opcionales hasta que la API los envíe (ver web-builder-api#63). Ausente = el producto se
-  // indexa y usa su propio nombre y descripción, que es el estado normal.
+  // Opcionales hasta que la API los envíe. Ausente = el producto se indexa y usa su propio
+  // nombre y descripción, que es el estado normal; y el sitemap omite el `lastmod`.
   seoTitle: z.string().nullable().optional(),
   seoDescription: z.string().nullable().optional(),
   noindex: z.boolean().optional(),

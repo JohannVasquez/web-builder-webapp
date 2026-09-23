@@ -5,7 +5,7 @@ import { createPageService } from '@/modules/Page/infrastructure/pageServiceFact
 import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { SectionRenderer } from '@/modules/Page/presentation/SectionRenderer';
-import { robotsFor } from '@/shared/lib/seo';
+import { canonical, NO_INDEX, robotsFor } from '@/shared/lib/seo';
 
 interface DynamicPageProps {
   readonly params: Promise<{ tenantDomain: string; slug?: string[] }>;
@@ -22,14 +22,16 @@ const resolveSlug = (segments: string[] | undefined): string => {
 
 export async function generateMetadata({ params }: DynamicPageProps): Promise<Metadata> {
   const { tenantDomain, slug } = await params;
-  const page = await createPageService(tenantDomain).getPage(resolveSlug(slug));
+  const resolved = resolveSlug(slug);
+  const page = await createPageService(tenantDomain).getPage(resolved);
   if (page === null) {
-    return { title: 'Página no encontrada' };
+    return { title: 'Página no encontrada', robots: NO_INDEX };
   }
   return {
     title: page.seoTitle ?? page.title,
     description: page.seoDescription ?? page.description,
     robots: robotsFor(page.noindex),
+    alternates: canonical(resolved === HOME_SLUG ? '/' : `/${resolved}`),
     ...(page.ogImageUrl === null || page.ogImageUrl === undefined
       ? {}
       : { openGraph: { images: [{ url: page.ogImageUrl }] } }),

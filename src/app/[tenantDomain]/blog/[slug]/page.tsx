@@ -9,7 +9,7 @@ import { BlogPostCard } from '@/modules/Blog/presentation/BlogPostCard';
 import { BlogPostingJsonLd } from '@/modules/Blog/presentation/BlogPostingJsonLd';
 import { ShareButtons } from '@/modules/Blog/presentation/ShareButtons';
 import { formatPublishedAt } from '@/modules/Blog/presentation/blogDate';
-import { robotsFor } from '@/shared/lib/seo';
+import { canonical, NO_INDEX, robotsFor } from '@/shared/lib/seo';
 
 interface BlogPostPageProps {
   readonly params: Promise<{ tenantDomain: string; slug: string }>;
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const { tenantDomain, slug } = await params;
   const post = await createBlogService(tenantDomain).getPost(slug);
   if (post === null) {
-    return { title: 'Publicación no encontrada' };
+    return { title: 'Publicación no encontrada', robots: NO_INDEX };
   }
 
   const title = post.seoTitle ?? post.title;
@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     title,
     description,
     robots: robotsFor(post.noindex),
+    alternates: canonical(`/blog/${slug}`),
     openGraph: {
       type: 'article',
       title,

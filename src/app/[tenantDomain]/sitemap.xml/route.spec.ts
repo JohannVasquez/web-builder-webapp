@@ -2,6 +2,9 @@ import { NextRequest } from 'next/server';
 
 const getPublishedPages = jest.fn();
 const listPosts = jest.fn();
+const listProducts = jest.fn();
+const listCategories = jest.fn();
+const getStoreSettings = jest.fn();
 const getSettings = jest.fn();
 
 jest.mock('@/modules/Page/infrastructure/pageServiceFactory', () => ({
@@ -9,6 +12,9 @@ jest.mock('@/modules/Page/infrastructure/pageServiceFactory', () => ({
 }));
 jest.mock('@/modules/Blog/infrastructure/blogServiceFactory', () => ({
   createBlogService: () => ({ listPosts }),
+}));
+jest.mock('@/modules/Store/infrastructure/storeServiceFactory', () => ({
+  createStoreService: () => ({ listProducts, listCategories, getStoreSettings }),
 }));
 jest.mock('@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory', () => ({
   createGlobalSettingsService: () => ({ getSettings }),
@@ -23,14 +29,20 @@ const sitemap = async (): Promise<string> => {
   return response.text();
 };
 
+const emptyList = { posts: [], total: 0 };
+const emptyCatalog = { products: [], total: 0 };
+
 describe('GET /sitemap.xml', () => {
   beforeEach(() => {
-    getSettings.mockResolvedValue({ siteUnderConstruction: '' });
     getPublishedPages.mockResolvedValue([
       { slug: 'home', updatedAt: '2026-01-01T00:00:00.000Z' },
       { slug: 'nosotros', updatedAt: null },
     ]);
-    listPosts.mockResolvedValue({ posts: [], total: 0 });
+    listPosts.mockResolvedValue(emptyList);
+    listProducts.mockResolvedValue(emptyCatalog);
+    listCategories.mockResolvedValue([]);
+    getStoreSettings.mockResolvedValue({ isEnabled: true });
+    getSettings.mockResolvedValue({ siteUnderConstruction: '' });
   });
 
   it('lista las páginas publicadas, con la portada en la raíz', async () => {
@@ -38,6 +50,71 @@ describe('GET /sitemap.xml', () => {
 
     expect(xml).toContain('<loc>https://acme.cl/</loc>');
     expect(xml).toContain('<loc>https://acme.cl/nosotros</loc>');
+    expect(xml).toContain('<lastmod>2026-01-01T00:00:00.000Z</lastmod>');
+  });
+
+  it('incluye el índice de la tienda y cada producto', async () => {
+    listProducts.mockResolvedValue({
+      products: [
+        { slug: 'torta-chocolate', updatedAt: '2026-02-01T00:00:00.000Z' },
+        { slug: 'torta-vainilla' },
+      ],
+      total: 2,
+    });
+
+    const xml = await sitemap();
+
+    expect(xml).toContain('<loc>https://acme.cl/tienda</loc>');
+    expect(xml).toContain('<loc>https://acme.cl/tienda/torta-chocolate</loc>');
+    expect(xml).toContain('<lastmod>2026-02-01T00:00:00.000Z</lastmod>');
+    // Sin `updatedAt` la entrada existe igual: el `lastmod` es opcional en el estándar.
+    expect(xml).toContain('<loc>https://acme.cl/tienda/torta-vainilla</loc>');
+  });
+
+  it('ofrece el filtro por categoría, que es una URL canónica propia', async () => {
+    listCategories.mockResolvedValue([{ slug: 'tortas' }, { slug: 'pan & masas' }]);
+
+    const xml = await sitemap();
+
+    expect(xml).toContain('<loc>https://acme.cl/tienda?categoria=tortas</loc>');
+    // El `&` de una URL tiene que ir escapado o el XML no es válido.
+    expect(xml).toContain('categoria=pan%20%26%20masas');
+    expect(xml).not.toMatch(/categoria=pan%20&[^a]/);
+  });
+
+  it('con la tienda apagada no lista ninguna URL de tienda', async () => {
+    getStoreSettings.mockResolvedValue(null);
+    listProducts.mockResolvedValue({
+      products: [{ slug: 'torta-chocolate' }],
+      total: 1,
+    });
+
+    const xml = await sitemap();
+
+    expect(xml).not.toContain('/tienda');
+  });
+
+  it('sin publicaciones no lista el índice del blog', async () => {
+    const xml = await sitemap();
+
+    expect(xml).not.toContain('<loc>https://acme.cl/blog</loc>');
+  });
+
+  it('agota la paginación del catálogo en vez de quedarse en la primera página', async () => {
+    const page = (start: number): { products: { slug: string }[]; total: number } => ({
+      products: Array.from({ length: 50 }, (_, index) => ({
+        slug: `producto-${start + index}`,
+      })),
+      total: 51,
+    });
+    listProducts
+      .mockResolvedValueOnce(page(1))
+      .mockResolvedValueOnce({ products: [{ slug: 'producto-51' }], total: 51 });
+
+    const xml = await sitemap();
+
+    expect(listProducts).toHaveBeenCalledTimes(2);
+    expect(xml).toContain('<loc>https://acme.cl/tienda/producto-51</loc>');
   });
 
   it('no lista lo que la propia página pide no indexar', async () => {
@@ -51,12 +128,6 @@ describe('GET /sitemap.xml', () => {
 
     expect(xml).toContain('<loc>https://acme.cl/</loc>');
     expect(xml).not.toContain('gracias-por-escribir');
-  });
-
-  it('sin el dato, la página se lista: ausente no es lo mismo que excluida', async () => {
-    const xml = await sitemap();
-
-    expect(xml).toContain('<loc>https://acme.cl/nosotros</loc>');
   });
 
   it('deja fuera las publicaciones marcadas como no indexables', async () => {
