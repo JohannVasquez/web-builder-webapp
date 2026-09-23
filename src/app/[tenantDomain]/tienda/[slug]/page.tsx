@@ -6,7 +6,7 @@ import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastruc
 import { ProductGallery } from '@/modules/Store/presentation/ProductGallery';
 import { AddToCartForm } from '@/modules/Store/presentation/AddToCartForm';
 import { ProductJsonLd } from '@/modules/Store/presentation/ProductJsonLd';
-import { canonical, NO_INDEX } from '@/shared/lib/seo';
+import { canonical, NO_INDEX, robotsFor } from '@/shared/lib/seo';
 import { Breadcrumbs } from '@/shared/ui/Breadcrumbs';
 
 interface StoreProductPageProps {
@@ -25,8 +25,9 @@ export async function generateMetadata({
   const image = product.imageUrls[0];
 
   return {
-    title: product.name,
-    description: product.description,
+    title: product.seoTitle ?? product.name,
+    description: product.seoDescription ?? product.description,
+    robots: robotsFor(product.noindex),
     alternates: canonical(`/tienda/${slug}`),
     openGraph: {
       type: 'website',

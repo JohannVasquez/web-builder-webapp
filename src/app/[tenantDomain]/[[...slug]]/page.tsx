@@ -6,7 +6,7 @@ import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFact
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { SectionRenderer } from '@/modules/Page/presentation/SectionRenderer';
-import { canonical, NO_INDEX } from '@/shared/lib/seo';
+import { canonical, NO_INDEX, robotsFor } from '@/shared/lib/seo';
 import { Breadcrumbs, type Crumb } from '@/shared/ui/Breadcrumbs';
 
 interface DynamicPageProps {
@@ -52,9 +52,13 @@ export async function generateMetadata({ params }: DynamicPageProps): Promise<Me
     return { title: 'Página no encontrada', robots: NO_INDEX };
   }
   return {
-    title: page.title,
-    description: page.description,
+    title: page.seoTitle ?? page.title,
+    description: page.seoDescription ?? page.description,
+    robots: robotsFor(page.noindex),
     alternates: canonical(resolved === HOME_SLUG ? '/' : `/${resolved}`),
+    ...(page.ogImageUrl === null || page.ogImageUrl === undefined
+      ? {}
+      : { openGraph: { images: [{ url: page.ogImageUrl }] } }),
   };
 }
 

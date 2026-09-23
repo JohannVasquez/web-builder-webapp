@@ -43,3 +43,10 @@ export const parsePageParam = (value: string | undefined): number => {
   const page = Number(value);
   return Number.isInteger(page) && page > 0 ? page : 1;
 };
+
+// `noindex` llega opcional desde la API: ausente significa que el contenido se indexa, que es
+// el estado normal. Solo el `true` explícito lo saca del índice.
+export const robotsFor = (
+  noindex: boolean | undefined,
+): Metadata['robots'] | undefined => (noindex === true ? NO_INDEX : undefined);
+

@@ -9,7 +9,7 @@ import { BlogPostCard } from '@/modules/Blog/presentation/BlogPostCard';
 import { BlogPostingJsonLd } from '@/modules/Blog/presentation/BlogPostingJsonLd';
 import { ShareButtons } from '@/modules/Blog/presentation/ShareButtons';
 import { formatPublishedAt } from '@/modules/Blog/presentation/blogDate';
-import { canonical, NO_INDEX } from '@/shared/lib/seo';
+import { canonical, NO_INDEX, robotsFor } from '@/shared/lib/seo';
 import { Breadcrumbs } from '@/shared/ui/Breadcrumbs';
 
 interface BlogPostPageProps {
@@ -30,6 +30,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title,
     description,
+    robots: robotsFor(post.noindex),
     alternates: canonical(`/blog/${slug}`),
     openGraph: {
       type: 'article',
