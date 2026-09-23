@@ -75,13 +75,23 @@ describe('addCartItem', () => {
 describe('setCartItemQuantity', () => {
   it('actualiza la cantidad de la línea que coincide', () => {
     const cart = [item({ quantity: 1 })];
-    const result = setCartItemQuantity(cart, '018f6f1a-0000-7000-8000-000000000001', {}, 4);
+    const result = setCartItemQuantity(
+      cart,
+      '018f6f1a-0000-7000-8000-000000000001',
+      {},
+      4,
+    );
     expect(result).toEqual([item({ quantity: 4 })]);
   });
 
   it('quita la línea cuando la cantidad es 0', () => {
     const cart = [item({ quantity: 1 })];
-    const result = setCartItemQuantity(cart, '018f6f1a-0000-7000-8000-000000000001', {}, 0);
+    const result = setCartItemQuantity(
+      cart,
+      '018f6f1a-0000-7000-8000-000000000001',
+      {},
+      0,
+    );
     expect(result).toEqual([]);
   });
 
@@ -90,7 +100,12 @@ describe('setCartItemQuantity', () => {
       item({ productId: '018f6f1a-0000-7000-8000-000000000001', quantity: 1 }),
       item({ productId: '018f6f1a-0000-7000-8000-000000000002', quantity: 1 }),
     ];
-    const result = setCartItemQuantity(cart, '018f6f1a-0000-7000-8000-000000000001', {}, 9);
+    const result = setCartItemQuantity(
+      cart,
+      '018f6f1a-0000-7000-8000-000000000001',
+      {},
+      9,
+    );
     expect(result).toEqual([
       item({ productId: '018f6f1a-0000-7000-8000-000000000001', quantity: 9 }),
       item({ productId: '018f6f1a-0000-7000-8000-000000000002', quantity: 1 }),
@@ -101,11 +116,24 @@ describe('setCartItemQuantity', () => {
 describe('removeCartItem', () => {
   it('quita solo la línea con el mismo producto y variante', () => {
     const cart = [
-      item({ productId: '018f6f1a-0000-7000-8000-000000000001', variant: { Tamaño: '12 porciones' } }),
-      item({ productId: '018f6f1a-0000-7000-8000-000000000001', variant: { Tamaño: '20 porciones' } }),
+      item({
+        productId: '018f6f1a-0000-7000-8000-000000000001',
+        variant: { Tamaño: '12 porciones' },
+      }),
+      item({
+        productId: '018f6f1a-0000-7000-8000-000000000001',
+        variant: { Tamaño: '20 porciones' },
+      }),
     ];
-    const result = removeCartItem(cart, '018f6f1a-0000-7000-8000-000000000001', { Tamaño: '12 porciones' });
-    expect(result).toEqual([item({ productId: '018f6f1a-0000-7000-8000-000000000001', variant: { Tamaño: '20 porciones' } })]);
+    const result = removeCartItem(cart, '018f6f1a-0000-7000-8000-000000000001', {
+      Tamaño: '12 porciones',
+    });
+    expect(result).toEqual([
+      item({
+        productId: '018f6f1a-0000-7000-8000-000000000001',
+        variant: { Tamaño: '20 porciones' },
+      }),
+    ]);
   });
 
   it('deja el carrito igual si no encuentra la línea', () => {
@@ -121,7 +149,10 @@ describe('cartItemCount', () => {
   });
 
   it('suma las cantidades de todas las líneas', () => {
-    const cart = [item({ quantity: 2 }), item({ productId: '018f6f1a-0000-7000-8000-000000000002', quantity: 3 })];
+    const cart = [
+      item({ quantity: 2 }),
+      item({ productId: '018f6f1a-0000-7000-8000-000000000002', quantity: 3 }),
+    ];
     expect(cartItemCount(cart)).toBe(5);
   });
 });

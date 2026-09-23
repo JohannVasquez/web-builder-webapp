@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { BlogPostCard } from '@/modules/Blog/presentation/BlogPostCard';
 import { Button } from '@/shared/ui/button';
+import { canonicalPaged, pagedTitle, parsePageParam } from '@/shared/lib/seo';
 
 const PER_PAGE = 9;
 
@@ -13,21 +15,20 @@ interface BlogIndexPageProps {
   readonly searchParams: Promise<{ page?: string; tag?: string }>;
 }
 
-const parsePage = (value: string | undefined): number => {
-  const page = Number(value);
-  return Number.isInteger(page) && page > 0 ? page : 1;
-};
-
 export async function generateMetadata({
   params,
-}: Pick<BlogIndexPageProps, 'params'>): Promise<Metadata> {
+  searchParams,
+}: BlogIndexPageProps): Promise<Metadata> {
   const { tenantDomain } = await params;
+  const { page: pageParam, tag } = await searchParams;
+  const page = parsePageParam(pageParam);
   const settings = await createGlobalSettingsService(tenantDomain).getSettings();
 
   return {
-    title: 'Blog',
+    title: pagedTitle('Blog', page),
     description:
       settings.tagline !== '' ? settings.tagline : `Novedades de ${settings.siteName}`,
+    alternates: canonicalPaged('/blog', page, { tag }),
   };
 }
 
@@ -37,7 +38,7 @@ export default async function BlogIndexPage({
 }: BlogIndexPageProps): Promise<ReactElement> {
   const { tenantDomain } = await params;
   const { page: pageParam, tag } = await searchParams;
-  const page = parsePage(pageParam);
+  const page = parsePageParam(pageParam);
 
   const { posts, total, perPage } = await createBlogService(tenantDomain).listPosts({
     page,
@@ -45,6 +46,12 @@ export default async function BlogIndexPage({
     tag,
   });
   const totalPages = Math.max(1, Math.ceil(total / perPage));
+
+  // Una página fuera de rango es un listado vacío con URL propia: si responde 200, el
+  // buscador la indexa como contenido sin valor. Mejor que no exista.
+  if (page > totalPages) {
+    notFound();
+  }
 
   const pageHref = (targetPage: number): string => {
     const query = new URLSearchParams();

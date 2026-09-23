@@ -1,4 +1,11 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+import { renderToStaticMarkup as render } from 'react-dom/server';
+import type { ReactElement } from 'react';
+import { ConsentProvider } from '@/modules/Consent/presentation/ConsentProvider';
+
+// El pie y el formulario de contacto llevan controles de consentimiento (reconfigurar
+// cookies, autorizar el tratamiento de datos), así que necesitan su contexto.
+const renderToStaticMarkup = (element: ReactElement): string =>
+  render(<ConsentProvider>{element}</ConsentProvider>);
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { DEFAULT_GLOBAL_SETTINGS, type GlobalSettings } from '../domain/GlobalSettings';
@@ -16,7 +23,9 @@ const links = [
 
 describe('Navbar variants', () => {
   it('sin variant, el HTML es idéntico al de "classic" explícito', () => {
-    const withoutVariant = renderToStaticMarkup(<Navbar settings={baseSettings} links={links} />);
+    const withoutVariant = renderToStaticMarkup(
+      <Navbar settings={baseSettings} links={links} />,
+    );
     const withClassic = renderToStaticMarkup(
       <Navbar settings={baseSettings} links={links} variant="classic" />,
     );
@@ -90,7 +99,9 @@ describe('Navbar variants', () => {
 describe('Footer variants', () => {
   it('sin variant, el HTML es idéntico al de "columns" explícito', () => {
     const withoutVariant = renderToStaticMarkup(<Footer settings={baseSettings} />);
-    const withColumns = renderToStaticMarkup(<Footer settings={baseSettings} variant="columns" />);
+    const withColumns = renderToStaticMarkup(
+      <Footer settings={baseSettings} variant="columns" />,
+    );
 
     expect(withoutVariant).toEqual(withColumns);
   });
@@ -100,14 +111,20 @@ describe('Footer variants', () => {
       // @ts-expect-error -- probamos el fallback en runtime ante un valor fuera del union
       <Footer settings={baseSettings} variant="bogus" />,
     );
-    const withColumns = renderToStaticMarkup(<Footer settings={baseSettings} variant="columns" />);
+    const withColumns = renderToStaticMarkup(
+      <Footer settings={baseSettings} variant="columns" />,
+    );
 
     expect(withUnknown).toEqual(withColumns);
   });
 
   it('cada variante produce un marcado distinguible', () => {
-    const simple = renderToStaticMarkup(<Footer settings={baseSettings} variant="simple" />);
-    const columns = renderToStaticMarkup(<Footer settings={baseSettings} variant="columns" />);
+    const simple = renderToStaticMarkup(
+      <Footer settings={baseSettings} variant="simple" />,
+    );
+    const columns = renderToStaticMarkup(
+      <Footer settings={baseSettings} variant="columns" />,
+    );
     const newsletter = renderToStaticMarkup(
       <Footer settings={baseSettings} variant="newsletter" />,
     );
@@ -123,14 +140,18 @@ describe('Footer variants', () => {
   it('el contenido (nombre del sitio y copyright) aparece en todas las variantes', () => {
     const year = new Date().getFullYear();
     for (const variant of ['simple', 'columns', 'newsletter'] as const) {
-      const html = renderToStaticMarkup(<Footer settings={baseSettings} variant={variant} />);
+      const html = renderToStaticMarkup(
+        <Footer settings={baseSettings} variant={variant} />,
+      );
       expect(html).toContain('Acme Co.');
       expect(html).toContain(`© ${year} Acme Co.`);
     }
   });
 
   it('"newsletter" sin onSubscribe muestra el mensaje de activación en vez de un formulario', () => {
-    const html = renderToStaticMarkup(<Footer settings={baseSettings} variant="newsletter" />);
+    const html = renderToStaticMarkup(
+      <Footer settings={baseSettings} variant="newsletter" />,
+    );
 
     expect(html).toContain('La suscripción se activa junto con el bloque de novedades.');
     expect(html).not.toContain('<form');

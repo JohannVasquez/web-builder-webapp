@@ -5,6 +5,7 @@ import { createNavigationService } from '@/modules/Navigation/infrastructure/nav
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { Navbar } from '@/modules/GlobalSettings/presentation/Navbar';
 import { Footer } from '@/modules/GlobalSettings/presentation/Footer';
+import { SellerIdentityCard } from '@/modules/Store/presentation/SellerIdentityCard';
 import { WhatsAppButton } from '@/modules/GlobalSettings/presentation/WhatsAppButton';
 import { BrandStyle } from '@/modules/Brand/presentation/BrandStyle';
 import { ThemeScript } from '@/modules/Brand/presentation/ThemeScript';
@@ -12,6 +13,9 @@ import { resolveFontPairing } from '@/modules/Brand/presentation/fonts';
 import { VisualStyleTokens } from '@/modules/VisualStyle/presentation/VisualStyleTokens';
 import { LocalBusinessJsonLd } from '@/modules/GlobalSettings/presentation/LocalBusinessJsonLd';
 import { Analytics } from '@/modules/Analytics/presentation/Analytics';
+import { CookieNotice } from '@/modules/Consent/presentation/CookieNotice';
+import { COOKIE_POLICY_SLUG } from '@/modules/Consent/domain/Consent';
+import { createPageService } from '@/modules/Page/infrastructure/pageServiceFactory';
 import { readAnalyticsConfig } from '@/modules/Analytics/domain/Analytics';
 import { Toaster } from '@/shared/ui/sonner';
 import { TenantProviders } from './providers';
@@ -33,11 +37,14 @@ export async function generateMetadata({
 
   // El canónico apunta al dominio principal del cliente, no a aquel por el que entró el
   // visitante: un tenant con dos dominios no puede competir consigo mismo en buscadores.
+  //
+  // Aquí se fija solo la base; el canónico concreto lo declara cada página con `canonical()`
+  // de `@/shared/lib/seo`. Ponerlo en este layout lo heredarían TODAS las rutas, y cada post
+  // y cada producto terminaría señalando a la portada como su versión buena.
   const canonicalHost = settings.primaryDomain ?? tenantDomain;
 
   return {
     metadataBase: new URL(`https://${canonicalHost}`),
-    alternates: { canonical: '/' },
     title: { default: settings.siteName, template: `%s | ${settings.siteName}` },
     description: settings.tagline,
     icons: favicon === undefined ? undefined : { icon: brandAsset('favicon') },
@@ -62,11 +69,16 @@ export default async function TenantLayout({
   params,
 }: TenantLayoutProps): Promise<ReactElement> {
   const { tenantDomain } = await params;
-  const [settings, links, store] = await Promise.all([
+  const [settings, links, store, publishedPages] = await Promise.all([
     createGlobalSettingsService(tenantDomain).getSettings(),
     createNavigationService(tenantDomain).getLinks(),
     createStoreService(tenantDomain).getStoreSettings(),
+    createPageService(tenantDomain).getPublishedPages(),
   ]);
+  // Solo se enlaza si existe: mandar a un 404 desde un aviso legal es peor que no enlazar.
+  const cookiePolicyHref = publishedPages.some((page) => page.slug === COOKIE_POLICY_SLUG)
+    ? `/${COOKIE_POLICY_SLUG}`
+    : null;
   const pairing = resolveFontPairing(settings.brand.typography.pairing);
 
   return (
@@ -93,9 +105,19 @@ export default async function TenantLayout({
       <main id="contenido" tabIndex={-1} className="ui-page-backdrop flex-1">
         {children}
       </main>
+      {/* Solo en tiendas: identificar al vendedor lo exige el Reglamento de Comercio
+          Electrónico, y un sitio sin tienda no vende nada. */}
+      {store !== null && (
+        <div className="bg-secondary/40 border-t px-6 pt-6">
+          <div className="mx-auto max-w-6xl">
+            <SellerIdentityCard seller={store.seller} />
+          </div>
+        </div>
+      )}
       <Footer settings={settings} />
       <WhatsAppButton whatsappNumber={settings.whatsappNumber} />
       <Analytics config={readAnalyticsConfig(settings)} />
+      <CookieNotice policyHref={cookiePolicyHref} />
       <Toaster position="top-center" richColors />
     </TenantProviders>
   );

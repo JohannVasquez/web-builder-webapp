@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { useCart } from '@/modules/Store/presentation/CartProvider';
 import { createIdempotencyKeyTracker } from '@/modules/Store/application/idempotencyKey';
 import { OrderSummary } from '@/modules/Store/presentation/OrderSummary';
+import { SellerIdentityCard } from '@/modules/Store/presentation/SellerIdentityCard';
 import { formatClp } from '@/modules/Store/presentation/money';
 import { StoreOrderService } from '@/modules/Store/application/StoreOrderService';
 import { CustomerInputSchema } from '@/modules/Store/domain/Checkout';
@@ -151,7 +152,9 @@ export default function CheckoutPage(): ReactElement {
     }
     // La API también lo valida; acá se ataja antes para no mandar una compra que va a fallar.
     if (quote.termsPageSlug !== null && !acceptedTerms) {
-      setTermsError('Para comprar tienes que aceptar los términos y condiciones de compra.');
+      setTermsError(
+        'Para comprar tienes que aceptar los términos y condiciones de compra.',
+      );
       return;
     }
     submittingRef.current = true;
@@ -399,8 +402,10 @@ export default function CheckoutPage(): ReactElement {
           </form>
         </Form>
 
-        <div className="h-fit">
+        <div className="h-fit space-y-4">
           <OrderSummary quote={quote} />
+          {/* Antes de pagar, no después: quien contrata tiene derecho a saber con quién. */}
+          <SellerIdentityCard seller={quote.seller} variant="checkout" />
         </div>
       </div>
     </div>
