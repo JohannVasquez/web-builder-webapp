@@ -10,6 +10,7 @@ import { BlogPostingJsonLd } from '@/modules/Blog/presentation/BlogPostingJsonLd
 import { ShareButtons } from '@/modules/Blog/presentation/ShareButtons';
 import { formatPublishedAt } from '@/modules/Blog/presentation/blogDate';
 import { canonical, NO_INDEX } from '@/shared/lib/seo';
+import { Breadcrumbs } from '@/shared/ui/Breadcrumbs';
 
 interface BlogPostPageProps {
   readonly params: Promise<{ tenantDomain: string; slug: string }>;
@@ -63,7 +64,26 @@ export default async function BlogPostPage({
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-16">
-      <BlogPostingJsonLd post={post} siteUrl={siteUrl} siteName={settings.siteName} />
+      <BlogPostingJsonLd
+        post={post}
+        siteUrl={siteUrl}
+        siteName={settings.siteName}
+        logoUrl={
+          settings.brand.assets.logoLight === undefined
+            ? null
+            : `${siteUrl}/brand-asset/logo-light`
+        }
+      />
+      <div className="mb-8">
+        <Breadcrumbs
+          siteUrl={siteUrl}
+          crumbs={[
+            { label: 'Inicio', href: '/' },
+            { label: 'Blog', href: '/blog' },
+            { label: post.title },
+          ]}
+        />
+      </div>
 
       <header className="mb-10 flex flex-col gap-4">
         {post.tags.length > 0 && (

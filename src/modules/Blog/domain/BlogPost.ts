@@ -69,6 +69,9 @@ export const BlogPostDetailSchema = BlogPostSummarySchema.extend({
   seoTitle: z.string().nullable(),
   seoDescription: z.string().nullable(),
   ogImageUrl: z.string().nullable(),
+  // Opcional porque las respuestas guardadas en caché desde antes de que la API lo enviara
+  // siguen siendo válidas; el dato estructurado cae a `publishedAt` cuando falta.
+  updatedAt: z.string().optional(),
   related: z.array(BlogPostSummarySchema).default([]),
 });
 
