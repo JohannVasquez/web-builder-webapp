@@ -17,11 +17,23 @@ import {
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { getPublicApiBaseUrl } from '@/shared/config/api';
-import { ContactSchema, type ContactInput } from '../domain/ContactSchema';
+import {
+  ContactFormSchema,
+  toContactInput,
+  type ContactFormInput,
+} from '../domain/ContactSchema';
+import { useConsent } from '@/modules/Consent/presentation/ConsentProvider';
+import { CONSENT_TEXT_VERSION } from '@/modules/Consent/domain/Consent';
 import { ContactService } from '../application/ContactService';
 
-export function ContactForm(): ReactElement {
+interface ContactFormProps {
+  // Dirección de la política de privacidad del cliente; nula = no hay página que enlazar.
+  readonly privacyHref?: string | null;
+}
+
+export function ContactForm({ privacyHref = null }: ContactFormProps): ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { recordFor } = useConsent();
   const contactService = useMemo(
     () =>
       new ContactService(
@@ -31,16 +43,23 @@ export function ContactForm(): ReactElement {
     [],
   );
 
-  const form = useForm<ContactInput>({
-    resolver: zodResolver(ContactSchema),
+  const form = useForm<ContactFormInput>({
+    resolver: zodResolver(ContactFormSchema),
     mode: 'onBlur',
     defaultValues: { name: '', email: '', message: '', website: '' },
   });
 
-  const onSubmit = async (values: ContactInput): Promise<void> => {
+  const onSubmit = async (values: ContactFormInput): Promise<void> => {
     setIsSubmitting(true);
     try {
-      const result = await contactService.sendContact(values);
+      // Primero el permiso y después el dato: si el registro falla, el mensaje igual se
+      // manda (la persona ya autorizó en pantalla), pero el orden deja la prueba antes que
+      // el tratamiento cuando ambos llegan.
+      recordFor(
+        { purposes: ['necessary'], textVersion: CONSENT_TEXT_VERSION },
+        'contact',
+      );
+      const result = await contactService.sendContact(toContactInput(values));
       toast.success(result.message);
       form.reset();
     } catch {
@@ -134,6 +153,43 @@ export function ContactForm(): ReactElement {
                   {...field}
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="acceptedPrivacy"
+          render={({ field }) => (
+            <FormItem>
+              <label className="flex items-start gap-2 text-sm">
+                <FormControl>
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={field.value === true}
+                    onChange={(event) => field.onChange(event.target.checked)}
+                    onBlur={field.onBlur}
+                  />
+                </FormControl>
+                <span>
+                  Autorizo el tratamiento de mis datos para responder esta consulta
+                  {privacyHref !== null && (
+                    <>
+                      , según la{' '}
+                      <a
+                        href={privacyHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline underline-offset-2"
+                      >
+                        política de privacidad
+                      </a>
+                    </>
+                  )}
+                  .
+                </span>
+              </label>
               <FormMessage />
             </FormItem>
           )}

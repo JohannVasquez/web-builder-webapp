@@ -1,6 +1,13 @@
-import { renderToStaticMarkup } from 'react-dom/server';
+import { renderToStaticMarkup as render } from 'react-dom/server';
+import type { ReactElement } from 'react';
 import { Footer } from './Footer';
+import { ConsentProvider } from '@/modules/Consent/presentation/ConsentProvider';
 import { DEFAULT_GLOBAL_SETTINGS, type GlobalSettings } from '../domain/GlobalSettings';
+
+// El pie lleva el enlace para reconfigurar cookies, que necesita el contexto de
+// consentimiento: sin él, el enlace no podría abrir el aviso.
+const renderToStaticMarkup = (element: ReactElement): string =>
+  render(<ConsentProvider>{element}</ConsentProvider>);
 
 describe('Footer', () => {
   const baseSettings: GlobalSettings = {

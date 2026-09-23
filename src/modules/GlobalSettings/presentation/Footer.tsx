@@ -2,6 +2,7 @@
 
 import type { ComponentType, FormEvent, ReactElement } from 'react';
 import { useState } from 'react';
+import { CookiePreferencesButton } from '@/modules/Consent/presentation/CookiePreferencesButton';
 import { Link as LinkIcon, Mail, MapPin, Phone } from 'lucide-react';
 import {
   FaFacebookF,
@@ -77,7 +78,11 @@ function FooterLogo({ settings }: { readonly settings: GlobalSettings }): ReactE
   );
 }
 
-function SocialIcons({ items }: { readonly items: readonly SocialLink[] }): ReactElement | null {
+function SocialIcons({
+  items,
+}: {
+  readonly items: readonly SocialLink[];
+}): ReactElement | null {
   if (items.length === 0) {
     return null;
   }
@@ -149,8 +154,14 @@ function NewsletterColumn({
   );
 }
 
-export function Footer({ settings, variant = 'columns', onSubscribe }: FooterProps): ReactElement {
-  const resolvedVariant: FooterVariant = FOOTER_VARIANTS.includes(variant) ? variant : 'columns';
+export function Footer({
+  settings,
+  variant = 'columns',
+  onSubscribe,
+}: FooterProps): ReactElement {
+  const resolvedVariant: FooterVariant = FOOTER_VARIANTS.includes(variant)
+    ? variant
+    : 'columns';
   const year = new Date().getFullYear();
   const socialLinks = socialLinksOf(settings);
 
@@ -160,8 +171,11 @@ export function Footer({ settings, variant = 'columns', onSubscribe }: FooterPro
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 py-8 text-center sm:flex-row sm:justify-between sm:text-left">
           <FooterLogo settings={settings} />
           <SocialIcons items={socialLinks} />
-          <p className="text-muted-foreground text-xs">
-            © {year} {settings.siteName}. Todos los derechos reservados.
+          <p className="text-muted-foreground flex flex-wrap items-center justify-center gap-x-2 text-xs">
+            <span>
+              © {year} {settings.siteName}. Todos los derechos reservados.
+            </span>
+            <CookiePreferencesButton />
           </p>
         </div>
       </footer>
@@ -214,8 +228,11 @@ export function Footer({ settings, variant = 'columns', onSubscribe }: FooterPro
         {isNewsletter && <NewsletterColumn onSubscribe={onSubscribe} />}
       </div>
       <div className="border-t py-4 text-center">
-        <p className="text-muted-foreground text-xs">
-          © {year} {settings.siteName}. Todos los derechos reservados.
+        <p className="text-muted-foreground flex flex-wrap items-center justify-center gap-x-2 text-xs">
+          <span>
+            © {year} {settings.siteName}. Todos los derechos reservados.
+          </span>
+          <CookiePreferencesButton />
         </p>
       </div>
     </footer>

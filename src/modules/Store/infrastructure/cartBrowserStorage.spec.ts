@@ -25,7 +25,11 @@ describe('cartBrowserStorage', () => {
   });
 
   it('guarda y lee un carrito válido', () => {
-    const cart: Cart = { items: [{ productId: '018f6f1a-0000-7000-8000-000000000001', quantity: 2, variant: {} }] };
+    const cart: Cart = {
+      items: [
+        { productId: '018f6f1a-0000-7000-8000-000000000001', quantity: 2, variant: {} },
+      ],
+    };
     writeCart(cart);
     expect(readCart()).toEqual(cart);
   });
@@ -33,7 +37,7 @@ describe('cartBrowserStorage', () => {
   it('vacía el carrito si tiene IDs numéricos viejos que no cumplen el esquema', () => {
     // Simulamos un carrito viejo con productId numérico guardado en localStorage
     const oldCartJson = JSON.stringify({
-      items: [{ productId: 1, quantity: 2, variant: {} }]
+      items: [{ productId: 1, quantity: 2, variant: {} }],
     });
     globalThis.localStorage.setItem('web-builder.store-cart', oldCartJson);
 
