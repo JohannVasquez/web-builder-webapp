@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { SellerIdentitySchema } from './StoreSettings';
 import { CartVariantSchema } from './Cart';
 import { ShippingOptionSchema } from './StoreSettings';
 
@@ -61,6 +62,9 @@ export const QuoteResponseSchema = z.object({
   taxRatePercent: z.number(),
   // Página de términos que hay que aceptar para comprar; nula si la tienda no los exige.
   termsPageSlug: z.string().nullable().default(null),
+  // Quién vende. Viaja con la cotización, igual que los términos, porque es lo que hay que
+  // mostrar antes de pagar. Opcional hasta que la API lo envíe (web-builder-api#77).
+  seller: SellerIdentitySchema.optional(),
 });
 
 export type QuoteResponse = z.infer<typeof QuoteResponseSchema>;

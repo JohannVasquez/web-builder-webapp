@@ -5,6 +5,7 @@ import { createNavigationService } from '@/modules/Navigation/infrastructure/nav
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { Navbar } from '@/modules/GlobalSettings/presentation/Navbar';
 import { Footer } from '@/modules/GlobalSettings/presentation/Footer';
+import { SellerIdentityCard } from '@/modules/Store/presentation/SellerIdentityCard';
 import { WhatsAppButton } from '@/modules/GlobalSettings/presentation/WhatsAppButton';
 import { BrandStyle } from '@/modules/Brand/presentation/BrandStyle';
 import { ThemeScript } from '@/modules/Brand/presentation/ThemeScript';
@@ -104,6 +105,15 @@ export default async function TenantLayout({
       <main id="contenido" tabIndex={-1} className="ui-page-backdrop flex-1">
         {children}
       </main>
+      {/* Solo en tiendas: identificar al vendedor lo exige el Reglamento de Comercio
+          Electrónico, y un sitio sin tienda no vende nada. */}
+      {store !== null && (
+        <div className="bg-secondary/40 border-t px-6 pt-6">
+          <div className="mx-auto max-w-6xl">
+            <SellerIdentityCard seller={store.seller} />
+          </div>
+        </div>
+      )}
       <Footer settings={settings} />
       <WhatsAppButton whatsappNumber={settings.whatsappNumber} />
       <Analytics config={readAnalyticsConfig(settings)} />
