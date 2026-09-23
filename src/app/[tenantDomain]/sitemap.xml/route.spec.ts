@@ -5,6 +5,7 @@ const listPosts = jest.fn();
 const listProducts = jest.fn();
 const listCategories = jest.fn();
 const getStoreSettings = jest.fn();
+const getSettings = jest.fn();
 
 jest.mock('@/modules/Page/infrastructure/pageServiceFactory', () => ({
   createPageService: () => ({ getPublishedPages }),
@@ -14,6 +15,9 @@ jest.mock('@/modules/Blog/infrastructure/blogServiceFactory', () => ({
 }));
 jest.mock('@/modules/Store/infrastructure/storeServiceFactory', () => ({
   createStoreService: () => ({ listProducts, listCategories, getStoreSettings }),
+}));
+jest.mock('@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory', () => ({
+  createGlobalSettingsService: () => ({ getSettings }),
 }));
 
 import { GET } from './route';
@@ -38,6 +42,7 @@ describe('GET /sitemap.xml', () => {
     listProducts.mockResolvedValue(emptyCatalog);
     listCategories.mockResolvedValue([]);
     getStoreSettings.mockResolvedValue({ isEnabled: true });
+    getSettings.mockResolvedValue({ siteUnderConstruction: '' });
   });
 
   it('lista las páginas publicadas, con la portada en la raíz', async () => {
@@ -110,5 +115,43 @@ describe('GET /sitemap.xml', () => {
 
     expect(listProducts).toHaveBeenCalledTimes(2);
     expect(xml).toContain('<loc>https://acme.cl/tienda/producto-51</loc>');
+  });
+
+  it('no lista lo que la propia página pide no indexar', async () => {
+    // Un sitemap que lista una URL `noindex` son dos señales contradictorias.
+    getPublishedPages.mockResolvedValue([
+      { slug: 'home', updatedAt: null },
+      { slug: 'gracias-por-escribir', updatedAt: null, noindex: true },
+    ]);
+
+    const xml = await sitemap();
+
+    expect(xml).toContain('<loc>https://acme.cl/</loc>');
+    expect(xml).not.toContain('gracias-por-escribir');
+  });
+
+  it('deja fuera las publicaciones marcadas como no indexables', async () => {
+    listPosts.mockResolvedValue({
+      posts: [
+        { slug: 'visible', publishedAt: '2026-01-05T00:00:00.000Z' },
+        { slug: 'oculta', publishedAt: '2026-01-06T00:00:00.000Z', noindex: true },
+      ],
+      total: 2,
+    });
+
+    const xml = await sitemap();
+
+    expect(xml).toContain('/blog/visible');
+    expect(xml).not.toContain('/blog/oculta');
+  });
+
+  it('un sitio en construcción no lista nada', async () => {
+    getSettings.mockResolvedValue({ siteUnderConstruction: 'true' });
+
+    const xml = await sitemap();
+
+    expect(xml).not.toContain('<loc>');
+    // Sigue siendo un sitemap válido, para que el cliente vea que está vacío a propósito.
+    expect(xml).toContain('<urlset');
   });
 });

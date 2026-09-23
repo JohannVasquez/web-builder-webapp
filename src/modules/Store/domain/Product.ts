@@ -18,6 +18,9 @@ export const ProductViewSchema = z.object({
   name: z.string(),
   description: z.string(),
   imageUrls: z.array(z.string()),
+  // Las mismas imágenes como clave del bucket, para armar la dirección estable que
+  // `next/image` necesita. Opcional hasta que la API las mande (web-builder-api#87).
+  imageKeys: z.array(z.string()).optional(),
   priceCents: z.number(),
   salePriceCents: z.number().nullable(),
   currency: z.string(),
@@ -29,8 +32,11 @@ export const ProductViewSchema = z.object({
   stock: z.number().nullable(),
   isSoldOut: z.boolean(),
   whatsappOrderUrl: z.string().nullable(),
-  // Opcional porque las respuestas guardadas en caché desde antes de que la API lo enviara
-  // siguen siendo válidas; el sitemap simplemente omite el `lastmod` cuando falta.
+  // Opcionales hasta que la API los envíe. Ausente = el producto se indexa y usa su propio
+  // nombre y descripción, que es el estado normal; y el sitemap omite el `lastmod`.
+  seoTitle: z.string().nullable().optional(),
+  seoDescription: z.string().nullable().optional(),
+  noindex: z.boolean().optional(),
   updatedAt: z.string().optional(),
 });
 

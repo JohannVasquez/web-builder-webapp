@@ -17,6 +17,7 @@ import { CookieNotice } from '@/modules/Consent/presentation/CookieNotice';
 import { COOKIE_POLICY_SLUG } from '@/modules/Consent/domain/Consent';
 import { createPageService } from '@/modules/Page/infrastructure/pageServiceFactory';
 import { readAnalyticsConfig } from '@/modules/Analytics/domain/Analytics';
+import { isUnderConstruction } from '@/modules/GlobalSettings/domain/GlobalSettings';
 import { Toaster } from '@/shared/ui/sonner';
 import { TenantProviders } from './providers';
 
@@ -43,8 +44,20 @@ export async function generateMetadata({
   // y cada producto terminaría señalando a la portada como su versión buena.
   const canonicalHost = settings.primaryDomain ?? tenantDomain;
 
+  // Un sitio en construcción no se indexa entero, aunque cada página diga lo contrario.
+  const underConstruction = isUnderConstruction(settings);
+
   return {
     metadataBase: new URL(`https://${canonicalHost}`),
+    ...(underConstruction ? { robots: { index: false, follow: false } } : {}),
+    verification: {
+      ...(settings.googleSiteVerification === ''
+        ? {}
+        : { google: settings.googleSiteVerification }),
+      ...(settings.bingSiteVerification === ''
+        ? {}
+        : { other: { 'msvalidate.01': settings.bingSiteVerification } }),
+    },
     title: { default: settings.siteName, template: `%s | ${settings.siteName}` },
     description: settings.tagline,
     icons: favicon === undefined ? undefined : { icon: brandAsset('favicon') },

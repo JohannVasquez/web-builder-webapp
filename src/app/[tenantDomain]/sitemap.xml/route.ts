@@ -3,6 +3,8 @@ import { createPageService } from '@/modules/Page/infrastructure/pageServiceFact
 import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import type { BlogPostSummary } from '@/modules/Blog/domain/BlogPost';
+import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
+import { isUnderConstruction } from '@/modules/GlobalSettings/domain/GlobalSettings';
 import type { ProductView } from '@/modules/Store/domain/Product';
 
 const HOME_SLUG = 'home';
@@ -87,6 +89,19 @@ const toXmlEntry = (origin: string, entry: SitemapEntry): string => {
   return `  <url>\n    <loc>${loc}</loc>${lastmod}\n  </url>`;
 };
 
+const xmlResponse = (xml: string): NextResponse =>
+  new NextResponse(xml, {
+    headers: {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
+
+const emptySitemap = (): NextResponse =>
+  xmlResponse(
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>`,
+  );
+
 // Ruta propia en vez del `sitemap.ts` de Next porque el sitemap es POR TENANT y el tenant
 // llega en el segmento de la ruta, no en la configuración del proyecto.
 export async function GET(
@@ -95,16 +110,28 @@ export async function GET(
 ): Promise<NextResponse> {
   const { tenantDomain } = await params;
   const origin = new URL(request.url).origin;
+
+  // Un sitio en construcción no ofrece nada que rastrear, pero el sitemap sigue existiendo
+  // para que el cliente pueda comprobar que está vacío a propósito.
+  const settings = await createGlobalSettingsService(tenantDomain).getSettings();
+  if (isUnderConstruction(settings)) {
+    return emptySitemap();
+  }
+
   const [pages, blogPosts, storeEntries] = await Promise.all([
     createPageService(tenantDomain).getPublishedPages(),
     getAllBlogPosts(tenantDomain),
     getStoreEntries(tenantDomain),
   ]);
 
-  const pageEntries: SitemapEntry[] = pages.map((page) => ({
-    path: page.slug === HOME_SLUG ? '/' : `/${page.slug}`,
-    lastmod: page.updatedAt,
-  }));
+  // Lo que la propia página pide no indexar tampoco se le ofrece al rastreador: un sitemap
+  // que lista una URL `noindex` son dos señales contradictorias.
+  const pageEntries: SitemapEntry[] = pages
+    .filter((page) => page.noindex !== true)
+    .map((page) => ({
+      path: page.slug === HOME_SLUG ? '/' : `/${page.slug}`,
+      lastmod: page.updatedAt,
+    }));
 
   // Además de cada publicación, el índice del blog: sin publicaciones no tiene sentido
   // listarlo, ya que estaría vacío y no aportaría nada a un rastreador.
@@ -113,10 +140,12 @@ export async function GET(
       ? []
       : [
           { path: '/blog' },
-          ...blogPosts.map((post) => ({
-            path: `/blog/${post.slug}`,
-            lastmod: post.publishedAt,
-          })),
+          ...blogPosts
+            .filter((post) => post.noindex !== true)
+            .map((post) => ({
+              path: `/blog/${post.slug}`,
+              lastmod: post.publishedAt,
+            })),
         ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -126,10 +155,5 @@ ${[...pageEntries, ...blogEntries, ...storeEntries]
   .join('\n')}
 </urlset>`;
 
-  return new NextResponse(xml, {
-    headers: {
-      'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
-    },
-  });
+  return xmlResponse(xml);
 }

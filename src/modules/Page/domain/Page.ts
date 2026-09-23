@@ -16,6 +16,12 @@ export const PageSchema = z.object({
   // Estilo propio de la página; nulo = hereda el del sitio. Con default, una API que todavía
   // no lo manda sigue siendo válida.
   visualStyle: z.string().nullable().default(null),
+  // Metadatos de buscador propios de la página. Con default, una API que todavía no los
+  // manda sigue siendo válida (ver web-builder-api#63).
+  seoTitle: z.string().nullable().optional(),
+  seoDescription: z.string().nullable().optional(),
+  ogImageUrl: z.string().nullable().optional(),
+  noindex: z.boolean().optional(),
   sections: z.array(PageSectionSchema),
 });
 
@@ -28,6 +34,9 @@ export const PublishedPageSummarySchema = z.object({
   title: z.string(),
   description: z.string().nullable(),
   updatedAt: z.string().nullable(),
+  // Opcional porque las respuestas guardadas en caché desde antes de que la API lo enviara
+  // siguen siendo válidas; sin el dato, la página se indexa, que es el estado normal.
+  noindex: z.boolean().optional(),
 });
 
 export const PublishedPagesSchema = z.object({

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
@@ -9,8 +10,9 @@ import { BlogPostCard } from '@/modules/Blog/presentation/BlogPostCard';
 import { BlogPostingJsonLd } from '@/modules/Blog/presentation/BlogPostingJsonLd';
 import { ShareButtons } from '@/modules/Blog/presentation/ShareButtons';
 import { formatPublishedAt } from '@/modules/Blog/presentation/blogDate';
-import { canonical, NO_INDEX } from '@/shared/lib/seo';
+import { canonical, NO_INDEX, robotsFor } from '@/shared/lib/seo';
 import { Breadcrumbs } from '@/shared/ui/Breadcrumbs';
+import { mediaSrc } from '@/shared/lib/mediaSrc';
 
 interface BlogPostPageProps {
   readonly params: Promise<{ tenantDomain: string; slug: string }>;
@@ -30,6 +32,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title,
     description,
+    robots: robotsFor(post.noindex),
     alternates: canonical(`/blog/${slug}`),
     openGraph: {
       type: 'article',
@@ -61,6 +64,8 @@ export default async function BlogPostPage({
   }
 
   const siteUrl = `https://${settings.primaryDomain ?? tenantDomain}`;
+  // Dirección estable; la firmada es el respaldo mientras la API no mande la clave.
+  const cover = mediaSrc(post.coverImageKey) ?? post.coverImageUrl;
 
   return (
     <article className="mx-auto max-w-3xl px-6 py-16">
@@ -106,13 +111,18 @@ export default async function BlogPostPage({
         </p>
       </header>
 
-      {post.coverImageUrl !== null && (
-        // eslint-disable-next-line @next/next/no-img-element -- URL dinámica del bucket, fuera del optimizador de next/image
-        <img
-          src={post.coverImageUrl}
-          alt=""
-          className="mb-10 aspect-16/9 w-full rounded-2xl object-cover"
-        />
+      {cover !== null && (
+        <div className="relative mb-10 aspect-16/9 w-full overflow-hidden rounded-2xl">
+          {/* `priority`: es lo primero que se ve de la publicación. */}
+          <Image
+            src={cover}
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 768px) 768px, 100vw"
+            className="object-cover"
+          />
+        </div>
       )}
 
       <BlogContent blocks={post.content} />

@@ -21,6 +21,11 @@ export const GlobalSettingsSchema = z.object({
   metaPixelId: z.string().default(''),
   googleTagManagerId: z.string().default(''),
   cookieBanner: z.string().default(''),
+  // Códigos que Search Console y Bing piden pegar en el `<head>` para verificar el dominio.
+  googleSiteVerification: z.string().default(''),
+  bingSiteVerification: z.string().default(''),
+  // 'true' saca del índice el sitio entero mientras se construye.
+  siteUnderConstruction: z.string().default(''),
   openingHours: z.string().default(''),
   // Dominio canónico del cliente; puede ser distinto de aquel por el que entró el visitante.
   primaryDomain: z.string().nullable().default(null),
@@ -48,7 +53,15 @@ export const DEFAULT_GLOBAL_SETTINGS: GlobalSettings = {
   metaPixelId: '',
   googleTagManagerId: '',
   cookieBanner: '',
+  googleSiteVerification: '',
+  bingSiteVerification: '',
+  siteUnderConstruction: '',
   openingHours: '',
   primaryDomain: null,
   brand: DEFAULT_BRAND,
 };
+
+// El ajuste es texto libre (todas las claves de configuración lo son), así que solo el valor
+// exacto cuenta: cualquier otra cosa deja el sitio visible, que es el estado normal.
+export const isUnderConstruction = (settings: GlobalSettings): boolean =>
+  settings.siteUnderConstruction === 'true';
