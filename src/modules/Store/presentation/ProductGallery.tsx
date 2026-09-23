@@ -1,8 +1,8 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, type ReactElement } from 'react';
 import { cn } from '@/shared/lib/utils';
-import { imageLoading } from '@/shared/lib/imageLoading';
 
 interface ProductGalleryProps {
   readonly images: readonly string[];
@@ -20,16 +20,17 @@ export function ProductGallery({ images, alt }: ProductGalleryProps): ReactEleme
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="bg-muted aspect-square w-full overflow-hidden rounded-2xl">
-        {
-          // eslint-disable-next-line @next/next/no-img-element -- URL dinámica del bucket, fuera del optimizador de next/image
-          <img
-            src={activeImage}
-            alt={alt}
-            className="size-full object-cover"
-            {...imageLoading(true)}
-          />
-        }
+      <div className="bg-muted relative aspect-square w-full overflow-hidden rounded-2xl">
+        {/* `priority`: es la imagen principal de la ficha, sobre el pliegue. Diferirla
+            empeora el LCP en vez de mejorarlo. */}
+        <Image
+          src={activeImage}
+          alt={alt}
+          fill
+          priority
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className="object-cover"
+        />
       </div>
       {images.length > 1 && (
         <div className="grid grid-cols-4 gap-3 sm:grid-cols-5">
@@ -41,19 +42,11 @@ export function ProductGallery({ images, alt }: ProductGalleryProps): ReactEleme
               aria-label={`Ver imagen ${index + 1} de ${images.length}`}
               aria-current={index === activeIndex}
               className={cn(
-                'bg-muted aspect-square overflow-hidden rounded-lg ring-2 ring-transparent transition',
+                'bg-muted relative aspect-square overflow-hidden rounded-lg ring-2 ring-transparent transition',
                 index === activeIndex && 'ring-primary',
               )}
             >
-              {
-                // eslint-disable-next-line @next/next/no-img-element -- URL dinámica del bucket, fuera del optimizador de next/image
-                <img
-                  src={image}
-                  alt=""
-                  className="size-full object-cover"
-                  {...imageLoading()}
-                />
-              }
+              <Image src={image} alt="" fill sizes="20vw" className="object-cover" />
             </button>
           ))}
         </div>

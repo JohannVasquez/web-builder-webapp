@@ -1,7 +1,8 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactElement } from 'react';
 import { cn } from '@/shared/lib/utils';
-import { imageLoading } from '@/shared/lib/imageLoading';
+import { mediaSrc } from '@/shared/lib/mediaSrc';
 import type { ProductView } from '../domain/Product';
 
 interface ProductCardProps {
@@ -15,7 +16,9 @@ export function ProductCard({
   product,
   lightText = false,
 }: ProductCardProps): ReactElement {
-  const image = product.imageUrls[0];
+  // La clave da una dirección estable; la URL firmada es el respaldo mientras la API no la
+  // mande (ver `mediaSrc`).
+  const image = mediaSrc(product.imageKeys?.[0]) ?? product.imageUrls[0] ?? null;
 
   return (
     <Link
@@ -23,13 +26,15 @@ export function ProductCard({
       className="ui-card group flex flex-col overflow-hidden p-0"
     >
       <div className="bg-muted relative aspect-square w-full overflow-hidden">
-        {image !== undefined && (
-          // eslint-disable-next-line @next/next/no-img-element -- URL dinámica del bucket, fuera del optimizador de next/image
-          <img
+        {image !== null && (
+          // `fill` porque el contenedor ya reserva el espacio con `aspect-square`: la imagen
+          // no tiene que traer sus dimensiones para que no haya salto de maquetación.
+          <Image
             src={image}
             alt=""
-            className="size-full object-cover transition-transform group-hover:scale-105"
-            {...imageLoading()}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover transition-transform group-hover:scale-105"
           />
         )}
         {product.isSoldOut && (

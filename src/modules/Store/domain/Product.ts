@@ -18,6 +18,9 @@ export const ProductViewSchema = z.object({
   name: z.string(),
   description: z.string(),
   imageUrls: z.array(z.string()),
+  // Las mismas imágenes como clave del bucket, para armar la dirección estable que
+  // `next/image` necesita. Opcional hasta que la API las mande (web-builder-api#87).
+  imageKeys: z.array(z.string()).optional(),
   priceCents: z.number(),
   salePriceCents: z.number().nullable(),
   currency: z.string(),

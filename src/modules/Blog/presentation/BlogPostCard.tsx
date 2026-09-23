@@ -1,7 +1,8 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { ReactElement } from 'react';
 import { cn } from '@/shared/lib/utils';
-import { imageLoading } from '@/shared/lib/imageLoading';
+import { mediaSrc } from '@/shared/lib/mediaSrc';
 import type { BlogPostSummary } from '../domain/BlogPost';
 import { formatPublishedAt } from './blogDate';
 
@@ -23,6 +24,9 @@ export function BlogPostCard({
   lightText = false,
 }: BlogPostCardProps): ReactElement {
   const isGrid = variant === 'grid';
+  // La clave da una dirección estable; la URL firmada es el respaldo mientras la API no la
+  // mande (ver `mediaSrc` y web-builder-api#87).
+  const cover = mediaSrc(post.coverImageKey) ?? post.coverImageUrl;
 
   return (
     <Link
@@ -33,17 +37,23 @@ export function BlogPostCard({
         isGrid ? 'ui-card flex-col overflow-hidden p-0' : 'items-start',
       )}
     >
-      {post.coverImageUrl !== null && (
-        // eslint-disable-next-line @next/next/no-img-element -- URL dinámica del bucket, fuera del optimizador de next/image
-        <img
-          src={post.coverImageUrl}
-          alt=""
+      {cover !== null && (
+        <div
           className={cn(
-            'object-cover transition-transform group-hover:scale-105',
+            'relative overflow-hidden',
             isGrid ? 'aspect-16/9 w-full' : 'aspect-square size-24 shrink-0 rounded-lg',
           )}
-          {...imageLoading()}
-        />
+        >
+          {/* `fill` sobre un contenedor con proporción: la imagen no necesita traer sus
+              dimensiones para que no haya salto de maquetación. */}
+          <Image
+            src={cover}
+            alt=""
+            fill
+            sizes={isGrid ? '(min-width: 640px) 50vw, 100vw' : '96px'}
+            className="object-cover transition-transform group-hover:scale-105"
+          />
+        </div>
       )}
       <div className={cn('flex flex-col gap-2', isGrid && 'p-6')}>
         <h3

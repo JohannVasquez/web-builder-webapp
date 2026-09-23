@@ -4,8 +4,25 @@ import type { ReactElement } from 'react';
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { ProductGallery } from '@/modules/Store/presentation/ProductGallery';
+import { mediaSrc } from '@/shared/lib/mediaSrc';
 import { AddToCartForm } from '@/modules/Store/presentation/AddToCartForm';
 import { ProductJsonLd } from '@/modules/Store/presentation/ProductJsonLd';
+
+/**
+ * Direcciones estables para la galería. La URL firmada sirve de respaldo mientras la API no
+ * mande las claves (ver web-builder-api#87); así la ficha no se queda sin imágenes entre un
+ * despliegue y el otro.
+ */
+const galleryImages = (product: {
+  imageKeys?: readonly string[];
+  imageUrls: readonly string[];
+}): string[] =>
+  product.imageKeys === undefined || product.imageKeys.length === 0
+    ? [...product.imageUrls]
+    : product.imageKeys.flatMap((key) => {
+        const src = mediaSrc(key);
+        return src === null ? [] : [src];
+      });
 
 interface StoreProductPageProps {
   readonly params: Promise<{ tenantDomain: string; slug: string }>;
@@ -63,7 +80,7 @@ export default async function StoreProductPage({
       <ProductJsonLd product={product} siteUrl={siteUrl} />
 
       <div className="grid gap-10 md:grid-cols-2">
-        <ProductGallery images={product.imageUrls} alt={product.name} />
+        <ProductGallery images={galleryImages(product)} alt={product.name} />
 
         <div className="flex flex-col gap-6">
           <div>
