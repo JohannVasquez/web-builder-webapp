@@ -1,3 +1,5 @@
+/** @jest-environment jsdom */
+
 import { renderToStaticMarkup } from 'react-dom/server';
 import { SectionList } from './PageEditor';
 import type { AdminSection } from '../domain/AdminApi';
@@ -97,5 +99,132 @@ describe('SectionList', () => {
     expect(html).toContain('JSON inválido');
     expect(html).toContain('Guardar');
     expect(html).toContain('Cancelar');
+  });
+});
+
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { PageSeoForm } from './PageEditor';
+import { useAdminApi } from './useAdminApi';
+import '@testing-library/jest-dom';
+
+// Mock dependencies
+jest.mock('./useAdminApi', () => ({ useAdminApi: jest.fn() }));
+
+jest.mock('@/shared/lib/useAsyncData', () => ({
+  useAsyncData: jest.fn().mockReturnValue({ data: [], error: null, isLoading: false }),
+  refreshAsyncData: jest.fn(),
+}));
+
+jest.mock('./useUnsavedChangesGuard', () => ({
+  useUnsavedChangesGuard: jest.fn(),
+}));
+
+jest.mock('sonner', () => ({
+  toast: {
+    success: jest.fn(),
+    error: jest.fn(),
+  },
+}));
+
+describe('PageSeoForm', () => {
+  const baseSeoProps = {
+    tenantId: 't1',
+    pageId: 'p1',
+    pageTitle: 'Página de Prueba',
+    initialSeoTitle: null,
+    initialSeoDescription: null,
+    initialOgImageKey: null,
+    initialNoindex: false,
+  };
+
+  it('rellena los campos con lo que ya tenía la página', () => {
+    render(
+      <PageSeoForm
+        {...baseSeoProps}
+        initialSeoTitle="Mi Título SEO"
+        initialSeoDescription="Mi Descripción"
+        initialOgImageKey="images/foto.jpg"
+        initialNoindex={true}
+      />,
+    );
+    expect(screen.getByLabelText(/Título SEO/)).toHaveValue('Mi Título SEO');
+    expect(screen.getByLabelText(/Descripción SEO/)).toHaveValue('Mi Descripción');
+    expect(screen.getByLabelText(/Imagen al compartir/)).toHaveValue('images/foto.jpg');
+    expect(screen.getByLabelText(/Ocultar de buscadores/)).toBeChecked();
+  });
+
+  it('un campo vacío se manda como null', async () => {
+    const user = userEvent.setup();
+    const mockPatch = jest.fn().mockResolvedValue({ page: {} });
+    (useAdminApi as jest.Mock).mockReturnValue({
+      patch: mockPatch,
+      get: jest.fn().mockResolvedValue({ assets: [] }),
+    });
+
+    render(<PageSeoForm {...baseSeoProps} initialSeoTitle="Título Viejo" />);
+
+    const titleInput = screen.getByLabelText(/Título SEO/);
+    await user.clear(titleInput); // lo dejamos vacío
+
+    const saveButton = screen.getByRole('button', { name: /Guardar SEO/i });
+    await user.click(saveButton);
+
+    await waitFor(() => {
+      expect(mockPatch).toHaveBeenCalledWith(
+        '/api/admin/tenants/t1/pages/p1',
+        {
+          seoTitle: null,
+          seoDescription: null,
+          ogImageKey: null,
+          noindex: false,
+        },
+        expect.anything(),
+      );
+    });
+  });
+
+  it('el aviso de largo aparece al pasarse', async () => {
+    const user = userEvent.setup();
+    render(<PageSeoForm {...baseSeoProps} />);
+
+    const titleInput = screen.getByLabelText(/Título SEO/);
+    await user.type(titleInput, 'a'.repeat(61));
+
+    expect(screen.getByText(/El título es muy largo.*Sobran 1 caracteres/)).toBeTruthy();
+
+    const descInput = screen.getByLabelText(/Descripción SEO/);
+    await user.type(descInput, 'b'.repeat(161));
+
+    expect(
+      screen.getByText(/La descripción es muy larga.*Sobran 1 caracteres/),
+    ).toBeTruthy();
+  });
+
+  it('la imagen elegida se guarda como key', async () => {
+    const user = userEvent.setup();
+    const mockPatch = jest.fn().mockResolvedValue({ page: {} });
+    (useAdminApi as jest.Mock).mockReturnValue({
+      patch: mockPatch,
+      get: jest.fn().mockResolvedValue({ assets: [] }),
+    });
+
+    render(<PageSeoForm {...baseSeoProps} />);
+
+    const imageInput = screen.getByLabelText(/Imagen al compartir/);
+    await user.type(imageInput, 'nueva/imagen.png');
+
+    const saveButton = screen.getByRole('button', { name: /Guardar SEO/i });
+    await user.click(saveButton);
+
+    await waitFor(() => {
+      expect(mockPatch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          ogImageKey: 'nueva/imagen.png',
+        }),
+        expect.anything(),
+      );
+    });
   });
 });

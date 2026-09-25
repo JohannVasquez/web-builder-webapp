@@ -78,6 +78,10 @@ export const AdminPageSchema = z.object({
   isPublished: z.boolean(),
   // Estilo propio de la página; nulo = hereda el del sitio.
   visualStyle: z.string().nullable().default(null),
+  seoTitle: z.string().nullable().optional(),
+  seoDescription: z.string().nullable().optional(),
+  ogImageKey: z.string().nullable().optional(),
+  noindex: z.boolean().optional(),
   sections: z.array(AdminSectionSchema),
 });
 

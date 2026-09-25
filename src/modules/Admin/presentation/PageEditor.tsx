@@ -23,6 +23,7 @@ import {
 import {
   AdminPageResponseSchema,
   AdminPagesSchema,
+  MediaAssetsSchema,
   TenantsSchema,
   type AdminSection,
 } from '../domain/AdminApi';
@@ -45,6 +46,7 @@ import { PagePreview } from './PagePreview';
 import { useAsyncData, refreshAsyncData } from '@/shared/lib/useAsyncData';
 import { useUnsavedChangesGuard } from './useUnsavedChangesGuard';
 import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 
 interface PageEditorProps {
@@ -265,6 +267,216 @@ export function SectionList({
         </li>
       ))}
     </ol>
+  );
+}
+
+interface PageSeoFormProps {
+  readonly tenantId: string;
+  readonly pageId: string;
+  readonly pageTitle: string;
+  readonly initialSeoTitle: string | null;
+  readonly initialSeoDescription: string | null;
+  readonly initialOgImageKey: string | null;
+  readonly initialNoindex: boolean;
+}
+
+export function PageSeoForm({
+  tenantId,
+  pageId,
+  pageTitle,
+  initialSeoTitle,
+  initialSeoDescription,
+  initialOgImageKey,
+  initialNoindex,
+}: PageSeoFormProps): ReactElement {
+  const api = useAdminApi();
+  const [seoTitle, setSeoTitle] = useState(initialSeoTitle ?? '');
+  const [seoDescription, setSeoDescription] = useState(initialSeoDescription ?? '');
+  const [ogImageKey, setOgImageKey] = useState(initialOgImageKey ?? '');
+  const [noindex, setNoindex] = useState(initialNoindex);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const isDirty =
+    seoTitle !== (initialSeoTitle ?? '') ||
+    seoDescription !== (initialSeoDescription ?? '') ||
+    ogImageKey !== (initialOgImageKey ?? '') ||
+    noindex !== initialNoindex;
+
+  useUnsavedChangesGuard(isDirty);
+
+  const media = useAsyncData(`admin:tenant:${tenantId}:media:`, async () => {
+    const { assets } = await api.get(
+      `/api/admin/tenants/${tenantId}/media`,
+      MediaAssetsSchema,
+    );
+    return assets;
+  });
+
+  const selectedAsset = media.data?.find((a) => a.key === ogImageKey);
+
+  const effectiveTitle = seoTitle.trim() || pageTitle;
+  const effectiveDescription = seoDescription.trim() || 'Sin descripción';
+
+  const titleLeft = 60 - effectiveTitle.length;
+  const descLeft = 160 - effectiveDescription.length;
+
+  const handleSave = async (): Promise<void> => {
+    setIsSaving(true);
+    try {
+      await api.patch(
+        `/api/admin/tenants/${tenantId}/pages/${pageId}`,
+        {
+          seoTitle: seoTitle === '' ? null : seoTitle,
+          seoDescription: seoDescription === '' ? null : seoDescription,
+          ogImageKey: ogImageKey === '' ? null : ogImageKey,
+          noindex,
+        },
+        AdminPageResponseSchema,
+      );
+      toast.success(
+        'SEO guardado correctamente. Publica la página para que se vea en el sitio.',
+      );
+      refreshAsyncData(`admin:tenant:${tenantId}:page:${pageId}`);
+    } catch {
+      toast.error('Error al guardar SEO.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <section className="ui-card space-y-6 p-5">
+      <div className="flex items-center justify-between">
+        <h2 className="ui-heading text-lg">SEO y Redes Sociales</h2>
+        {isDirty && (
+          <Button size="sm" onClick={() => void handleSave()} disabled={isSaving}>
+            {isSaving ? (
+              <Loader2 className="size-4 animate-spin mr-2" />
+            ) : (
+              <Save className="size-4 mr-2" />
+            )}
+            Guardar SEO
+          </Button>
+        )}
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="page-seo-title">Título SEO (opcional)</Label>
+            <Input
+              id="page-seo-title"
+              value={seoTitle}
+              onChange={(e) => setSeoTitle(e.target.value)}
+              placeholder={pageTitle}
+            />
+            {titleLeft < 0 && (
+              <p className="text-xs text-amber-600 dark:text-amber-400" role="alert">
+                El título es muy largo, se cortará en los buscadores. Sobran{' '}
+                {Math.abs(titleLeft)} caracteres.
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="page-seo-desc">Descripción SEO (opcional)</Label>
+            <Textarea
+              id="page-seo-desc"
+              value={seoDescription}
+              onChange={(e) => setSeoDescription(e.target.value)}
+              rows={3}
+            />
+            {descLeft < 0 && (
+              <p className="text-xs text-amber-600 dark:text-amber-400" role="alert">
+                La descripción es muy larga, se cortará. Sobran {Math.abs(descLeft)}{' '}
+                caracteres.
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="page-og-image">Imagen al compartir (opcional)</Label>
+            <Input
+              id="page-og-image"
+              value={ogImageKey}
+              onChange={(e) => setOgImageKey(e.target.value)}
+              placeholder="Key de la biblioteca (ej. images/foto.jpg)"
+            />
+            <p className="text-xs text-muted-foreground">
+              Copia la key desde la{' '}
+              <Link href={`/clientes/${tenantId}/media`} className="underline">
+                biblioteca de imágenes
+              </Link>
+              .
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2 pt-2">
+            <input
+              id="page-noindex"
+              type="checkbox"
+              className="size-4 rounded border-gray-300"
+              checked={noindex}
+              onChange={(e) => setNoindex(e.target.checked)}
+            />
+            <Label htmlFor="page-noindex" className="font-normal cursor-pointer">
+              <strong>Ocultar de buscadores (noindex):</strong> el enlace sigue
+              funcionando, pero el buscador no la lista.
+            </Label>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-sm font-medium mb-2">Vista previa en buscadores</h3>
+            <div className="border rounded-md p-3 bg-white dark:bg-black">
+              <p className="text-sm text-[#1a0dab] dark:text-[#8ab4f8] truncate">
+                {effectiveTitle.length > 60
+                  ? effectiveTitle.slice(0, 60) + '...'
+                  : effectiveTitle}
+              </p>
+              <p className="text-xs text-[#006621] dark:text-[#246F38] truncate">
+                www.tusitio.com/pagina
+              </p>
+              <p className="text-xs text-[#545454] dark:text-[#a0aab4] line-clamp-2 mt-1">
+                {effectiveDescription}
+              </p>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-medium mb-2">
+              Vista previa al compartir (WhatsApp / Redes)
+            </h3>
+            <div className="border rounded-md overflow-hidden bg-[#f0f2f5] dark:bg-[#202c33] max-w-sm">
+              <div className="aspect-[1.91/1] bg-muted flex items-center justify-center overflow-hidden">
+                {selectedAsset?.url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={selectedAsset.url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <p className="text-xs text-muted-foreground">Sin imagen</p>
+                )}
+              </div>
+              <div className="p-3">
+                <p className="text-sm font-bold text-black dark:text-white truncate">
+                  {effectiveTitle}
+                </p>
+                <p className="text-xs text-[#4a4a4a] dark:text-[#8696a0] line-clamp-1 mt-0.5">
+                  {effectiveDescription}
+                </p>
+                <p className="text-[10px] text-[#4a4a4a] dark:text-[#8696a0] mt-1 uppercase">
+                  tusitio.com
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -556,6 +768,16 @@ export function PageEditor({ tenantId, pageId }: PageEditorProps): ReactElement 
         pageId={pageId}
         isBusy={isBusy}
         onRestore={restoreVersion}
+      />
+
+      <PageSeoForm
+        tenantId={tenantId}
+        pageId={pageId}
+        pageTitle={page.data.title}
+        initialSeoTitle={page.data.seoTitle ?? null}
+        initialSeoDescription={page.data.seoDescription ?? null}
+        initialOgImageKey={page.data.ogImageKey ?? null}
+        initialNoindex={page.data.noindex ?? false}
       />
 
       {showCatalog && (
