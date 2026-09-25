@@ -319,3 +319,28 @@ export type UserAccount = z.infer<typeof UserAccountSchema>;
 export type NavigationLink = z.infer<typeof NavigationLinkSchema>;
 export type DataRightsRequest = z.infer<typeof DataRightsRequestSchema>;
 export type AdminRedirect = z.infer<typeof RedirectSchema>;
+
+export const SubscriptionStatusSchema = z.enum(['al_dia', 'por_vencer', 'atrasado']);
+export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
+
+export const SubscriptionOverviewRowSchema = z.object({
+  tenantId: z.string(),
+  planName: z.string(),
+  priceCents: z.number(),
+  status: SubscriptionStatusSchema,
+  mrrCents: z.number(),
+});
+export type SubscriptionOverviewRow = z.infer<typeof SubscriptionOverviewRowSchema>;
+
+export const SubscriptionOverviewResponseSchema = z.object({
+  rows: z.array(SubscriptionOverviewRowSchema),
+  totalMrrCents: z.number(),
+});
+export type SubscriptionOverviewResponse = z.infer<typeof SubscriptionOverviewResponseSchema>;
+
+export const SubscriptionStatusResponseSchema = z.object({
+  planName: z.string(),
+  priceCents: z.number(),
+  status: SubscriptionStatusSchema,
+});
+export type SubscriptionStatusResponse = z.infer<typeof SubscriptionStatusResponseSchema>;

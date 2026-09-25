@@ -14,6 +14,7 @@ const NAV_LINK_DEFINITIONS: readonly NavLinkDefinition[] = [
   { href: '/', label: 'Clientes', ownerOnly: false },
   { href: '/claves', label: 'Claves de acceso', ownerOnly: true },
   { href: '/usuarios', label: 'Usuarios', ownerOnly: true },
+  { href: '/cobros', label: 'Cobros', ownerOnly: true },
   { href: '/actividad', label: 'Actividad', ownerOnly: false },
 ];
 

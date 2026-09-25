@@ -36,6 +36,8 @@ import {
 } from '../application/adminErrorMessage';
 import { useAdminApi } from './useAdminApi';
 import { TenantDomains } from './TenantDomains';
+import { TenantSubscriptionDetail } from './TenantSubscriptionDetail';
+
 import { useAsyncData, refreshAsyncData } from '@/shared/lib/useAsyncData';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -196,9 +198,9 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
 
       <TenantStatusSection tenantId={tenantId} tenant={tenant} />
 
-      <TenantDomains tenantId={tenantId} />
-
-      <div className="flex flex-wrap items-center justify-between gap-4">
+            <TenantDomains tenantId={tenantId} />
+      <TenantSubscriptionDetail tenantId={tenantId} />
+<div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="ui-heading text-lg">Páginas</h2>
         <Button type="button" onClick={() => setIsCreateOpen((open) => !open)}>
           <Plus className="size-4" /> Nueva página

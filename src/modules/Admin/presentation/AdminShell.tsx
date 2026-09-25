@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, type ReactElement, type ReactNode } from 'react';
-import { Activity, KeyRound, LogOut, ShieldAlert, Users } from 'lucide-react';
+import { Activity, Banknote, KeyRound, LogOut, ShieldAlert, Users } from 'lucide-react';
 import { useSession } from '@/modules/Auth/presentation/SessionProvider';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
@@ -15,6 +15,7 @@ const ICON_BY_HREF: Record<string, typeof Users> = {
   '/': Users,
   '/claves': KeyRound,
   '/usuarios': Users,
+  '/cobros': Banknote,
   '/actividad': Activity,
 };
 
