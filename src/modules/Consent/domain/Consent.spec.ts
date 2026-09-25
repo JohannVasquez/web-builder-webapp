@@ -5,6 +5,9 @@ import {
   decisionFor,
   needsDecision,
   rejectAll,
+  resolveCookieNoticeHref,
+  COOKIE_POLICY_SLUG,
+  PRIVACY_POLICY_SLUG,
 } from './Consent';
 
 describe('decisiones', () => {
@@ -69,5 +72,25 @@ describe('versión del texto', () => {
   it('las decisiones nuevas se sellan con la versión vigente', () => {
     expect(acceptAll().textVersion).toBe(CONSENT_TEXT_VERSION);
     expect(rejectAll().textVersion).toBe(CONSENT_TEXT_VERSION);
+  });
+});
+
+describe('resolveCookieNoticeHref', () => {
+  it('prefiere la política de cookies si está publicada', () => {
+    const pages = [
+      { slug: COOKIE_POLICY_SLUG },
+      { slug: PRIVACY_POLICY_SLUG },
+    ];
+    expect(resolveCookieNoticeHref(pages)).toBe(`/${COOKIE_POLICY_SLUG}`);
+  });
+
+  it('cae a la política de privacidad si la de cookies no está publicada', () => {
+    const pages = [{ slug: PRIVACY_POLICY_SLUG }];
+    expect(resolveCookieNoticeHref(pages)).toBe(`/${PRIVACY_POLICY_SLUG}`);
+  });
+
+  it('devuelve null si ninguna está publicada', () => {
+    const pages = [{ slug: 'otra-pagina' }];
+    expect(resolveCookieNoticeHref(pages)).toBeNull();
   });
 });

@@ -2,6 +2,7 @@
 
 import type { ComponentType, FormEvent, ReactElement } from 'react';
 import { useState } from 'react';
+import NextLink from 'next/link';
 import { CookiePreferencesButton } from '@/modules/Consent/presentation/CookiePreferencesButton';
 import { Link as LinkIcon, Mail, MapPin, Phone } from 'lucide-react';
 import {
@@ -24,6 +25,8 @@ interface FooterProps {
   readonly variant?: FooterVariant;
   // Sin este callback, la columna de suscripción solo explica que se activa con el bloque de novedades.
   readonly onSubscribe?: (email: string) => void | Promise<void>;
+  // Enlaces a las páginas legales publicadas (privacidad, términos, cookies, etc.)
+  readonly legalLinks?: readonly { readonly href: string; readonly label: string }[];
 }
 
 // Tipa el ícono por lo único que usamos: lucide y react-icons no comparten tipo, pero sí `className`.
@@ -158,6 +161,7 @@ export function Footer({
   settings,
   variant = 'columns',
   onSubscribe,
+  legalLinks,
 }: FooterProps): ReactElement {
   const resolvedVariant: FooterVariant = FOOTER_VARIANTS.includes(variant)
     ? variant
@@ -175,6 +179,11 @@ export function Footer({
             <span>
               © {year} {settings.siteName}. Todos los derechos reservados.
             </span>
+            {legalLinks?.map((link) => (
+              <NextLink key={link.href} href={link.href} className="hover:underline">
+                {link.label}
+              </NextLink>
+            ))}
             <CookiePreferencesButton />
           </p>
         </div>
@@ -232,6 +241,11 @@ export function Footer({
           <span>
             © {year} {settings.siteName}. Todos los derechos reservados.
           </span>
+          {legalLinks?.map((link) => (
+            <NextLink key={link.href} href={link.href} className="hover:underline">
+              {link.label}
+            </NextLink>
+          ))}
           <CookiePreferencesButton />
         </p>
       </div>

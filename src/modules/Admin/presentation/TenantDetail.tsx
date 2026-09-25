@@ -16,6 +16,7 @@ import {
   Pencil,
   Play,
   Plus,
+  Scale,
   ShoppingBag,
   Trash2,
 } from 'lucide-react';
@@ -164,6 +165,11 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
         <Button asChild size="sm" variant="outline">
           <Link href={`/clientes/${tenantId}/tienda`}>
             <ShoppingBag className="size-4" /> Tienda
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/legales`}>
+            <Scale className="size-4" /> Páginas legales
           </Link>
         </Button>
       </div>
