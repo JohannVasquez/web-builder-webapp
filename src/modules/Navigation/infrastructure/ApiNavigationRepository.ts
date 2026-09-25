@@ -11,12 +11,13 @@ export class ApiNavigationRepository implements NavigationRepository {
   ) {}
 
   public async findAll(): Promise<NavigationLink[]> {
+    const options = await siteCacheOptions(this.tenantDomain);
     const response = await fetch(`${this.baseUrl}/api/navigation`, {
-      ...siteCacheOptions(this.tenantDomain),
-      headers:
-        this.tenantDomain === undefined
-          ? undefined
-          : { [TENANT_DOMAIN_HEADER]: this.tenantDomain },
+      ...options,
+      headers: {
+        ...options.headers,
+        ...(this.tenantDomain === undefined ? {} : { [TENANT_DOMAIN_HEADER]: this.tenantDomain }),
+      }
     });
     if (!response.ok) {
       throw new Error(`Failed to fetch navigation: HTTP ${response.status}`);

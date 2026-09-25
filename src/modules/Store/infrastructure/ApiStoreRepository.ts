@@ -25,8 +25,9 @@ export class ApiStoreRepository implements StoreRepository {
       : { [TENANT_DOMAIN_HEADER]: this.tenantDomain };
   }
 
-  private fetchOptions(): RequestInit {
-    return { ...siteCacheOptions(this.tenantDomain), headers: this.tenantHeaders() };
+  private async fetchOptions(): Promise<RequestInit> {
+    const options = await siteCacheOptions(this.tenantDomain);
+    return { ...options, headers: { ...options.headers, ...this.tenantHeaders() } };
   }
 
   public async listProducts(params: ProductListParams): Promise<ProductListResponse> {
@@ -43,7 +44,7 @@ export class ApiStoreRepository implements StoreRepository {
 
     const response = await fetch(
       `${this.baseUrl}/api/products?${query.toString()}`,
-      this.fetchOptions(),
+      await this.fetchOptions(),
     );
     if (!response.ok) {
       throw new Error(`Failed to list products: HTTP ${response.status}`);
@@ -55,7 +56,7 @@ export class ApiStoreRepository implements StoreRepository {
   public async getFeaturedProducts(limit: number): Promise<readonly ProductView[]> {
     const response = await fetch(
       `${this.baseUrl}/api/products/destacados?limit=${limit}`,
-      this.fetchOptions(),
+      await this.fetchOptions(),
     );
     if (!response.ok) {
       throw new Error(`Failed to list featured products: HTTP ${response.status}`);
@@ -67,7 +68,7 @@ export class ApiStoreRepository implements StoreRepository {
   public async findProductBySlug(slug: string): Promise<ProductView | null> {
     const response = await fetch(
       `${this.baseUrl}/api/products/${encodeURIComponent(slug)}`,
-      this.fetchOptions(),
+      await this.fetchOptions(),
     );
 
     // 400 = el slug no cumple el formato aceptado por la API. Desde el visitante es una URL
@@ -86,7 +87,7 @@ export class ApiStoreRepository implements StoreRepository {
   public async listCategories(): Promise<readonly ProductCategory[]> {
     const response = await fetch(
       `${this.baseUrl}/api/product-categories`,
-      this.fetchOptions(),
+      await this.fetchOptions(),
     );
     if (!response.ok) {
       throw new Error(`Failed to list product categories: HTTP ${response.status}`);
@@ -96,7 +97,7 @@ export class ApiStoreRepository implements StoreRepository {
   }
 
   public async getStoreSettings(): Promise<StoreSettings | null> {
-    const response = await fetch(`${this.baseUrl}/api/store`, this.fetchOptions());
+    const response = await fetch(`${this.baseUrl}/api/store`, await this.fetchOptions());
 
     if (response.status === 404) {
       return null;

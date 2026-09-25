@@ -46,10 +46,11 @@ import { ImageCropper } from '@/modules/FileStorage/presentation/ImageCropper';
 import { cn } from '@/shared/lib/utils';
 
 interface MediaLibraryProps {
+  readonly onSelect?: (key: string) => void;
   readonly tenantId: string;
 }
 
-export function MediaLibrary({ tenantId }: MediaLibraryProps): ReactElement {
+export function MediaLibrary({ tenantId, onSelect }: MediaLibraryProps): ReactElement {
   const api = useAdminApi();
   const [searchInput, setSearchInput] = useState('');
   const [committedSearch, setCommittedSearch] = useState('');
@@ -112,7 +113,7 @@ export function MediaLibrary({ tenantId }: MediaLibraryProps): ReactElement {
         >
           <ArrowLeft className="size-4" /> Volver al cliente
         </Link>
-        <h1 className="ui-heading text-2xl">Biblioteca de imágenes</h1>
+        {onSelect === undefined && <h1 className="ui-heading text-2xl">Biblioteca de imágenes</h1>}
       </div>
 
       <Uploader tenantId={tenantId} onUploaded={reload} />
@@ -157,6 +158,7 @@ export function MediaLibrary({ tenantId }: MediaLibraryProps): ReactElement {
           {media.data.map((asset) => (
             <MediaCard
               key={asset.key}
+              onSelect={onSelect ? () => onSelect(asset.key) : undefined}
               tenantId={tenantId}
               asset={asset}
               onChanged={reload}
@@ -323,13 +325,14 @@ function Uploader({ tenantId, onUploaded }: UploaderProps): ReactElement {
 }
 
 interface MediaCardProps {
+  readonly onSelect?: () => void;
   readonly tenantId: string;
   readonly asset: MediaAsset;
   readonly onChanged: () => void;
   readonly onCrop: (asset: MediaAsset) => void;
 }
 
-function MediaCard({ tenantId, asset, onChanged, onCrop }: MediaCardProps): ReactElement {
+function MediaCard({ tenantId, asset, onChanged, onCrop, onSelect }: MediaCardProps): ReactElement {
   const api = useAdminApi();
   const missingAlt = isMissingAlt(asset.alt);
   const displayName = asset.originalName ?? asset.key;
@@ -432,10 +435,10 @@ function MediaCard({ tenantId, asset, onChanged, onCrop }: MediaCardProps): Reac
           type="button"
           size="sm"
           variant="ghost"
-          aria-label={`Copiar key de ${displayName}`}
-          onClick={() => void copyKey()}
+          aria-label={onSelect !== undefined ? `Seleccionar ${displayName}` : `Copiar key de ${displayName}`}
+          onClick={onSelect !== undefined ? () => onSelect() : () => void copyKey()}
         >
-          <Copy className="size-4" /> Copiar key
+          {onSelect !== undefined ? "Seleccionar" : <><Copy className="size-4" /> Copiar key</>}
         </Button>
         <DeleteAssetButton tenantId={tenantId} asset={asset} onDeleted={onChanged} />
       </div>

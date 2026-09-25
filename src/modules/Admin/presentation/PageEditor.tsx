@@ -48,6 +48,8 @@ import { useUnsavedChangesGuard } from './useUnsavedChangesGuard';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
+import { MediaPickerDialog } from './MediaPickerDialog';
+import { Image as ImageIcon } from 'lucide-react';
 
 interface PageEditorProps {
   readonly tenantId: string;
@@ -68,6 +70,7 @@ const summarize = (section: AdminSection): string => {
 const labelFor = (type: string): string => findBlockCatalogEntry(type)?.label ?? type;
 
 export interface SectionListProps {
+  readonly tenantId: string;
   readonly sections: readonly AdminSection[];
   readonly editingId: string | null;
   readonly draft: string;
@@ -111,7 +114,9 @@ export function SectionList({
   onDraftChange,
   onSave,
   onCancelEdit,
+  tenantId,
 }: SectionListProps): ReactElement {
+  const [showPickerId, setShowPickerId] = useState<string | null>(null);
   if (sections.length === 0) {
     return (
       <p className="text-muted-foreground">
@@ -223,12 +228,42 @@ export function SectionList({
 
           {editingId === section.id && (
             <div className="mt-4 space-y-3">
-              <label
-                htmlFor={`props-${String(section.id)}`}
-                className="text-sm font-medium"
-              >
-                Contenido del bloque (JSON)
-              </label>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <label
+                  htmlFor={`props-${String(section.id)}`}
+                  className="text-sm font-medium"
+                >
+                  Contenido del bloque (JSON)
+                </label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPickerId(section.id)}
+                >
+                  <ImageIcon className="size-4 mr-2" aria-hidden="true" />
+                  Insertar imagen
+                </Button>
+              </div>
+              <MediaPickerDialog
+                tenantId={tenantId}
+                open={showPickerId === section.id}
+                onOpenChange={(open) => setShowPickerId(open ? section.id : null)}
+                onSelect={(key) => {
+                  const textarea = document.getElementById(`props-${String(section.id)}`) as HTMLTextAreaElement | null;
+                  if (textarea) {
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const newDraft = draft.substring(0, start) + key + draft.substring(end);
+                    onDraftChange(newDraft);
+                    setTimeout(() => {
+                      textarea.focus();
+                      textarea.setSelectionRange(start, start + key.length);
+                    }, 0);
+                  }
+                  setShowPickerId(null);
+                }}
+              />
               <Textarea
                 id={`props-${String(section.id)}`}
                 value={draft}
@@ -295,6 +330,7 @@ export function PageSeoForm({
   const [ogImageKey, setOgImageKey] = useState(initialOgImageKey ?? '');
   const [noindex, setNoindex] = useState(initialNoindex);
   const [isSaving, setIsSaving] = useState(false);
+  const [showMediaPicker, setShowMediaPicker] = useState(false);
 
   const isDirty =
     seoTitle !== (initialSeoTitle ?? '') ||
@@ -396,12 +432,18 @@ export function PageSeoForm({
 
           <div className="space-y-2">
             <Label htmlFor="page-og-image">Imagen al compartir (opcional)</Label>
-            <Input
-              id="page-og-image"
-              value={ogImageKey}
-              onChange={(e) => setOgImageKey(e.target.value)}
-              placeholder="Key de la biblioteca (ej. images/foto.jpg)"
-            />
+            <div className="flex gap-2">
+              <Input
+                id="page-og-image"
+                value={ogImageKey}
+                onChange={(e) => setOgImageKey(e.target.value)}
+                placeholder="Key de la biblioteca (ej. images/foto.jpg)"
+              />
+              <Button type="button" variant="outline" onClick={() => setShowMediaPicker(true)}>
+                <ImageIcon className="size-4" aria-hidden="true" />
+              </Button>
+            </div>
+            <MediaPickerDialog tenantId={tenantId} open={showMediaPicker} onOpenChange={setShowMediaPicker} onSelect={setOgImageKey} />
             <p className="text-xs text-muted-foreground">
               Copia la key desde la{' '}
               <Link href={`/clientes/${tenantId}/media`} className="underline">
@@ -821,6 +863,7 @@ export function PageEditor({ tenantId, pageId }: PageEditorProps): ReactElement 
       )}
 
       <SectionList
+        tenantId={tenantId}
         sections={sections}
         editingId={editingId}
         draft={draft}

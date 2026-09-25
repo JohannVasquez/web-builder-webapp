@@ -16,14 +16,15 @@ export class ApiPageRepository implements PageRepository {
   ) {}
 
   public async findBySlug(slug: string): Promise<Page | null> {
+    const options = await siteCacheOptions(this.tenantDomain);
     const response = await fetch(
       `${this.baseUrl}/api/pages/${encodeURIComponent(slug)}`,
       {
-        ...siteCacheOptions(this.tenantDomain),
-        headers:
-          this.tenantDomain === undefined
-            ? undefined
-            : { [TENANT_DOMAIN_HEADER]: this.tenantDomain },
+        ...options,
+        headers: {
+          ...options.headers,
+          ...(this.tenantDomain === undefined ? {} : { [TENANT_DOMAIN_HEADER]: this.tenantDomain }),
+        }
       },
     );
 
@@ -43,12 +44,13 @@ export class ApiPageRepository implements PageRepository {
   }
 
   public async findAllPublished(): Promise<PublishedPageSummary[]> {
+    const options = await siteCacheOptions(this.tenantDomain);
     const response = await fetch(`${this.baseUrl}/api/pages`, {
-      ...siteCacheOptions(this.tenantDomain),
-      headers:
-        this.tenantDomain === undefined
-          ? undefined
-          : { [TENANT_DOMAIN_HEADER]: this.tenantDomain },
+      ...options,
+      headers: {
+        ...options.headers,
+        ...(this.tenantDomain === undefined ? {} : { [TENANT_DOMAIN_HEADER]: this.tenantDomain }),
+      }
     });
     if (!response.ok) {
       throw new Error(`Failed to list pages: HTTP ${response.status}`);

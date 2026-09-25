@@ -30,9 +30,10 @@ export class ApiBlogRepository implements BlogRepository {
       query.set('tag', params.tag);
     }
 
+    const options = await siteCacheOptions(this.tenantDomain);
     const response = await fetch(`${this.baseUrl}/api/blog?${query.toString()}`, {
-      ...siteCacheOptions(this.tenantDomain),
-      headers: this.tenantHeaders(),
+      ...options,
+      headers: { ...options.headers, ...this.tenantHeaders() },
     });
     if (!response.ok) {
       throw new Error(`Failed to list blog posts: HTTP ${response.status}`);
@@ -42,9 +43,10 @@ export class ApiBlogRepository implements BlogRepository {
   }
 
   public async findBySlug(slug: string): Promise<BlogPostDetail | null> {
+    const options = await siteCacheOptions(this.tenantDomain);
     const response = await fetch(`${this.baseUrl}/api/blog/${encodeURIComponent(slug)}`, {
-      ...siteCacheOptions(this.tenantDomain),
-      headers: this.tenantHeaders(),
+      ...options,
+      headers: { ...options.headers, ...this.tenantHeaders() },
     });
 
     // 400 = el slug no cumple el formato aceptado por la API. Desde el visitante es una URL

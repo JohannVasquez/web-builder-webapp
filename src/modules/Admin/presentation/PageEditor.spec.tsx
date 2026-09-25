@@ -27,6 +27,7 @@ const noop = (): void => {
 };
 
 const baseProps = {
+  tenantId: 't1',
   editingId: null,
   draft: '',
   jsonError: null,
@@ -111,6 +112,17 @@ import '@testing-library/jest-dom';
 // Mock dependencies
 jest.mock('./useAdminApi', () => ({ useAdminApi: jest.fn() }));
 
+jest.mock('./MediaPickerDialog', () => ({
+  MediaPickerDialog: ({ open, onSelect }: { open: boolean; onSelect: (key: string) => void }) => {
+    if (!open) return null;
+    return (
+      <div data-testid="media-picker-dialog">
+        <button onClick={() => onSelect('images/foto-galeria.jpg')}>Simular Selección</button>
+      </div>
+    );
+  },
+}));
+
 jest.mock('@/shared/lib/useAsyncData', () => ({
   useAsyncData: jest.fn().mockReturnValue({ data: [], error: null, isLoading: false }),
   refreshAsyncData: jest.fn(),
@@ -126,6 +138,32 @@ jest.mock('sonner', () => ({
     error: jest.fn(),
   },
 }));
+
+describe('SectionList Interacciones', () => {
+  it('permite insertar una imagen de la biblioteca en el JSON (ej. Galería)', async () => {
+    const user = userEvent.setup();
+    const mockDraftChange = jest.fn();
+    render(
+      <SectionList
+        {...baseProps}
+        sections={[{ id: 'sec-1', type: 'Gallery', position: 0, props: {}, anchor: null, isHidden: false }]}
+        editingId="sec-1"
+        draft='{"photos": [{"url": ""}]}'
+        onDraftChange={mockDraftChange}
+      />
+    );
+
+    const insertBtn = screen.getByRole('button', { name: /Insertar imagen/i });
+    await user.click(insertBtn);
+
+    const selectMockBtn = screen.getByText('Simular Selección');
+    await user.click(selectMockBtn);
+
+    expect(mockDraftChange).toHaveBeenCalledWith(
+      expect.stringContaining('images/foto-galeria.jpg')
+    );
+  });
+});
 
 describe('PageSeoForm', () => {
   const baseSeoProps = {

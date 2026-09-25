@@ -10,11 +10,11 @@ export class ApiRedirectRepository implements RedirectRepository {
   ) {}
 
   public async resolve(path: string): Promise<Redirect | null> {
+    const options = await siteCacheOptions(this.tenantDomain);
     const response = await fetch(
-      `${this.baseUrl}/api/redirecciones?path=${encodeURIComponent(path)}`,
-      {
-        ...siteCacheOptions(this.tenantDomain),
-        headers: { [TENANT_DOMAIN_HEADER]: this.tenantDomain },
+      `${this.baseUrl}/api/redirecciones?path=${encodeURIComponent(path)}`, {
+        ...options,
+        headers: { ...options.headers, [TENANT_DOMAIN_HEADER]: this.tenantDomain },
       },
     );
 

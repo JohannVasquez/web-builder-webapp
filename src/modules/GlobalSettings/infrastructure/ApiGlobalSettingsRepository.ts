@@ -11,12 +11,13 @@ export class ApiGlobalSettingsRepository implements GlobalSettingsRepository {
   ) {}
 
   public async find(): Promise<GlobalSettings> {
+    const options = await siteCacheOptions(this.tenantDomain);
     const response = await fetch(`${this.baseUrl}/api/settings`, {
-      ...siteCacheOptions(this.tenantDomain),
-      headers:
-        this.tenantDomain === undefined
-          ? undefined
-          : { [TENANT_DOMAIN_HEADER]: this.tenantDomain },
+      ...options,
+      headers: {
+        ...options.headers,
+        ...(this.tenantDomain === undefined ? {} : { [TENANT_DOMAIN_HEADER]: this.tenantDomain }),
+      }
     });
     if (!response.ok) {
       throw new Error(`Failed to fetch global settings: HTTP ${response.status}`);

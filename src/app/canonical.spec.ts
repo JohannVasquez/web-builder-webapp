@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
+import { draftMode } from 'next/headers';
 
 // Cada ruta pública tiene que declarar SU canónico. Hasta septiembre de 2026 el layout de
 // tenant fijaba `canonical: '/'`, y como el metadata de Next se hereda, cada post y cada
 // producto señalaba a la portada como su versión buena: el buscador los descartaba a todos.
 // Estas pruebas existen para que esa regresión no vuelva sin que nadie se entere.
 
-// `next/font/google` solo existe dentro del compilador de Next; fuera de él, cualquier
-// fuente devuelve lo mismo, que es todo lo que necesita el layout para construirse.
+jest.mock('next/headers', () => ({
+  draftMode: jest.fn().mockResolvedValue({ isEnabled: false }),
+}));
+
 jest.mock(
   'next/font/google',
   () =>
@@ -177,5 +180,21 @@ describe('canónico por ruta', () => {
 
     expect(metadata.metadataBase?.toString()).toBe('https://acme.cl/');
     expect(metadata.alternates).toBeUndefined();
+  });
+
+  it('el layout marca noindex de verdad si es vista previa', async () => {
+    (draftMode as jest.Mock).mockResolvedValueOnce({ isEnabled: true });
+
+    getSettings.mockResolvedValue({
+      ...SETTINGS,
+      brand: { assets: {} },
+    });
+    const { generateMetadata } = await import('./[tenantDomain]/layout');
+
+    const metadata = await generateMetadata({
+      params: Promise.resolve({ tenantDomain: 'acme.cl' }),
+    });
+
+    expect(metadata.robots).toEqual({ index: false, follow: false });
   });
 });
