@@ -23,3 +23,6 @@ build/
 
 # testing
 coverage/
+
+# Grafo de conocimiento de graphify: se regenera solo, vive solo en local.
+graphify-out/
