@@ -265,6 +265,7 @@ function MediaCard({ tenantId, asset, onChanged }: MediaCardProps): ReactElement
     <li className={cn('ui-card space-y-3 p-4', missingAlt && 'border-amber-400/60')}>
       <div className="bg-muted flex h-32 items-center justify-center overflow-hidden rounded-md">
         {asset.mimeType.startsWith('image/') && asset.url !== undefined ? (
+          // Decisión: Mantenemos <img> nativo para evitar que las firmas temporales saturen el disco y la caché de next/image.
           // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
           <img
             src={asset.url}

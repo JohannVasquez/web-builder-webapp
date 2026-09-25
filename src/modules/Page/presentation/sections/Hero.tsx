@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { preload } from 'react-dom';
 import { useEffect, useState, type ReactElement } from 'react';
 import { z } from 'zod';
@@ -14,7 +15,6 @@ import {
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import { ContactForm } from '@/modules/Contact/presentation/ContactForm';
 import { HEADING_TAGS } from '@/shared/lib/heading';
-import { imageLoading } from '@/shared/lib/imageLoading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const HERO_VARIANTS = ['centered', 'split', 'minimal', 'form'] as const;
@@ -159,13 +159,16 @@ export function Hero({
             )}
           </div>
           {hasImage && (
-            // eslint-disable-next-line @next/next/no-img-element -- URL dinámica del bucket, fuera del optimizador de next/image
-            <img
-              src={slides[0]}
-              alt=""
-              className="aspect-4/3 w-full rounded-2xl object-cover md:order-2"
-              {...imageLoading(headingLevel === 1)}
-            />
+            <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl md:order-2">
+              <Image
+                src={slides[0]}
+                alt=""
+                fill
+                className="object-cover"
+                priority={headingLevel === 1}
+                sizes="(max-width: 768px) 100vw, 50vw"
+              />
+            </div>
           )}
         </RevealOnScroll>
       </section>

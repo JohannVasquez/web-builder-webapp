@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import { cn } from '@/shared/lib/utils';
@@ -10,7 +11,6 @@ import {
   SectionLayoutPropsSchema,
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
-import { imageLoading } from '@/shared/lib/imageLoading';
 import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
@@ -110,13 +110,7 @@ export function Columns({
             return (
               <div key={index} className="flex flex-col gap-4">
                 {hasImage && (
-                  // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-                  <img
-                    src={column.imageUrl}
-                    alt={column.imageAlt ?? ''}
-                    className="aspect-4/3 w-full rounded-xl object-cover shadow-sm"
-                    {...imageLoading()}
-                  />
+                                    <div className="relative aspect-4/3 w-full overflow-hidden rounded-xl shadow-sm"><Image src={column.imageUrl!} alt={column.imageAlt ?? ''} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" /></div>
                 )}
                 {hasText && (
                   <div>

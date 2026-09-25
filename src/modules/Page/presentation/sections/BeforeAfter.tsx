@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, type ReactElement } from 'react';
+import Image from 'next/image';
 import { z } from 'zod';
 import { ArrowLeftRight } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
@@ -14,7 +15,7 @@ import {
   sectionLayoutClasses,
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
-import { imageLoading } from '@/shared/lib/imageLoading';
+
 import { HEADING_TAGS } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
@@ -112,25 +113,29 @@ export function BeforeAfter({
           {header}
           <div className="grid gap-4 sm:grid-cols-2">
             <figure className="ui-card overflow-hidden p-0">
-              {/* eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image */}
-              <img
-                src={beforeUrl}
-                alt={beforeLabel}
-                className="aspect-4/3 w-full object-cover"
-                {...imageLoading()}
-              />
+              <div className="relative aspect-4/3 w-full overflow-hidden">
+                <Image
+                  src={beforeUrl}
+                  alt={beforeLabel}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
               <figcaption className="text-muted-foreground p-3 text-center text-sm font-medium">
                 {beforeLabel}
               </figcaption>
             </figure>
             <figure className="ui-card overflow-hidden p-0">
-              {/* eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image */}
-              <img
-                src={afterUrl}
-                alt={afterLabel}
-                className="aspect-4/3 w-full object-cover"
-                {...imageLoading()}
-              />
+              <div className="relative aspect-4/3 w-full overflow-hidden">
+                <Image
+                  src={afterUrl}
+                  alt={afterLabel}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+              </div>
               <figcaption className="text-muted-foreground p-3 text-center text-sm font-medium">
                 {afterLabel}
               </figcaption>
@@ -155,20 +160,20 @@ export function BeforeAfter({
         {header}
         <div className="ui-card overflow-hidden p-0">
           <div className="relative aspect-4/3 w-full select-none overflow-hidden md:aspect-16/9">
-            {/* eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image */}
-            <img
+            <Image
               src={afterUrl}
               alt={afterLabel}
-              className="absolute inset-0 size-full object-cover"
-              {...imageLoading()}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 100vw"
             />
-            {/* eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image */}
-            <img
+            <Image
               src={beforeUrl}
               alt={beforeLabel}
-              className="absolute inset-0 size-full object-cover"
+              fill
+              className="object-cover"
               style={{ clipPath: `inset(0 ${100 - value}% 0 0)` }}
-              {...imageLoading()}
+              sizes="(max-width: 768px) 100vw, 100vw"
             />
             <div
               className="bg-background pointer-events-none absolute inset-y-0 w-0.5"

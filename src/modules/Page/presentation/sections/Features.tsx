@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import {
@@ -30,7 +31,6 @@ import {
   sectionLayoutClasses,
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
-import { imageLoading } from '@/shared/lib/imageLoading';
 import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
@@ -140,13 +140,7 @@ export function Features({
               return (
                 <div key={item.title} className="flex items-start gap-4 text-left">
                   {item.imageUrl !== undefined ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-                    <img
-                      src={item.imageUrl}
-                      alt=""
-                      className="size-16 shrink-0 rounded-lg object-cover"
-                      {...imageLoading()}
-                    />
+                                        <div className="relative size-16 shrink-0 overflow-hidden rounded-lg"><Image src={item.imageUrl} alt="" fill className="object-cover" sizes="64px" /></div>
                   ) : (
                     <div
                       className="bg-primary/10 text-primary flex size-12 shrink-0 items-center justify-center rounded-full"
@@ -211,13 +205,7 @@ export function Features({
                   )}
                 >
                   {item.imageUrl !== undefined ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-                    <img
-                      src={item.imageUrl}
-                      alt=""
-                      className="h-32 w-full rounded-2xl object-cover"
-                      {...imageLoading()}
-                    />
+                                        <div className="relative h-32 w-full overflow-hidden rounded-2xl"><Image src={item.imageUrl} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" /></div>
                   ) : (
                     <div
                       className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-full"
@@ -265,13 +253,7 @@ export function Features({
                 )}
               >
                 {item.imageUrl !== undefined ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-                  <img
-                    src={item.imageUrl}
-                    alt=""
-                    className="h-32 w-full rounded-lg object-cover"
-                    {...imageLoading()}
-                  />
+                                    <div className="relative h-32 w-full overflow-hidden rounded-lg"><Image src={item.imageUrl} alt="" fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" /></div>
                 ) : (
                   <div
                     className="bg-primary/10 text-primary flex size-12 items-center justify-center rounded-full"

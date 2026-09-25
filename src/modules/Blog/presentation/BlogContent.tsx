@@ -1,6 +1,6 @@
+import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { cn } from '@/shared/lib/utils';
-import { imageLoading } from '@/shared/lib/imageLoading';
 import { parseVideoUrl } from '@/modules/Page/presentation/sections/videoUrl';
 import {
   BlogDividerBlockSchema,
@@ -84,13 +84,7 @@ function renderBlock(block: BlogContentBlock, index: number): ReactElement | nul
     return (
       <figure key={index}>
         {
-          // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-          <img
-            src={image.data.key}
-            alt={image.data.alt}
-            className="w-full rounded-lg"
-            {...imageLoading()}
-          />
+                    <div className="relative aspect-video w-full overflow-hidden rounded-lg"><Image src={image.data.key} alt={image.data.alt} fill className="object-cover" sizes="(max-width: 768px) 100vw, 100vw" priority={index === 0} /></div>
         }
         {image.data.caption !== undefined && (
           <figcaption className="text-muted-foreground mt-2 text-sm">

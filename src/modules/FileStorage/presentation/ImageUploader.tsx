@@ -176,6 +176,7 @@ export function ImageUploader({
         )}
       >
         {previewUrl !== null ? (
+          // Decisión: Mantenemos <img> nativo para evitar que las firmas temporales saturen el disco y la caché de next/image.
           // eslint-disable-next-line @next/next/no-img-element -- preview local (blob:) y URLs de bucket dinámicas, fuera del optimizador de next/image
           <img
             src={previewUrl}

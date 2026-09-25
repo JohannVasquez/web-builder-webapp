@@ -56,7 +56,7 @@ function FooterLogo({ settings }: { readonly settings: GlobalSettings }): ReactE
   }
   return (
     <>
-      {/* eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- Ratio desconocido: next/image sin dimensiones rompe w-auto o exige contenedor fijo */}
       <img
         src={logoLight}
         alt={settings.siteName}
@@ -65,7 +65,7 @@ function FooterLogo({ settings }: { readonly settings: GlobalSettings }): ReactE
         className={logoDark !== undefined ? 'h-9 w-auto dark:hidden' : 'h-9 w-auto'}
       />
       {logoDark !== undefined && (
-        // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
+        // eslint-disable-next-line @next/next/no-img-element -- Ratio desconocido: next/image sin dimensiones rompe w-auto o exige contenedor fijo
         <img
           src={logoDark}
           alt={settings.siteName}

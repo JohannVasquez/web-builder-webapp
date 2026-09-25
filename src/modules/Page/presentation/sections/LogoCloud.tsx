@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import { cn } from '@/shared/lib/utils';
@@ -13,7 +14,6 @@ import {
 } from '@/shared/lib/sectionLayout';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import { HEADING_TAGS, type HeadingLevel } from '@/shared/lib/heading';
-import { imageLoading } from '@/shared/lib/imageLoading';
 import type { SectionComponentProps } from '../SectionComponentProps';
 
 const LOGO_CLOUD_VARIANTS = ['row', 'marquee'] as const;
@@ -48,15 +48,7 @@ type Logo = z.infer<typeof LogoCloudPropsSchema>['logos'][number];
 // Caja de ancho y alto fijos: no conocemos la proporción real del logo hasta que carga (Spec 6.2, CLS).
 function LogoImage({ logo }: { readonly logo: Logo }): ReactElement {
   const image = (
-    // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-    <img
-      src={logo.url}
-      alt={logo.alt}
-      width={96}
-      height={36}
-      className="h-9 w-24 shrink-0 object-contain opacity-70 grayscale transition-opacity hover:opacity-100 hover:grayscale-0"
-      {...imageLoading()}
-    />
+        <Image src={logo.url} alt={logo.alt} width={96} height={36} className="h-9 w-24 shrink-0 object-contain opacity-70 grayscale transition-opacity hover:opacity-100 hover:grayscale-0" />
   );
   if (logo.href === undefined) {
     return image;

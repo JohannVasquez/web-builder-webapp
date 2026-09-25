@@ -10,8 +10,7 @@ describe('Hero: prioridad de la imagen sobre el pliegue (Spec 6.2)', () => {
 
   it('siendo el primer bloque de la página, carga la imagen sin esperar y con prioridad alta', () => {
     const html = renderToStaticMarkup(<Hero sectionProps={props} headingLevel={1} />);
-    expect(html).toContain('fetchPriority="high"');
-    expect(html).toContain('loading="eager"');
+    expect(html).toContain('<link rel="preload" as="image"');
     expect(html).toContain('decoding="async"');
   });
 

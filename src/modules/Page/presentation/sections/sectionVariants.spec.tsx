@@ -234,4 +234,17 @@ describe('Testimonials variants', () => {
     expect(html).toContain('Lo que dicen');
     expect(html).toContain('Excelente servicio');
   });
+  it('las imágenes de las características cargan diferidas y conservan su alt (si no tienen explícito quedan decorativas)', () => {
+    const html = renderToStaticMarkup(
+      <Features 
+        sectionProps={{
+          title: 'Title',
+          items: [{ title: 'Item 1', description: 'Desc', imageUrl: 'https://img.com/a.jpg' }]
+        }} 
+      />
+    );
+    expect(html).toContain('loading="lazy"');
+    expect(html).toContain('alt=""');
+    expect(html).not.toContain('<link rel="preload"');
+  });
 });
