@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
 import { createPageService } from '@/modules/Page/infrastructure/pageServiceFactory';
 import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { SectionRenderer } from '@/modules/Page/presentation/SectionRenderer';
+import { notFoundWithRedirect } from '@/modules/Redirect/presentation/notFoundWithRedirect';
+import { createRedirectService } from '@/modules/Redirect/infrastructure/redirectServiceFactory';
 import { canonical, NO_INDEX, robotsFor } from '@/shared/lib/seo';
 import { Breadcrumbs, type Crumb } from '@/shared/ui/Breadcrumbs';
 
@@ -71,7 +72,10 @@ export default async function DynamicPage({
   const page = await pageService.getPage(resolved);
 
   if (page === null) {
-    notFound();
+    return await notFoundWithRedirect(
+      createRedirectService(tenantDomain),
+      resolved === 'home' ? '/' : `/${resolved}`,
+    );
   }
 
   // Las migas solo tienen sentido con slug anidado: en `/nosotros` serían "Inicio > Nosotros",

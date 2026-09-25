@@ -18,7 +18,7 @@ import {
   Plus,
   Scale,
   ShoppingBag,
-  Trash2,
+  Trash2, ArrowRightLeft,
 } from 'lucide-react';
 import {
   AdminPageResponseSchema,
@@ -175,6 +175,11 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
         <Button asChild size="sm" variant="outline">
           <Link href={`/clientes/${tenantId}/solicitudes-datos`}>
             <Scale className="size-4" /> Solicitudes ARCOP
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/redirecciones`}>
+            <ArrowRightLeft className="size-4" /> Redirecciones
           </Link>
         </Button>
       </div>

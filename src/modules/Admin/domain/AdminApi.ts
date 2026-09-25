@@ -288,6 +288,16 @@ export const DataRightsRequestsSchema = z.object({
   requests: z.array(DataRightsRequestSchema),
 });
 
+export const RedirectSchema = z.object({
+  id: z.string(),
+  fromPath: z.string(),
+  toPath: z.string(),
+  statusCode: z.number(),
+  createdAt: z.string(),
+});
+export const RedirectsSchema = z.object({ redirects: z.array(RedirectSchema) });
+export const RedirectResponseSchema = z.object({ redirect: RedirectSchema });
+
 export type Tenant = z.infer<typeof TenantSchema>;
 export type TenantStatus = z.infer<typeof TenantStatusSchema>;
 export type SiteTemplate = z.infer<typeof SiteTemplateSchema>;
@@ -308,3 +318,4 @@ export type Subscriber = z.infer<typeof SubscriberSchema>;
 export type UserAccount = z.infer<typeof UserAccountSchema>;
 export type NavigationLink = z.infer<typeof NavigationLinkSchema>;
 export type DataRightsRequest = z.infer<typeof DataRightsRequestSchema>;
+export type AdminRedirect = z.infer<typeof RedirectSchema>;

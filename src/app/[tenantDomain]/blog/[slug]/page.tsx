@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
+import { notFoundWithRedirect } from '@/modules/Redirect/presentation/notFoundWithRedirect';
+import { createRedirectService } from '@/modules/Redirect/infrastructure/redirectServiceFactory';
 import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { BlogContent } from '@/modules/Blog/presentation/BlogContent';
@@ -60,7 +61,7 @@ export default async function BlogPostPage({
   ]);
 
   if (post === null) {
-    notFound();
+    return await notFoundWithRedirect(createRedirectService(tenantDomain), `/blog/${slug}`);
   }
 
   const siteUrl = `https://${settings.primaryDomain ?? tenantDomain}`;

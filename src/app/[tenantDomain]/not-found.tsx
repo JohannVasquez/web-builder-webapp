@@ -15,5 +15,5 @@ export default async function TenantNotFound(): Promise<ReactElement> {
 
   const links = await createNavigationService(tenantDomain).getLinks();
 
-  return <PageNotFound links={links} />;
+  console.log(Array.from(headersList.entries())); return <PageNotFound links={links} />;
 }
