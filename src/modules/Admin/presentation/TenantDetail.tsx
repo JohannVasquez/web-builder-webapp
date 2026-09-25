@@ -5,6 +5,7 @@ import { useState, type FormEvent, type ReactElement } from 'react';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
+  ClipboardCheck,
   ExternalLink,
   Image as ImageIcon,
   Loader2,
@@ -192,6 +193,11 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
         <Button asChild size="sm" variant="outline">
           <Link href={`/clientes/${tenantId}/redirecciones`}>
             <ArrowRightLeft className="size-4" /> Redirecciones
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/revision-calidad`}>
+            <ClipboardCheck className="size-4" /> Revisión de calidad
           </Link>
         </Button>
       </div>
