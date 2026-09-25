@@ -172,6 +172,11 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
             <Scale className="size-4" /> Páginas legales
           </Link>
         </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/solicitudes-datos`}>
+            <Scale className="size-4" /> Solicitudes ARCOP
+          </Link>
+        </Button>
       </div>
 
       <TenantStatusSection tenantId={tenantId} tenant={tenant} />

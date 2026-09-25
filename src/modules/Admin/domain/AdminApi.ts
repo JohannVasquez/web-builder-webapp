@@ -257,6 +257,37 @@ export const SubscribersSchema = z.object({
   total: z.number(),
 });
 
+export const DATA_RIGHTS = [
+  'acceso',
+  'rectificacion',
+  'cancelacion',
+  'oposicion',
+  'portabilidad',
+] as const;
+
+export const REQUEST_STATUSES = [
+  'pendiente',
+  'verificada',
+  'resuelta',
+  'rechazada',
+] as const;
+
+export const DataRightsRequestSchema = z.object({
+  id: z.string(),
+  right: z.enum(DATA_RIGHTS),
+  email: z.string(),
+  details: z.string(),
+  status: z.enum(REQUEST_STATUSES),
+  createdAt: z.string(),
+  verifiedAt: z.string().nullable(),
+  resolvedAt: z.string().nullable(),
+  dueAt: z.string(),
+});
+
+export const DataRightsRequestsSchema = z.object({
+  requests: z.array(DataRightsRequestSchema),
+});
+
 export type Tenant = z.infer<typeof TenantSchema>;
 export type TenantStatus = z.infer<typeof TenantStatusSchema>;
 export type SiteTemplate = z.infer<typeof SiteTemplateSchema>;
@@ -276,3 +307,4 @@ export type AssetUsage = z.infer<typeof AssetUsageSchema>;
 export type Subscriber = z.infer<typeof SubscriberSchema>;
 export type UserAccount = z.infer<typeof UserAccountSchema>;
 export type NavigationLink = z.infer<typeof NavigationLinkSchema>;
+export type DataRightsRequest = z.infer<typeof DataRightsRequestSchema>;
