@@ -43,11 +43,12 @@ describe('OrderList', () => {
     createdAt: '2026-09-22T04:00:00Z',
     termsAcceptedAt: null,
     termsVersion: null,
+    confirmationEmailError: null,
   };
 
   it('renders correctly', () => {
     const html = renderToStaticMarkup(
-      <OrderList orders={[baseOrder]} onAdvanceStatus={() => {}} />,
+      <OrderList orders={[baseOrder]} onAdvanceStatus={() => {}} onRetryEmail={() => {}} retryingOrderId={null} />,
     );
     expect(html).toContain('ORD-001');
     expect(html).toContain('Juan Pérez');
@@ -58,7 +59,7 @@ describe('OrderList', () => {
   it('shows shipped status without payment next step', () => {
     const order: Order = { ...baseOrder, status: 'shipped' };
     const html = renderToStaticMarkup(
-      <OrderList orders={[order]} onAdvanceStatus={() => {}} />,
+      <OrderList orders={[order]} onAdvanceStatus={() => {}} onRetryEmail={() => {}} retryingOrderId={null} />,
     );
     expect(html).toContain('Enviado');
     expect(html).toContain('Marcar como Entregado');
@@ -76,6 +77,8 @@ describe('OrderList', () => {
           },
         ]}
         onAdvanceStatus={() => undefined}
+        onRetryEmail={() => {}}
+        retryingOrderId={null}
       />,
     );
 
