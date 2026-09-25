@@ -138,6 +138,11 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
 
       <div className="flex flex-wrap gap-2">
         <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/datos-negocio`}>
+            <Newspaper className="size-4" /> Datos del negocio
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
           <Link href={`/clientes/${tenantId}/identidad`}>
             <Palette className="size-4" /> Identidad de marca
           </Link>
@@ -175,6 +180,11 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
         <Button asChild size="sm" variant="outline">
           <Link href={`/clientes/${tenantId}/solicitudes-datos`}>
             <Scale className="size-4" /> Solicitudes ARCOP
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/medicion`}>
+            <ExternalLink className="size-4" /> Medición y buscadores
           </Link>
         </Button>
         <Button asChild size="sm" variant="outline">
