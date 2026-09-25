@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import {
@@ -29,7 +30,6 @@ import {
   SectionLayoutPropsSchema,
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
-import { imageLoading } from '@/shared/lib/imageLoading';
 import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
@@ -180,16 +180,7 @@ export function SplitHighlights({
         )}
       >
         {hasImage && (
-          // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-          <img
-            src={imageUrl}
-            alt={imageAlt ?? ''}
-            className={cn(
-              'aspect-4/3 w-full rounded-2xl object-cover shadow-sm',
-              imagePosition === 'right' && 'md:order-2',
-            )}
-            {...imageLoading()}
-          />
+                    <div className={cn('relative aspect-4/3 w-full overflow-hidden rounded-2xl shadow-sm', imagePosition === 'right' && 'md:order-2')}><Image src={imageUrl} alt={imageAlt ?? ''} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" /></div>
         )}
         {content}
       </RevealOnScroll>

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import { ExternalLink, Star } from 'lucide-react';
@@ -12,7 +13,6 @@ import {
   sectionLayoutClasses,
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
-import { imageLoading } from '@/shared/lib/imageLoading';
 import { HEADING_TAGS } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
@@ -84,13 +84,15 @@ function ReviewCard({ review }: { readonly review: Review }): ReactElement {
     <div className="ui-card flex flex-col gap-3 p-6">
       <div className="flex items-center gap-3">
         {review.avatarUrl !== undefined ? (
-          // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-          <img
-            src={review.avatarUrl}
-            alt=""
-            className="size-10 shrink-0 rounded-full object-cover"
-            {...imageLoading()}
-          />
+                    <div className="relative size-10 shrink-0 overflow-hidden rounded-full">
+            <Image
+              src={review.avatarUrl}
+              alt=""
+              fill
+              className="object-cover"
+              sizes="40px"
+            />
+          </div>
         ) : (
           <div
             className="bg-primary text-primary-foreground flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"

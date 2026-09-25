@@ -38,7 +38,7 @@ describe('Team', () => {
   it('con photoUrl muestra un <img> con su alt', () => {
     const html = renderToStaticMarkup(<Team sectionProps={{ members }} />);
     expect(html).toContain('<img');
-    expect(html).toContain('src="https://bucket.example.com/juan.jpg"');
+    expect(html).toMatch(/https%3A%2F%2Fbucket.example.com%2Fjuan.jpg/);
     expect(html).toContain('alt="Juan Pérez"');
   });
 
@@ -80,6 +80,22 @@ describe('Team', () => {
     expect(grid).not.toEqual(list);
   });
 });
+
+  
+
+  it('las imágenes del equipo cargan diferidas y conservan el nombre como alt', () => {
+    const html = renderToStaticMarkup(
+      <Team 
+        sectionProps={{
+          title: 'Title',
+          members: [{ name: 'Juan', role: 'Dev', photoUrl: 'https://img.com/juan.jpg' }]
+        }} 
+      />
+    );
+    expect(html).toContain('loading="lazy"');
+    expect(html).toContain('alt="Juan"');
+    expect(html).not.toContain('<link rel="preload"');
+  });
 
 describe('Timeline', () => {
   const steps = [

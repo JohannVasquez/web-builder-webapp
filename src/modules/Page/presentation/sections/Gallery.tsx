@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useState, type KeyboardEvent, type ReactElement } from 'react';
+import Image from 'next/image';
 import { z } from 'zod';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
@@ -61,14 +62,7 @@ function GalleryImg({
 }): ReactElement {
   return (
     // Sin `imageLoading()`: ese helper liga "eager" a `fetchPriority: high`, reservado para el hero.
-    // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-    <img
-      src={src}
-      alt={alt}
-      loading={eager ? undefined : 'lazy'}
-      decoding="async"
-      className={className}
-    />
+        <Image src={src} alt={alt} priority={eager} fill className={className} sizes="(max-width: 768px) 100vw, 33vw" />
   );
 }
 
@@ -155,10 +149,7 @@ export function Gallery({
               type="button"
               onClick={() => openAt(index)}
               aria-label={image.alt !== '' ? image.alt : `Ampliar imagen ${index + 1}`}
-              className={cn(
-                'ui-card mb-4 block w-full overflow-hidden p-0',
-                variant === 'grid' && 'mb-0 aspect-square',
-              )}
+              className={cn('ui-card mb-4 block w-full overflow-hidden p-0 relative', variant === 'grid' ? 'mb-0 aspect-square' : 'aspect-[4/3]')}
             >
               <GalleryImg
                 src={image.url}

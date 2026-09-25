@@ -5,6 +5,7 @@ import { VISUAL_STYLES } from '@/modules/VisualStyle/domain/registry';
 import { COMPONENT_MAP } from '@/modules/Page/presentation/componentMap';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
+import { ConsentProvider } from '@/modules/Consent/presentation/ConsentProvider';
 
 export const metadata: Metadata = { robots: { index: false, follow: false } };
 
@@ -339,7 +340,7 @@ function SampleRow(): ReactElement {
 
 export default function StyleguidePage(): ReactElement {
   return (
-    <>
+    <ConsentProvider>
       <VisualStyleTokens styleId="classic" />
       {VISUAL_STYLES.map((style) => (
         <section
@@ -358,6 +359,6 @@ export default function StyleguidePage(): ReactElement {
           ))}
         </section>
       ))}
-    </>
+    </ConsentProvider>
   );
 }
