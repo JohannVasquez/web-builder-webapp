@@ -3,16 +3,29 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, type ReactElement, type ReactNode } from 'react';
-import { Activity, Banknote, KeyRound, LogOut, ShieldAlert, Users } from 'lucide-react';
+import {
+  Activity,
+  Banknote,
+  KeyRound,
+  LogOut,
+  Presentation,
+  ShieldAlert,
+  Users,
+} from 'lucide-react';
 import { useSession } from '@/modules/Auth/presentation/SessionProvider';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
-import { visibleNavLinks, isOwnerOnlyPath } from '../application/navLinks';
+import {
+  visibleNavLinks,
+  isOwnerOnlyPath,
+  isStaffOnlyPath,
+} from '../application/navLinks';
 import { canManageUsers } from '../application/userPresentation';
 import { LoginForm } from './LoginForm';
 
 const ICON_BY_HREF: Record<string, typeof Users> = {
   '/': Users,
+  '/demos': Presentation,
   '/claves': KeyRound,
   '/usuarios': Users,
   '/cobros': Banknote,
@@ -60,6 +73,8 @@ export function AdminShell({ children }: AdminShellProps): ReactElement {
   const links = visibleNavLinks(role);
   const isForbidden =
     pathname !== null && isOwnerOnlyPath(pathname) && !canManageUsers(role);
+  const isStaffForbidden =
+    pathname !== null && isStaffOnlyPath(pathname) && role === 'client';
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -77,7 +92,7 @@ export function AdminShell({ children }: AdminShellProps): ReactElement {
                   href={href}
                   className={cn(
                     'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
-                    pathname === href
+                    isCurrentSection(pathname, href)
                       ? 'bg-accent text-foreground'
                       : 'text-muted-foreground hover:text-foreground hover:bg-accent',
                   )}
@@ -104,8 +119,36 @@ export function AdminShell({ children }: AdminShellProps): ReactElement {
         </div>
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 md:px-6">
-        {isForbidden ? <OwnerOnlyNotice /> : children}
+        {isForbidden ? (
+          <OwnerOnlyNotice />
+        ) : isStaffForbidden ? (
+          <StaffOnlyNotice />
+        ) : (
+          children
+        )}
       </main>
+    </div>
+  );
+}
+
+// La ficha de una demo (`/demos/<id>`) sigue marcando "Demos" en el menú; la raíz solo se
+// marca a sí misma, o todo quedaría bajo "Clientes".
+const isCurrentSection = (pathname: string | null, href: string): boolean =>
+  pathname !== null &&
+  (href === '/'
+    ? pathname === '/'
+    : pathname === href || pathname.startsWith(`${href}/`));
+
+function StaffOnlyNotice(): ReactElement {
+  return (
+    <div role="alert" className="ui-card flex items-start gap-3 p-6">
+      <ShieldAlert className="text-muted-foreground mt-0.5 size-5 shrink-0" />
+      <div className="space-y-1">
+        <p className="font-medium">Esta sección es solo para el equipo de la agencia.</p>
+        <p className="text-muted-foreground text-sm">
+          Desde tu cuenta puedes trabajar en los sitios que tienes asignados.
+        </p>
+      </div>
     </div>
   );
 }

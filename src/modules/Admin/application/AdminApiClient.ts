@@ -15,6 +15,8 @@ export class AdminApiError extends Error {
     message: string,
     public readonly status: number,
     public readonly issues: readonly ValidationIssue[] = [],
+    // Un 409 por dirección ocupada trae la siguiente libre: el panel la ofrece con un clic.
+    public readonly suggestedSlug: string | null = null,
   ) {
     super(message);
     this.name = 'AdminApiError';
@@ -44,8 +46,9 @@ export class AdminApiClient {
     return schema.parse(await this.send('PUT', path, body));
   }
 
-  public async remove(path: string): Promise<void> {
-    await this.send('DELETE', path);
+  // Algunas rutas piden la confirmación en el cuerpo (borrar una demo lleva `{ confirm: true }`).
+  public async remove(path: string, body?: unknown): Promise<void> {
+    await this.send('DELETE', path, body);
   }
 
   // No usa `send`: un `FormData` no lleva `Content-Type` a mano (el navegador pone el
@@ -62,7 +65,6 @@ export class AdminApiClient {
     return schema.parse(await this.parseResponse(response));
   }
 
-  
   public async downloadCsv(path: string): Promise<Blob> {
     const token = this.getToken();
     const response = await this.fetchFn(`${this.baseUrl}${path}`, {
@@ -111,6 +113,7 @@ export class AdminApiClient {
     const body = (payload ?? {}) as {
       message?: string;
       issues?: ValidationIssue[];
+      suggestedSlug?: unknown;
     };
 
     if (body.issues !== undefined && body.issues.length > 0) {
@@ -123,6 +126,8 @@ export class AdminApiClient {
     return new AdminApiError(
       body.message ?? 'No pudimos completar la acción. Inténtalo nuevamente.',
       status,
+      [],
+      typeof body.suggestedSlug === 'string' ? body.suggestedSlug : null,
     );
   }
 }

@@ -70,3 +70,7 @@ export const isDemoHost = (
   const platform = platformDomain?.trim().toLowerCase() ?? '';
   return platform === '' ? rest.length > 0 : rest.join('.') === platform;
 };
+
+// Solo para mostrar: el panel arma con esto la vista previa `demo-<slug>.<dominio>` antes de
+// crear la demo. La dirección real la devuelve la API. Vacío = vista previa genérica.
+export const getPlatformDomain = (): string => process.env.PLATFORM_DOMAIN?.trim() ?? '';

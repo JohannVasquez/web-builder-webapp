@@ -21,7 +21,7 @@ const LOADING: AsyncState<never> = { data: null, error: null, isLoading: true };
 // cascada y obliga a cada pantalla a repetir el mismo andamiaje de carga/error.
 const entries = new Map<string, Entry<unknown>>();
 
-const entryFor = <T,>(key: string): Entry<T> => {
+const entryFor = <T>(key: string): Entry<T> => {
   const existing = entries.get(key);
   if (existing !== undefined) {
     return existing as Entry<T>;
@@ -31,14 +31,14 @@ const entryFor = <T,>(key: string): Entry<T> => {
   return created;
 };
 
-const publish = <T,>(entry: Entry<T>, state: AsyncState<T>): void => {
+const publish = <T>(entry: Entry<T>, state: AsyncState<T>): void => {
   entry.state = state;
   for (const listener of entry.listeners) {
     listener();
   }
 };
 
-const start = <T,>(key: string, load: () => Promise<T>): void => {
+const start = <T>(key: string, load: () => Promise<T>): void => {
   const entry = entryFor<T>(key);
   if (entry.started) {
     return;
@@ -63,6 +63,17 @@ export const refreshAsyncData = (key: string): void => {
   }
   entry.started = false;
   publish(entry, LOADING);
+};
+
+// Como `refreshAsyncData`, pero deja a la vista lo que ya había mientras llega lo nuevo: una
+// ficha que se vuelve a pedir tras un botón no parpadea ni pierde el scroll en el celular.
+export const revalidateAsyncData = (key: string): void => {
+  const entry = entries.get(key);
+  if (entry === undefined) {
+    return;
+  }
+  entry.started = false;
+  publish(entry, { ...entry.state, isLoading: true });
 };
 
 export function useAsyncData<T>(key: string, load: () => Promise<T>): AsyncState<T> {
