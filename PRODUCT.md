@@ -48,7 +48,7 @@ Cuatro mecanismos, confirmados como diferenciales:
 - Identidad de marca por cliente: paleta, tipografía desde un catálogo curado, logos, modo claro/oscuro.
 - Multi-cliente por dominio, con borrador, publicación, historial de 50 versiones y caché invalidada por dominio.
 - Blog y tienda opcionales por cliente: sin contenido cargado, simplemente no existen.
-- Panel: clientes, dominios, páginas y bloques, identidad, biblioteca de imágenes, menú, mensajes, blog, tienda, usuarios, claves de agente y registro de actividad.
+- Panel: clientes, demos de prospecto (crear, enviar el enlace por WhatsApp, seguir visitas, extender, descartar y convertir en cliente), dominios, páginas y bloques, identidad, biblioteca de imágenes, menú, mensajes, blog, tienda, usuarios, claves de agente y registro de actividad.
 - Conexión para agentes con 46 herramientas, sobre las mismas rutas del panel.
 
 **Restricciones que el trabajo futuro debe respetar**

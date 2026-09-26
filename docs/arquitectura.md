@@ -31,6 +31,7 @@ src/
 │   ├── admin/                  # Panel de administración
 │   │   ├── layout.tsx          # Shell del panel
 │   │   ├── clientes/[tenantId]/ # Pantallas por cliente
+│   │   ├── demos/              # Demos de prospecto: lista, creación y ficha (/demos/[demoId])
 │   │   └── ...
 │   └── api/                    # Route handlers de Next.js
 │       ├── revalidate/         # POST /api/revalidate — invalida caché por dominio
@@ -123,7 +124,8 @@ El test `src/modules/docs-sync.spec.ts` fallará si `VISUAL_STYLES` no coincide 
 
 ### Una pantalla del panel
 
-- Ruta en `src/app/admin/clientes/[tenantId]/<seccion>/page.tsx`.
+- Ruta en `src/app/admin/clientes/[tenantId]/<seccion>/page.tsx`, o en `src/app/admin/<seccion>/page.tsx` si no cuelga de un cliente (como `demos/`).
+- Si es una sección del menú, una entrada en `src/modules/Admin/application/navLinks.ts` con quién la ve (`ownerOnly`, `staffOnly`); `AdminShell` muestra el aviso a quien escriba la dirección sin permiso.
 - Componente de presentación en `src/modules/Admin/presentation/<NombreVista>.tsx`.
 - Lógica en `src/modules/Admin/application/<nombre>.ts`.
 - Llamadas a la API en `src/modules/Admin/application/AdminApiClient.ts`.

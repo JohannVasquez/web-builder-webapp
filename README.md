@@ -158,6 +158,43 @@ Define `PLATFORM_DOMAIN` (el mismo valor que en la API) para que solo
 tramo empiece por `demo-`, y un cliente con dominio propio como `demo-motors.cl` se trataría
 como demo.
 
+### Demos en el panel
+
+La sección **Demos** (`/demos` en el host `admin.*`) es donde el equipo de ventas trabaja las
+demos desde el celular. La ven la dueña y las editoras; un usuario `client` no la ve en el
+menú y, si escribe la dirección, `AdminShell` le muestra el aviso de "solo para el equipo"
+(`staffOnly` en `navLinks.ts`, que también cubre `/demos/<id>`). Todo pasa por
+`/api/admin/demos` con la sesión del panel.
+
+- **Lista.** Tarjetas (no tabla, para no desplazarse de lado en el celular) con negocio,
+  rubro, estado, vencimiento, visitas, última visita y quién la creó. El estado lleva ícono y
+  texto, y el lector de pantalla lo anuncia como "Estado: …". Filtros: estado (incluido
+  **Por vencer**, que pide `status=por-vencer` a la API), "Creadas por mí" (`createdBy`) y
+  búsqueda por negocio (local, sin tildes). Una demo por vencer deja a mano el teléfono y un
+  botón de WhatsApp (`https://wa.me/<solo dígitos>`).
+- **Crear.** Prospecto (solo el negocio es obligatorio), dirección con vista previa
+  `demo-<slug>.<PLATFORM_DOMAIN>` y punto de partida: kit por rubro, duplicar un sitio o
+  vacía. `PLATFORM_DOMAIN` se lee en el servidor al pedir la página (`connection()`), solo
+  para esa vista previa; sin él se muestra una dirección genérica. Si la dirección está
+  ocupada, la sugerencia del 409 (`suggestedSlug`) se aplica con un clic.
+- **Los enlaces se ven una vez.** Tras crear (o regenerar) se muestran los enlaces en claro
+  con "Copiar", "Enviar por WhatsApp" (mensaje editable, prellenado con el enlace) y "Ver
+  como equipo", y el aviso de que no se vuelven a mostrar. El panel no los guarda: cerrar el
+  aviso pide confirmación.
+- **Ficha** (`/demos/<id>`): prospecto editable (se manda solo lo que cambió), otras
+  propuestas del mismo negocio (y "Nueva propuesta", que manda `prospectId`), visitas
+  paginadas y las acciones. Cada acción aparece solo si el rol y el estado la permiten, con
+  las mismas reglas que la API (`availableDemoActions`): un editor no ve Borrar, una
+  convertida no se extiende. El resultado o el error de la API se muestra tal cual.
+- **Editar sitio** lleva a la ficha del cliente con el tenant de la demo. Esa ficha pide la
+  lista con `includeDemos=true` (clave de caché aparte: la lista de Clientes sigue sin
+  demos) y, en una demo, cambia pausar, dominios y cobro por el camino de vuelta a Demos,
+  porque la API rechaza esas acciones sobre una demo.
+- **Convertir** explica que las otras propuestas abiertas se descartan, acepta slug y dueño
+  opcionales y muestra el resultado de la invitación (`sent`, `not-needed` o `failed`). La
+  lista de Clientes se vuelve a pedir, así que el sitio aparece ahí con su dirección
+  definitiva.
+
 ## Puesta en marcha
 
 Requiere la [web-builder-api](../web-builder-api) corriendo (por defecto en
