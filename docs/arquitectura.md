@@ -6,9 +6,9 @@ Para agentes de IA y desarrolladores. Léelo antes de modificar o crear módulos
 
 El proyecto se divide en dos repos con responsabilidades separadas:
 
-| Repositorio | Responsabilidad |
-| --- | --- |
-| `web-builder-api` | Motor headless. Guarda bloques como JSONB, aplica reglas de negocio, sirve la API REST y expone las herramientas MCP para agentes. No genera HTML. |
+| Repositorio                 | Responsabilidad                                                                                                                                             |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `web-builder-api`           | Motor headless. Guarda bloques como JSONB, aplica reglas de negocio, sirve la API REST y expone las herramientas MCP para agentes. No genera HTML.          |
 | `web-builder-webapp` (este) | Consume la API, convierte el JSON en componentes React, aloja el catálogo de estilos visuales, sirve el panel de administración y actúa como caché público. |
 
 Se comunican por HTTP. Agregar un tipo de bloque implica registrar el componente aquí (`COMPONENT_MAP`) y opcionalmente registrarlo en las herramientas de la API. La API lo almacena agnósticamente como datos.
@@ -26,6 +26,7 @@ src/
 │   │   ├── [[...slug]]/        # Catch-all: resuelve cualquier slug contra la API
 │   │   ├── blog/               # Rutas del blog del cliente
 │   │   ├── tienda/             # Rutas de la tienda del cliente
+│   │   ├── demo/               # 404 del enlace de demo inválido y reenvío de acciones (/demo/api)
 │   │   └── ...
 │   ├── admin/                  # Panel de administración
 │   │   ├── layout.tsx          # Shell del panel
@@ -46,6 +47,7 @@ src/
 │   ├── Store/              # Módulo de tienda
 │   ├── FileStorage/        # Imágenes del cliente
 │   ├── Consent/            # Banner de consentimiento (Ley 21.719)
+│   ├── Demo/               # Demo de prospecto: canje del enlace mágico y reenvío de acciones
 │   └── Redirect/           # Redirecciones por cliente
 └── shared/                 # Código compartido entre módulos
     ├── config/             # Configuración de API y tenant
@@ -72,13 +74,13 @@ presentation   ← componentes React que el usuario ve
 
 ### Reglas de dependencia (extraídas de `eslint.config.mjs`)
 
-| Capa | Puede importar de |
-| --- | --- |
-| `domain` | `domain`, `shared` |
-| `application` | `domain`, `application`, `shared` |
+| Capa             | Puede importar de                                   |
+| ---------------- | --------------------------------------------------- |
+| `domain`         | `domain`, `shared`                                  |
+| `application`    | `domain`, `application`, `shared`                   |
 | `infrastructure` | `domain`, `application`, `infrastructure`, `shared` |
-| `presentation` | `domain`, `application`, `presentation`, `shared` |
-| `shared` | `shared` |
+| `presentation`   | `domain`, `application`, `presentation`, `shared`   |
+| `shared`         | `shared`                                            |
 
 **`presentation` nunca importa de `infrastructure`.** El sentido: los componentes React nunca llaman directamente a `fetch`; lo hace la capa de `infrastructure`, y `presentation` consume lo que le pasa `application`.
 
@@ -135,13 +137,14 @@ No se hace en el bloque. Se define un token en `src/modules/VisualStyle/domain/V
 - Ruta en `src/app/[tenantDomain]/<ruta>/page.tsx`.
 - La ruta lee el dominio del tenant desde los parámetros de ruta y lo pasa a los servicios de los módulos correspondientes.
 - El caché se invalida por dominio con `revalidateTag` desde `src/shared/lib/cacheTags.ts`.
+- Toda lectura a la API pasa por `siteCacheOptions`: es la que reenvía el token de una demo de prospecto y la saca de la caché. Una lectura nueva que arme su propio `fetch` sin ella rompe el aislamiento de las demos (ver "Demos de prospecto" en el README).
 
 ## Tres capas de identidad visual
 
 Son independientes y se combinan libremente. Cambiar una no afecta las otras.
 
-| Capa | Dónde vive | Qué decide |
-| --- | --- | --- |
-| Identidad de marca | `settings.brand` (viene de la API) | Colores, tipografía, logos, modo claro/oscuro |
-| Estilo visual | `src/modules/VisualStyle/` | Bordes, sombras, radios, botones, menú, separadores |
-| Variante de bloque | `props` de cada sección | Disposición del contenido dentro del bloque |
+| Capa               | Dónde vive                         | Qué decide                                          |
+| ------------------ | ---------------------------------- | --------------------------------------------------- |
+| Identidad de marca | `settings.brand` (viene de la API) | Colores, tipografía, logos, modo claro/oscuro       |
+| Estilo visual      | `src/modules/VisualStyle/`         | Bordes, sombras, radios, botones, menú, separadores |
+| Variante de bloque | `props` de cada sección            | Disposición del contenido dentro del bloque         |

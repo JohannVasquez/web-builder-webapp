@@ -108,6 +108,56 @@ la versión vieja, y lo que se busca es que el cambio se vea de inmediato.
 
 Para invalidar a mano (por ejemplo, después de `make seed`): `make revalidate`.
 
+## Demos de prospecto (enlace mágico)
+
+Una **demo de prospecto** es el sitio privado de un negocio real que todavía no compró (épica
+DEMO de la API). No confundir con los sitios de demostración públicos de web-builder-api#104.
+La API cierra entero un tenant en estado `demo`: sin un token válido en `X-Demo-Token`
+responde 404 en todas sus rutas públicas, y con él sirve lo **publicado** (no el borrador)
+con `X-Demo: true`. El sitio vive en `demo-<slug>.<PLATFORM_DOMAIN>`.
+
+Cómo viaja el token:
+
+1. **Canje.** El prospecto abre `https://demo-<slug>.<dominio>/demo/<token>`. Lo atiende
+   `src/proxy.ts` (`redeemDemoLink` del módulo `Demo`), porque es el único punto que puede
+   dejar una cookie y además mostrar el 404 del sitio: valida el token contra
+   `GET /api/settings` (sin caché) y exige `X-Demo: true` en la respuesta. Válido → cookie
+   `demo_token` (httpOnly, `secure` en producción, `sameSite=lax`, `path=/`, **sin**
+   `domain`, así queda atada al host) y redirección a `/`, que saca el token de la barra de
+   direcciones. Inválido, vencido, de otra demo o descartado → el 404 normal del sitio, sin
+   explicar por qué. A diferencia del enlace de revisión no se usa `draftMode`.
+2. **Lecturas del servidor.** `siteCacheOptions` (`src/shared/lib/cacheTags.ts`) lee la
+   cookie: con ella reenvía `X-Demo-Token` en **todas** las lecturas (páginas, ajustes, menú,
+   blog, tienda, redirecciones) y usa `cache: 'no-store'` sin etiquetas. En un host `demo-*`
+   tampoco cachea aunque no haya cookie, para que ni el 404 de quien no tiene enlace quede
+   guardado. Si la demo vence mientras la miran, la API responde 404 y se ve el 404 común.
+3. **Acciones del navegador.** Contacto (`contact`), newsletter (`newsletter`), cotización y
+   compra de la tienda (`store/quote`, `store/checkout`), consentimiento (`consents`), y para
+   cuando existan en el sitio, `solicitudes-datos` y `reclamos`. Hoy salen del navegador directo a `/api/*`, que en
+   producción Caddy manda a la API, y el navegador no puede poner el header porque la cookie
+   es httpOnly. En una demo el layout cambia la base de esas llamadas por `/demo`
+   (`useSiteApiBaseUrl`), así que caen en `src/app/[tenantDomain]/demo/api/[...path]`, que
+   agrega el token desde la cookie y reenvía **solo** esa lista cerrada de acciones. El token
+   nunca llega a un script de la página. Consecuencia asumida: para la API esas acciones
+   vienen de la IP del servidor de Next y comparten su límite de frecuencia. La compra usa el
+   pago simulado de la API y vuelve a `/tienda/gracias` como un pago real.
+4. **Imágenes.** `/api/media/<clave>` lo piden el navegador y el optimizador de imágenes, que
+   no llevan el token: en una demo los repositorios de tienda y blog descartan la clave y se
+   usa la URL firmada que la API manda al lado.
+
+Buscadores y caché: con host `demo-*`, cookie de demo o `X-Demo: true`, el layout marca
+`noindex, nofollow` en el metadata y además pinta la etiqueta `<meta name="robots">` (una
+página que declara su propio `robots` pisa el del layout). `proxy.ts` agrega
+`Cache-Control: private, no-store` y `X-Robots-Tag: noindex, nofollow` a toda respuesta de una
+demo, tenga o no cookie. `robots.txt` responde `Disallow: /`, `sitemap.xml` un sitemap vacío
+y `blog/rss.xml` un 404, siempre, sin consultar la API. No hay franja de "Propuesta para…" ni
+aviso de vencimiento: el vendedor lo dice en la llamada.
+
+Define `PLATFORM_DOMAIN` (el mismo valor que en la API) para que solo
+`demo-<slug>.<PLATFORM_DOMAIN>` cuente como host de demo; sin él basta con que el primer
+tramo empiece por `demo-`, y un cliente con dominio propio como `demo-motors.cl` se trataría
+como demo.
+
 ## Puesta en marcha
 
 Requiere la [web-builder-api](../web-builder-api) corriendo (por defecto en

@@ -7,6 +7,8 @@
 import { COMPONENT_MAP } from '@/modules/Page/presentation/componentMap';
 import { BLOCK_CATALOG } from '@/modules/Admin/domain/blockCatalog';
 import { VISUAL_STYLES } from '@/modules/VisualStyle/domain/registry';
+import { DEMO_FORWARDED_ACTIONS } from '@/modules/Demo/domain/DemoAction';
+import { DEMO_TOKEN_COOKIE } from '@/shared/config/demo';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -14,6 +16,8 @@ const docsRoot = join(__dirname, '..', '..', 'docs');
 
 const readDoc = (filename: string): string =>
   readFileSync(join(docsRoot, filename), 'utf-8');
+
+const readReadme = (): string => readFileSync(join(docsRoot, '..', 'README.md'), 'utf-8');
 
 describe('sincronización documentación ↔ código', () => {
   describe('bloques de página', () => {
@@ -87,6 +91,22 @@ describe('sincronización documentación ↔ código', () => {
       const types = BLOCK_CATALOG.map((b) => b.type);
       const uniqueTypes = new Set(types);
       expect(uniqueTypes.size).toBe(types.length);
+    });
+  });
+
+  describe('demos de prospecto', () => {
+    // Qué acciones del navegador pasan por el servidor en una demo es una decisión de
+    // seguridad: si se agrega una al código, el README tiene que decirlo.
+    it('el README nombra cada acción que se reenvía con el token de la demo', () => {
+      const readme = readReadme();
+      const missing = DEMO_FORWARDED_ACTIONS.filter(
+        (action) => !readme.includes(`\`${action}\``),
+      );
+      expect(missing).toEqual([]);
+    });
+
+    it('el README documenta la cookie del enlace mágico', () => {
+      expect(readReadme()).toContain(`\`${DEMO_TOKEN_COOKIE}\``);
     });
   });
 });
