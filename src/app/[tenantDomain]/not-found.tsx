@@ -15,5 +15,6 @@ export default async function TenantNotFound(): Promise<ReactElement> {
 
   const links = await createNavigationService(tenantDomain).getLinks();
 
-  console.log(Array.from(headersList.entries())); return <PageNotFound links={links} />;
+  // Sin volcar las cabeceras al registro: entre ellas viaja la cookie con el token de una demo.
+  return <PageNotFound links={links} />;
 }
