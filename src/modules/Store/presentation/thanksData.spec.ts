@@ -1,4 +1,4 @@
-import { parseThanksData } from './thanksData';
+import { afterCheckout, parseThanksData } from './thanksData';
 import type { Order } from '../domain/Checkout';
 
 const order: Order = {
@@ -52,5 +52,51 @@ describe('parseThanksData', () => {
   it('sin instrucciones (pago no transferencia) acepta null', () => {
     const raw = JSON.stringify({ order, instructions: null });
     expect(parseThanksData(raw)).toEqual({ order, instructions: null });
+  });
+});
+
+describe('afterCheckout', () => {
+  const origin = 'https://demo-luna.webbuilder.cl';
+  const paid: Order = { ...order, status: 'paid', paymentProvider: 'demo' };
+
+  it('un medio de pago externo se lleva a quien compra a su sitio', () => {
+    expect(
+      afterCheckout(
+        { order, redirectUrl: 'https://www.flow.cl/app/pay?token=x', instructions: null },
+        origin,
+      ),
+    ).toEqual({ kind: 'external', url: 'https://www.flow.cl/app/pay?token=x' });
+  });
+
+  it('el pago simulado de una demo vuelve a nuestra página de gracias con el detalle', () => {
+    const next = afterCheckout(
+      { order: paid, redirectUrl: `${origin}/tienda/gracias`, instructions: null },
+      origin,
+    );
+
+    expect(next.kind).toBe('thanks');
+    const path = next.kind === 'thanks' ? next.path : '';
+    expect(path.startsWith('/tienda/gracias?data=')).toBe(true);
+    const data = decodeURIComponent(path.slice('/tienda/gracias?data='.length));
+    expect(parseThanksData(data)?.order.number).toBe('0001');
+  });
+
+  it('sin redirección (transferencia) muestra el detalle y las instrucciones', () => {
+    const next = afterCheckout(
+      { order, redirectUrl: null, instructions: 'Transfiere a la cuenta 123' },
+      origin,
+    );
+    const path = next.kind === 'thanks' ? next.path : '';
+    const data = decodeURIComponent(path.slice('/tienda/gracias?data='.length));
+    expect(parseThanksData(data)?.instructions).toBe('Transfiere a la cuenta 123');
+  });
+
+  it('una página de gracias de otro dominio no se trata como propia', () => {
+    expect(
+      afterCheckout(
+        { order, redirectUrl: 'https://otro.cl/tienda/gracias', instructions: null },
+        origin,
+      ).kind,
+    ).toBe('external');
   });
 });

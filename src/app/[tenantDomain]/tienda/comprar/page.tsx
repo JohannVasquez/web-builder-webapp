@@ -13,6 +13,7 @@ import { createIdempotencyKeyTracker } from '@/modules/Store/application/idempot
 import { OrderSummary } from '@/modules/Store/presentation/OrderSummary';
 import { SellerIdentityCard } from '@/modules/Store/presentation/SellerIdentityCard';
 import { formatClp } from '@/modules/Store/presentation/money';
+import { afterCheckout } from '@/modules/Store/presentation/thanksData';
 import { StoreOrderService } from '@/modules/Store/application/StoreOrderService';
 import { CustomerInputSchema } from '@/modules/Store/domain/Checkout';
 import type { DeliveryMethod } from '@/modules/Store/domain/Checkout';
@@ -184,15 +185,12 @@ export default function CheckoutPage(): ReactElement {
 
       cart.clear();
 
-      if (response.redirectUrl !== null) {
-        window.location.href = response.redirectUrl;
+      const next = afterCheckout(response, window.location.origin);
+      if (next.kind === 'external') {
+        window.location.href = next.url;
         return;
       }
-
-      const payload = encodeURIComponent(
-        JSON.stringify({ order: response.order, instructions: response.instructions }),
-      );
-      router.push(`/tienda/gracias?data=${payload}`);
+      router.push(next.path);
     } catch (cause) {
       toast.error(
         cause instanceof Error ? cause.message : 'No pudimos procesar tu compra.',

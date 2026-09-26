@@ -148,7 +148,10 @@ Cómo viaja el token:
    agrega el token desde la cookie y reenvía **solo** esa lista cerrada de acciones. El token
    nunca llega a un script de la página. Consecuencia asumida: para la API esas acciones
    vienen de la IP del servidor de Next y comparten su límite de frecuencia. La compra usa el
-   pago simulado de la API y vuelve a `/tienda/gracias` como un pago real.
+   pago simulado de la API, que devuelve como destino la propia `/tienda/gracias`: en ese caso
+   (`afterCheckout`) se va ahí con el detalle del pedido pagado, en vez de la página genérica
+   que ve quien vuelve de un pago externo y que le diría "revisa tu correo" a un prospecto al
+   que la demo nunca le escribe.
 4. **Imágenes.** `/api/media/<clave>` lo piden el navegador y el optimizador de imágenes, que
    no llevan el token: en una demo los repositorios de tienda y blog descartan la clave y se
    usa la URL firmada que la API manda al lado.
