@@ -13,7 +13,7 @@ export const SITE_CACHE_TTL_SECONDS = 3600;
 
 import { cookies, draftMode } from 'next/headers';
 import { DEMO_TOKEN_HEADER, isDemoHost } from '@/shared/config/demo';
-import { readDemoToken } from '@/shared/lib/demoAccess';
+import { readDemoToken, readVisitorUserAgent } from '@/shared/lib/demoAccess';
 
 // Opciones de `fetch` para lecturas públicas: en Next 16 el cacheo es opt-in,
 // sin `force-cache` las etiquetas no sirven porque no hay entrada que invalidar.
@@ -36,7 +36,14 @@ export const siteCacheOptions = async (
   // cookie, y con cookie se aplica en cualquier host.
   const demoToken = await readDemoToken();
   if (demoToken !== undefined) {
-    return { cache: 'no-store', headers: { [DEMO_TOKEN_HEADER]: demoToken } };
+    const userAgent = await readVisitorUserAgent();
+    return {
+      cache: 'no-store',
+      headers: {
+        [DEMO_TOKEN_HEADER]: demoToken,
+        ...(userAgent === undefined ? {} : { 'User-Agent': userAgent }),
+      },
+    };
   }
   if (isDemoHost(tenantDomain)) {
     return { cache: 'no-store' };

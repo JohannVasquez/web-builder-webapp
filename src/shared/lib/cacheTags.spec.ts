@@ -1,9 +1,10 @@
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { siteCacheOptions, tenantCacheTag } from './cacheTags';
 
 jest.mock('next/headers', () => ({
   draftMode: jest.fn().mockResolvedValue({ isEnabled: false }),
   cookies: jest.fn().mockResolvedValue({ get: jest.fn() }),
+  headers: jest.fn().mockResolvedValue({ get: () => null }),
 }));
 
 const DEMO_TOKEN = `demo_${'0f'.repeat(32)}`;
@@ -59,6 +60,24 @@ describe('cacheTags', () => {
       });
       // Sin etiquetas: una demo jamás puede quedar en la caché del servidor.
       expect(options.next).toBeUndefined();
+    });
+
+    it('reenvía el agente de usuario de quien mira: la API lo anota en la visita', async () => {
+      withCookies({ demo_token: DEMO_TOKEN });
+      (headers as jest.Mock).mockResolvedValueOnce({
+        get: (name: string) =>
+          name === 'user-agent'
+            ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0) Mobile'
+            : null,
+      });
+
+      expect(await siteCacheOptions('demo-luna.webbuilder.cl')).toEqual({
+        cache: 'no-store',
+        headers: {
+          'X-Demo-Token': DEMO_TOKEN,
+          'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0) Mobile',
+        },
+      });
     });
 
     it('la cookie manda aunque el host no parezca de demo', async () => {

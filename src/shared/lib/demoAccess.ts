@@ -1,4 +1,4 @@
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { DEMO_TOKEN_COOKIE, isDemoHost, isDemoToken } from '@/shared/config/demo';
 
 // Token de demo de la visita actual, leído de la cookie httpOnly que deja `/demo/<token>`.
@@ -17,3 +17,15 @@ export const readDemoToken = async (): Promise<string | undefined> => {
 // haya canjeado el enlace, o porque trae la cookie de un canje.
 export const isDemoRequest = async (tenantDomain: string): Promise<boolean> =>
   isDemoHost(tenantDomain) || (await readDemoToken()) !== undefined;
+
+// Agente de usuario de quien está mirando. Las páginas de una demo las pide el servidor de
+// Next, no el navegador: sin reenviarlo, la API anotaría cada visita del prospecto como hecha
+// desde "node" y la ficha de la demo no podría decir si la abrió desde el celular.
+export const readVisitorUserAgent = async (): Promise<string | undefined> => {
+  try {
+    const value = (await headers()).get('user-agent');
+    return value === null || value.trim() === '' ? undefined : value;
+  } catch {
+    return undefined;
+  }
+};

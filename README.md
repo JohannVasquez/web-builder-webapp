@@ -131,6 +131,9 @@ Cómo viaja el token:
    blog, tienda, redirecciones) y usa `cache: 'no-store'` sin etiquetas. En un host `demo-*`
    tampoco cachea aunque no haya cookie, para que ni el 404 de quien no tiene enlace quede
    guardado. Si la demo vence mientras la miran, la API responde 404 y se ve el 404 común.
+   Con la cookie también reenvía el `User-Agent` de quien mira: la API anota cada página
+   servida con el enlace del prospecto como una visita, y sin él la anotaría como hecha desde
+   el servidor de Next ("node"). La IP no se reenvía: la API usa la de la conexión.
    **Sin precarga.** En una demo, `proxy.ts` responde 204 a la precarga de un `<Link>`
    (`next-router-prefetch`): renderizarla pediría la página a la API con el token y la API la
    contaría como visita, así que abrir la portada dejaba "visitadas" todas las páginas del
