@@ -32,10 +32,11 @@ const building: Tenant = {
 const tenants = [active, paused, building];
 
 describe('describeTenantStatus', () => {
-  it('etiqueta cada uno de los tres estados', () => {
+  it('etiqueta cada estado, también el de una demo de prospecto', () => {
     expect(describeTenantStatus('active').label).toBe('Activo');
     expect(describeTenantStatus('paused').label).toBe('Pausado');
     expect(describeTenantStatus('building').label).toBe('En construcción');
+    expect(describeTenantStatus('demo').label).toBe('Demo de prospecto');
   });
 
   it('cubre exactamente los estados del selector', () => {

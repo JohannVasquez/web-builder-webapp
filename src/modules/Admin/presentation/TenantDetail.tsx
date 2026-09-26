@@ -19,7 +19,8 @@ import {
   Plus,
   Scale,
   ShoppingBag,
-  Trash2, ArrowRightLeft,
+  Trash2,
+  ArrowRightLeft,
 } from 'lucide-react';
 import {
   AdminPageResponseSchema,
@@ -40,6 +41,10 @@ import { TenantDomains } from './TenantDomains';
 import { TenantSubscriptionDetail } from './TenantSubscriptionDetail';
 
 import { useAsyncData, refreshAsyncData } from '@/shared/lib/useAsyncData';
+import {
+  TENANTS_WITH_DEMOS_CACHE_KEY,
+  refreshTenantLists,
+} from '../application/tenantCache';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
@@ -48,8 +53,6 @@ import { Textarea } from '@/shared/ui/textarea';
 interface TenantDetailProps {
   readonly tenantId: string;
 }
-
-const TENANTS_CACHE_KEY = 'admin:tenants';
 
 const FIELD_LABELS: Record<string, string> = {
   title: 'Título',
@@ -65,8 +68,11 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
   const api = useAdminApi();
   const pagesKey = `admin:tenant:${tenantId}:pages`;
 
-  const tenants = useAsyncData(TENANTS_CACHE_KEY, async () => {
-    const { tenants: list } = await api.get('/api/admin/tenants', TenantsSchema);
+  const tenants = useAsyncData(TENANTS_WITH_DEMOS_CACHE_KEY, async () => {
+    const { tenants: list } = await api.get(
+      '/api/admin/tenants?includeDemos=true',
+      TenantsSchema,
+    );
     return list;
   });
   const pages = useAsyncData(pagesKey, async () => {
@@ -78,6 +84,9 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
   });
 
   const tenant = tenants.data?.find((item) => String(item.id) === tenantId) ?? null;
+  // La dirección de una demo solo abre con el enlace mágico: sin él, el navegador del equipo
+  // vería un 404. Se entra por "Ver como equipo" desde la ficha de la demo.
+  const siteDomain = tenant?.status === 'demo' ? null : (tenant?.primaryDomain ?? null);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingPageId, setEditingPageId] = useState<string | null>(null);
@@ -126,14 +135,14 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
             </div>
             <p className="text-muted-foreground text-sm">{tenant.slug}</p>
           </div>
-          {tenant.primaryDomain !== null && (
+          {siteDomain !== null && (
             <a
-              href={`http://${tenant.primaryDomain}`}
+              href={`http://${siteDomain}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground flex shrink-0 items-center gap-1 text-sm"
             >
-              {tenant.primaryDomain} <ExternalLink className="size-3.5" />
+              {siteDomain} <ExternalLink className="size-3.5" />
             </a>
           )}
         </div>
@@ -202,11 +211,16 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
         </Button>
       </div>
 
-      <TenantStatusSection tenantId={tenantId} tenant={tenant} />
-
-            <TenantDomains tenantId={tenantId} />
-      <TenantSubscriptionDetail tenantId={tenantId} />
-<div className="flex flex-wrap items-center justify-between gap-4">
+      {tenant.status === 'demo' ? (
+        <DemoTenantNotice />
+      ) : (
+        <>
+          <TenantStatusSection tenantId={tenantId} tenant={tenant} />
+          <TenantDomains tenantId={tenantId} />
+          <TenantSubscriptionDetail tenantId={tenantId} />
+        </>
+      )}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="ui-heading text-lg">Páginas</h2>
         <Button type="button" onClick={() => setIsCreateOpen((open) => !open)}>
           <Plus className="size-4" /> Nueva página
@@ -289,10 +303,10 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
                       Editar bloques
                     </Link>
                   </Button>
-                  {tenant.primaryDomain !== null && (
+                  {siteDomain !== null && (
                     <Button asChild size="sm" variant="ghost">
                       <a
-                        href={`http://${tenant.primaryDomain}${pagePath(page.slug)}`}
+                        href={`http://${siteDomain}${pagePath(page.slug)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -337,7 +351,29 @@ const STATUS_BADGE_CLASSES: Record<TenantStatus, string> = {
   active: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300',
   paused: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
   building: 'bg-muted text-muted-foreground',
+  demo: 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300',
 };
+
+// Una demo no se pausa, no lleva dominio propio ni se cobra (la API responde 422 a todo eso):
+// esas secciones se cambian por el camino de vuelta a la ficha de la demo.
+function DemoTenantNotice(): ReactElement {
+  return (
+    <div className="ui-card flex flex-wrap items-center justify-between gap-4 p-5">
+      <div>
+        <p className="font-medium">Este sitio es una demo de prospecto</p>
+        <p className="text-muted-foreground text-sm">
+          El prospecto ve lo publicado. Vencimiento, enlaces y conversión se manejan desde
+          Demos.
+        </p>
+      </div>
+      <Button asChild variant="outline">
+        <Link href="/demos">
+          <ArrowLeft className="size-4" /> Ir a Demos
+        </Link>
+      </Button>
+    </div>
+  );
+}
 
 function TenantStatusBadge({ status }: { readonly status: TenantStatus }): ReactElement {
   const description = describeTenantStatus(status);
@@ -380,7 +416,7 @@ function TenantStatusSection({
         { status: nextStatus },
         TenantResponseSchema,
       );
-      refreshAsyncData(TENANTS_CACHE_KEY);
+      refreshTenantLists();
       toast.success(nextStatus === 'paused' ? 'Cliente pausado.' : 'Cliente reactivado.');
     } catch (cause) {
       toast.error(

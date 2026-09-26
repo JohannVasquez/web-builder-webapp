@@ -2,9 +2,10 @@ import { z } from 'zod';
 import { BrandSchema } from '@/modules/Brand/domain/Brand';
 import { AdminRoleSchema } from '@/modules/Auth/domain/Session';
 
-// Mismos tres valores que `TENANT_STATUSES` en el backend (SPEC 9.3): pausar no borra
-// nada y reactivar deja el sitio tal cual estaba.
-export const TENANT_STATUSES = ['active', 'paused', 'building'] as const;
+// Mismos valores que `TENANT_STATUSES` en el backend (SPEC 9.3): pausar no borra nada y
+// reactivar deja el sitio tal cual estaba. `demo` es el sitio privado de un prospecto; solo
+// aparece al pedir la lista con `includeDemos=true` y se sale de él convirtiéndolo.
+export const TENANT_STATUSES = ['active', 'paused', 'building', 'demo'] as const;
 export const TenantStatusSchema = z.enum(TENANT_STATUSES);
 
 export const TenantSchema = z.object({
@@ -336,7 +337,9 @@ export const SubscriptionOverviewResponseSchema = z.object({
   rows: z.array(SubscriptionOverviewRowSchema),
   totalMrrCents: z.number(),
 });
-export type SubscriptionOverviewResponse = z.infer<typeof SubscriptionOverviewResponseSchema>;
+export type SubscriptionOverviewResponse = z.infer<
+  typeof SubscriptionOverviewResponseSchema
+>;
 
 export const SubscriptionStatusResponseSchema = z.object({
   planName: z.string(),

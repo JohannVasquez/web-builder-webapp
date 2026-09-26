@@ -18,9 +18,16 @@ export interface TenantStatusPresentation {
   readonly tone: TenantStatus;
 }
 
+// `demo` no es una opción del filtro de Clientes (la lista no trae demos), pero la ficha de un
+// sitio puede ser la de una demo y tiene que decirlo con palabras.
+const DEMO_STATUS_LABEL = 'Demo de prospecto';
+
 export const describeTenantStatus = (status: TenantStatus): TenantStatusPresentation => ({
   label:
-    TENANT_STATUS_OPTIONS.find((option) => option.value === status)?.label ?? status,
+    status === 'demo'
+      ? DEMO_STATUS_LABEL
+      : (TENANT_STATUS_OPTIONS.find((option) => option.value === status)?.label ??
+        status),
   tone: status,
 });
 

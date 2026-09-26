@@ -24,18 +24,19 @@ import {
   type AdminErrorMessage,
 } from '../application/adminErrorMessage';
 import { useAdminApi } from './useAdminApi';
-import { useAsyncData, refreshAsyncData } from '@/shared/lib/useAsyncData';
+import { useAsyncData } from '@/shared/lib/useAsyncData';
+import { TENANTS_CACHE_KEY, refreshTenantLists } from '../application/tenantCache';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 
-export const TENANTS_CACHE_KEY = 'admin:tenants';
 const SITE_TEMPLATES_CACHE_KEY = 'admin:site-templates';
 
 const STATUS_BADGE_CLASSES: Record<Tenant['status'], string> = {
   active: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300',
   paused: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
   building: 'bg-muted text-muted-foreground',
+  demo: 'bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300',
 };
 
 const FIELD_LABELS: Record<string, string> = {
@@ -242,7 +243,7 @@ function CreateTenantForm({
         },
         TenantResponseSchema,
       );
-      refreshAsyncData(TENANTS_CACHE_KEY);
+      refreshTenantLists();
       toast.success('Cliente creado.');
       onCreated();
       router.push(`/clientes/${String(tenant.id)}`);
@@ -452,7 +453,9 @@ function DuplicatePicker({
 }: DuplicatePickerProps): ReactElement {
   if (tenants.length === 0) {
     return (
-      <p className="text-muted-foreground text-sm">No hay otros clientes para duplicar.</p>
+      <p className="text-muted-foreground text-sm">
+        No hay otros clientes para duplicar.
+      </p>
     );
   }
   return (
