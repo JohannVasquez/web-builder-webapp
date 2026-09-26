@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { ReactElement } from 'react';
 import { z } from 'zod';
 import { cn } from '@/shared/lib/utils';
@@ -10,7 +11,6 @@ import {
   SectionLayoutPropsSchema,
   sectionLayoutClasses,
 } from '@/shared/lib/sectionLayout';
-import { imageLoading } from '@/shared/lib/imageLoading';
 import { HEADING_TAGS } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
@@ -77,13 +77,7 @@ export function TextBlock({
           </p>
         </div>
         {hasImage && (
-          // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-          <img
-            src={imageUrl}
-            alt={imageAlt ?? ''}
-            className="w-full rounded-xl shadow-sm"
-            {...imageLoading()}
-          />
+                    <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-sm"><Image src={imageUrl} alt={imageAlt ?? ''} fill className="object-cover" sizes="(max-width: 768px) 100vw, 50vw" /></div>
         )}
       </RevealOnScroll>
     </section>

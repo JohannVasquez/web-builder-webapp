@@ -14,11 +14,12 @@ import { VisualStyleTokens } from '@/modules/VisualStyle/presentation/VisualStyl
 import { SiteJsonLd } from '@/modules/GlobalSettings/presentation/SiteJsonLd';
 import { Analytics } from '@/modules/Analytics/presentation/Analytics';
 import { CookieNotice } from '@/modules/Consent/presentation/CookieNotice';
-import { COOKIE_POLICY_SLUG } from '@/modules/Consent/domain/Consent';
+import { resolveCookieNoticeHref } from '@/modules/Consent/domain/Consent';
 import { createPageService } from '@/modules/Page/infrastructure/pageServiceFactory';
 import { readAnalyticsConfig } from '@/modules/Analytics/domain/Analytics';
 import { isUnderConstruction } from '@/modules/GlobalSettings/domain/GlobalSettings';
 import { Toaster } from '@/shared/ui/sonner';
+import { draftMode } from 'next/headers';
 import { TenantProviders } from './providers';
 
 interface TenantLayoutProps {
@@ -32,6 +33,10 @@ export async function generateMetadata({
   const { tenantDomain } = await params;
   const settings = await createGlobalSettingsService(tenantDomain).getSettings();
   const { favicon, ogImage } = settings.brand.assets;
+  
+  const dm = await draftMode();
+  const isPreview = dm.isEnabled;
+
   // Rutas estables en vez de las URLs firmadas del bucket, que expiran en una hora y
   // dejarían sin imagen cualquier enlace ya compartido.
   const brandAsset = (name: string): string => `/brand-asset/${name}`;
@@ -49,7 +54,7 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL(`https://${canonicalHost}`),
-    ...(underConstruction ? { robots: { index: false, follow: false } } : {}),
+    ...(underConstruction || isPreview ? { robots: { index: false, follow: false } } : {}),
     verification: {
       ...(settings.googleSiteVerification === ''
         ? {}
@@ -82,16 +87,21 @@ export default async function TenantLayout({
   params,
 }: TenantLayoutProps): Promise<ReactElement> {
   const { tenantDomain } = await params;
+  const dm = await draftMode();
+  const isPreview = dm.isEnabled;
+  
   const [settings, links, store, publishedPages] = await Promise.all([
     createGlobalSettingsService(tenantDomain).getSettings(),
     createNavigationService(tenantDomain).getLinks(),
     createStoreService(tenantDomain).getStoreSettings(),
     createPageService(tenantDomain).getPublishedPages(),
   ]);
-  // Solo se enlaza si existe: mandar a un 404 desde un aviso legal es peor que no enlazar.
-  const cookiePolicyHref = publishedPages.some((page) => page.slug === COOKIE_POLICY_SLUG)
-    ? `/${COOKIE_POLICY_SLUG}`
-    : null;
+  const legalSlugs = ['politica-de-privacidad', 'terminos-y-condiciones', 'politica-de-cookies', 'terminos-de-compra'];
+  const legalLinks = publishedPages
+    .filter((page) => legalSlugs.includes(page.slug))
+    .map((page) => ({ href: `/${page.slug}`, label: page.title }));
+
+  const cookiePolicyHref = resolveCookieNoticeHref(publishedPages);
   const pairing = resolveFontPairing(settings.brand.typography.pairing);
 
   return (
@@ -108,6 +118,11 @@ export default async function TenantLayout({
         bodyVariable={pairing.bodyVariableName}
       />
       <VisualStyleTokens styleId={settings.brand.visualStyle} />
+      {isPreview && (
+        <div className="bg-primary text-primary-foreground text-center py-2 px-4 text-sm font-medium z-50 sticky top-0">
+          Estás viendo una vista previa de este sitio. Los cambios en borrador son visibles.
+        </div>
+      )}
       {/* Primer elemento enfocable: permite saltarse el menú sin tabular por todos sus enlaces. */}
       <a
         href="#contenido"
@@ -128,7 +143,7 @@ export default async function TenantLayout({
           </div>
         </div>
       )}
-      <Footer settings={settings} />
+      <Footer settings={settings} legalLinks={legalLinks} />
       <WhatsAppButton whatsappNumber={settings.whatsappNumber} />
       <Analytics config={readAnalyticsConfig(settings)} />
       <CookieNotice policyHref={cookiePolicyHref} />

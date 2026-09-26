@@ -23,6 +23,7 @@ import {
 import {
   MediaAssetResponseSchema,
   MediaAssetsSchema,
+  AdminPagesSchema,
   UploadMediaResponseSchema,
   type MediaAsset,
 } from '../domain/AdminApi';
@@ -37,18 +38,25 @@ import { useAsyncData, refreshAsyncData } from '@/shared/lib/useAsyncData';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
-import { validateFile, MAX_FILE_SIZE_MB } from '@/modules/FileStorage/domain/FileUploadSchema';
+import {
+  validateFile,
+  MAX_FILE_SIZE_MB,
+} from '@/modules/FileStorage/domain/FileUploadSchema';
+import { ImageCropper } from '@/modules/FileStorage/presentation/ImageCropper';
 import { cn } from '@/shared/lib/utils';
 
 interface MediaLibraryProps {
+  readonly onSelect?: (key: string) => void;
   readonly tenantId: string;
 }
 
-export function MediaLibrary({ tenantId }: MediaLibraryProps): ReactElement {
+export function MediaLibrary({ tenantId, onSelect }: MediaLibraryProps): ReactElement {
   const api = useAdminApi();
   const [searchInput, setSearchInput] = useState('');
   const [committedSearch, setCommittedSearch] = useState('');
   const mediaKey = `admin:tenant:${tenantId}:media:${committedSearch}`;
+
+  const [assetToCrop, setAssetToCrop] = useState<MediaAsset | null>(null);
 
   const media = useAsyncData(mediaKey, async () => {
     const { assets } = await api.get(
@@ -65,6 +73,37 @@ export function MediaLibrary({ tenantId }: MediaLibraryProps): ReactElement {
     setCommittedSearch(searchInput.trim());
   };
 
+  const handleCropComplete = async (
+    cropped: File,
+    original: MediaAsset,
+  ): Promise<void> => {
+    try {
+      setAssetToCrop(null);
+      // El recorte no destruye el original porque `api.upload` siempre genera una `key` nueva para el archivo subido.
+      const { asset } = await api.upload(
+        `/api/admin/tenants/${tenantId}/media`,
+        cropped,
+        UploadMediaResponseSchema,
+      );
+
+      if (original.alt) {
+        await api.patch(
+          `/api/admin/tenants/${tenantId}/media/${encodeURIComponent(asset.key)}`,
+          { alt: original.alt },
+          MediaAssetResponseSchema,
+        );
+      }
+
+      toast.success('Imagen recortada guardada como un nuevo archivo.');
+      reload();
+    } catch (cause) {
+      toast.error(
+        describeAdminError(cause, 'No pudimos guardar el recorte. Inténtalo nuevamente.')
+          .message,
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -74,7 +113,7 @@ export function MediaLibrary({ tenantId }: MediaLibraryProps): ReactElement {
         >
           <ArrowLeft className="size-4" /> Volver al cliente
         </Link>
-        <h1 className="ui-heading text-2xl">Biblioteca de imágenes</h1>
+        {onSelect === undefined && <h1 className="ui-heading text-2xl">Biblioteca de imágenes</h1>}
       </div>
 
       <Uploader tenantId={tenantId} onUploaded={reload} />
@@ -117,9 +156,25 @@ export function MediaLibrary({ tenantId }: MediaLibraryProps): ReactElement {
       {media.data !== null && media.data.length > 0 && (
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {media.data.map((asset) => (
-            <MediaCard key={asset.key} tenantId={tenantId} asset={asset} onChanged={reload} />
+            <MediaCard
+              key={asset.key}
+              onSelect={onSelect ? () => onSelect(asset.key) : undefined}
+              tenantId={tenantId}
+              asset={asset}
+              onChanged={reload}
+              onCrop={setAssetToCrop}
+            />
           ))}
         </ul>
+      )}
+
+      {assetToCrop !== null && assetToCrop.url !== undefined && (
+        <ImageCropper
+          imageSrc={assetToCrop.url}
+          onCropComplete={(cropped) => void handleCropComplete(cropped, assetToCrop)}
+          onSkip={() => setAssetToCrop(null)}
+          onCancel={() => setAssetToCrop(null)}
+        />
       )}
     </div>
   );
@@ -134,6 +189,8 @@ function Uploader({ tenantId, onUploaded }: UploaderProps): ReactElement {
   const api = useAdminApi();
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file: File): Promise<void> => {
@@ -142,6 +199,20 @@ function Uploader({ tenantId, onUploaded }: UploaderProps): ReactElement {
       toast.error(validationError);
       return;
     }
+
+    if (file.type.startsWith('image/')) {
+      const url = URL.createObjectURL(file);
+      setSelectedFile(file);
+      setPreviewUrl(url);
+      return;
+    }
+
+    await doUpload(file);
+  };
+
+  const doUpload = async (file: File): Promise<void> => {
+    setPreviewUrl(null);
+    setSelectedFile(null);
     setIsUploading(true);
     try {
       await api.upload(
@@ -238,17 +309,31 @@ function Uploader({ tenantId, onUploaded }: UploaderProps): ReactElement {
           </>
         )}
       </div>
+      {previewUrl !== null && selectedFile !== null && (
+        <ImageCropper
+          imageSrc={previewUrl}
+          onCropComplete={(cropped) => void doUpload(cropped)}
+          onSkip={() => void doUpload(selectedFile)}
+          onCancel={() => {
+            setPreviewUrl(null);
+            setSelectedFile(null);
+          }}
+        />
+      )}
     </div>
   );
 }
 
 interface MediaCardProps {
+  readonly onSelect?: () => void;
   readonly tenantId: string;
   readonly asset: MediaAsset;
   readonly onChanged: () => void;
+  readonly onCrop: (asset: MediaAsset) => void;
 }
 
-function MediaCard({ tenantId, asset, onChanged }: MediaCardProps): ReactElement {
+function MediaCard({ tenantId, asset, onChanged, onCrop, onSelect }: MediaCardProps): ReactElement {
+  const api = useAdminApi();
   const missingAlt = isMissingAlt(asset.alt);
   const displayName = asset.originalName ?? asset.key;
 
@@ -261,16 +346,65 @@ function MediaCard({ tenantId, asset, onChanged }: MediaCardProps): ReactElement
     }
   };
 
+  const handleCrop = async (): Promise<void> => {
+    try {
+      const { pages } = await api.get(
+        `/api/admin/tenants/${tenantId}/pages`,
+        AdminPagesSchema,
+      );
+
+      let usedIn = 0;
+      for (const page of pages) {
+        let isUsed = page.ogImageKey === asset.key;
+        if (!isUsed) {
+          for (const section of page.sections ?? []) {
+            if (Object.values(section.props ?? {}).includes(asset.key)) {
+              isUsed = true;
+              break;
+            }
+          }
+        }
+        if (isUsed) {
+          usedIn++;
+        }
+      }
+
+      if (usedIn > 0) {
+        const confirmMsg = `Esta imagen se está usando en ${usedIn} página(s). El recorte creará un archivo nuevo y deberás actualizar las páginas a mano. ¿Continuar?`;
+        if (!window.confirm(confirmMsg)) {
+          return;
+        }
+      }
+
+      onCrop(asset);
+    } catch (e) {
+      console.error(e);
+      onCrop(asset); // Si falla la comprobación, igual permitimos recortar.
+    }
+  };
+
   return (
     <li className={cn('ui-card space-y-3 p-4', missingAlt && 'border-amber-400/60')}>
-      <div className="bg-muted flex h-32 items-center justify-center overflow-hidden rounded-md">
+      <div className="bg-muted flex h-32 items-center justify-center overflow-hidden rounded-md relative group">
         {asset.mimeType.startsWith('image/') && asset.url !== undefined ? (
-          // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-          <img
-            src={asset.url}
-            alt={asset.alt ?? ''}
-            className="max-h-full max-w-full object-contain"
-          />
+          <>
+            {/* Decisión: Mantenemos <img> nativo para evitar que las firmas temporales saturen el disco y la caché de next/image. */}
+            {/* eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image */}
+            <img
+              src={asset.url}
+              alt={asset.alt ?? ''}
+              className="max-h-full max-w-full object-contain transition-opacity group-hover:opacity-75"
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="absolute opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={() => void handleCrop()}
+            >
+              Recortar
+            </Button>
+          </>
         ) : (
           <FileText className="text-muted-foreground size-10" aria-hidden="true" />
         )}
@@ -301,10 +435,10 @@ function MediaCard({ tenantId, asset, onChanged }: MediaCardProps): ReactElement
           type="button"
           size="sm"
           variant="ghost"
-          aria-label={`Copiar key de ${displayName}`}
-          onClick={() => void copyKey()}
+          aria-label={onSelect !== undefined ? `Seleccionar ${displayName}` : `Copiar key de ${displayName}`}
+          onClick={onSelect !== undefined ? () => onSelect() : () => void copyKey()}
         >
-          <Copy className="size-4" /> Copiar key
+          {onSelect !== undefined ? "Seleccionar" : <><Copy className="size-4" /> Copiar key</>}
         </Button>
         <DeleteAssetButton tenantId={tenantId} asset={asset} onDeleted={onChanged} />
       </div>

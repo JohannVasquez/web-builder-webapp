@@ -63,7 +63,7 @@ describe('BlogContent', () => {
         ]}
       />,
     );
-    expect(html).toContain('https://bucket.test/foto.jpg');
+    expect(html).toMatch(/https%3A%2F%2Fbucket.test%2Ffoto.jpg/);
     expect(html).toContain('alt="Una foto"');
     expect(html).toContain('Pie de foto');
   });

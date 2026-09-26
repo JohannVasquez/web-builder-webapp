@@ -78,4 +78,21 @@ describe('Footer', () => {
     expect(html).toContain('https://cdn.example.com/logo.png');
     expect(html).not.toContain('<p class="text-lg font-bold">Acme Co.</p>');
   });
+
+  it('renders legal links when provided', () => {
+    const legalLinks = [
+      { href: '/politica-de-privacidad', label: 'Política de privacidad' },
+    ];
+    const html = renderToStaticMarkup(<Footer settings={baseSettings} legalLinks={legalLinks} />);
+
+    expect(html).toContain('href="/politica-de-privacidad"');
+    expect(html).toContain('Política de privacidad');
+  });
+
+  it('does not change footer layout if legal links are empty or not provided', () => {
+    const html1 = renderToStaticMarkup(<Footer settings={baseSettings} />);
+    const html2 = renderToStaticMarkup(<Footer settings={baseSettings} legalLinks={[]} />);
+
+    expect(html1).toEqual(html2);
+  });
 });

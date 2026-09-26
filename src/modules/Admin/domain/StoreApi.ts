@@ -126,6 +126,8 @@ export const OrderSchema = z.object({
   // Constancia de los términos de compra aceptados; nulos si la tienda no los exigía.
   termsAcceptedAt: z.string().nullable().default(null),
   termsVersion: z.string().nullable().default(null),
+  // Motivo del fallo al enviar el correo de confirmación.
+  confirmationEmailError: z.string().nullable().default(null),
 });
 
 export type Order = z.infer<typeof OrderSchema>;

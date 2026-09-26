@@ -5,6 +5,7 @@ import { useState, type FormEvent, type ReactElement } from 'react';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
+  ClipboardCheck,
   ExternalLink,
   Image as ImageIcon,
   Loader2,
@@ -16,8 +17,9 @@ import {
   Pencil,
   Play,
   Plus,
+  Scale,
   ShoppingBag,
-  Trash2,
+  Trash2, ArrowRightLeft,
 } from 'lucide-react';
 import {
   AdminPageResponseSchema,
@@ -35,6 +37,8 @@ import {
 } from '../application/adminErrorMessage';
 import { useAdminApi } from './useAdminApi';
 import { TenantDomains } from './TenantDomains';
+import { TenantSubscriptionDetail } from './TenantSubscriptionDetail';
+
 import { useAsyncData, refreshAsyncData } from '@/shared/lib/useAsyncData';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -137,6 +141,11 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
 
       <div className="flex flex-wrap gap-2">
         <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/datos-negocio`}>
+            <Newspaper className="size-4" /> Datos del negocio
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
           <Link href={`/clientes/${tenantId}/identidad`}>
             <Palette className="size-4" /> Identidad de marca
           </Link>
@@ -166,13 +175,38 @@ export function TenantDetail({ tenantId }: TenantDetailProps): ReactElement {
             <ShoppingBag className="size-4" /> Tienda
           </Link>
         </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/legales`}>
+            <Scale className="size-4" /> Páginas legales
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/solicitudes-datos`}>
+            <Scale className="size-4" /> Solicitudes ARCOP
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/medicion`}>
+            <ExternalLink className="size-4" /> Medición y buscadores
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/redirecciones`}>
+            <ArrowRightLeft className="size-4" /> Redirecciones
+          </Link>
+        </Button>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/clientes/${tenantId}/revision-calidad`}>
+            <ClipboardCheck className="size-4" /> Revisión de calidad
+          </Link>
+        </Button>
       </div>
 
       <TenantStatusSection tenantId={tenantId} tenant={tenant} />
 
-      <TenantDomains tenantId={tenantId} />
-
-      <div className="flex flex-wrap items-center justify-between gap-4">
+            <TenantDomains tenantId={tenantId} />
+      <TenantSubscriptionDetail tenantId={tenantId} />
+<div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="ui-heading text-lg">Páginas</h2>
         <Button type="button" onClick={() => setIsCreateOpen((open) => !open)}>
           <Plus className="size-4" /> Nueva página

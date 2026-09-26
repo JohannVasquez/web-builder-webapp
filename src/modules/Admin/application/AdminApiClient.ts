@@ -62,6 +62,23 @@ export class AdminApiClient {
     return schema.parse(await this.parseResponse(response));
   }
 
+  
+  public async downloadCsv(path: string): Promise<Blob> {
+    const token = this.getToken();
+    const response = await this.fetchFn(`${this.baseUrl}${path}`, {
+      method: 'GET',
+      headers: token === null ? {} : { Authorization: `Bearer ${token}` },
+    });
+    if (response.status === 401) {
+      throw new SessionExpiredError();
+    }
+    if (!response.ok) {
+      const payload: unknown = await response.json().catch(() => null);
+      throw this.toError(payload, response.status);
+    }
+    return response.blob();
+  }
+
   private async send(method: string, path: string, body?: unknown): Promise<unknown> {
     const token = this.getToken();
     const response = await this.fetchFn(`${this.baseUrl}${path}`, {

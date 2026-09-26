@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
+import { notFoundWithRedirect } from '@/modules/Redirect/presentation/notFoundWithRedirect';
+import { createRedirectService } from '@/modules/Redirect/infrastructure/redirectServiceFactory';
 import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { BlogPostCard } from '@/modules/Blog/presentation/BlogPostCard';
@@ -50,7 +51,7 @@ export default async function BlogIndexPage({
   // Una página fuera de rango es un listado vacío con URL propia: si responde 200, el
   // buscador la indexa como contenido sin valor. Mejor que no exista.
   if (page > totalPages) {
-    notFound();
+    return await notFoundWithRedirect(createRedirectService(tenantDomain), '/blog');
   }
 
   const pageHref = (targetPage: number): string => {

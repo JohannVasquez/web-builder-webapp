@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { z } from 'zod';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { useAdminApi } from './useAdminApi';
@@ -58,6 +59,7 @@ export const OrderManager = ({
   }, [cacheKey]);
 
   const [saving, setSaving] = useState(false);
+  const [retryingOrderId, setRetryingOrderId] = useState<string | null>(null);
 
   const handleAdvanceStatus = async (order: Order, nextStatus: string): Promise<void> => {
     let confirmMessage = `¿Estás seguro de marcar el pedido como ${getOrderStatusLabel(nextStatus as OrderStatus)}?`;
@@ -83,6 +85,27 @@ export const OrderManager = ({
       toast.error(describeAdminError(err, 'Error al actualizar el pedido.').message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleRetryEmail = async (order: Order): Promise<void> => {
+    setRetryingOrderId(order.id);
+    try {
+      const response = await api.post(
+        `/api/admin/tenants/${tenantId}/store/retry-confirmation`,
+        {},
+        z.object({ retried: z.number() })
+      );
+      if (response.retried > 0) {
+        toast.success(`Se reintentó el envío de ${response.retried} correo(s).`);
+      } else {
+        toast.error('El reintento volvió a fallar. Revisa los registros.');
+      }
+      refreshAsyncData(cacheKey);
+    } catch (err) {
+      toast.error(describeAdminError(err, 'Error al reintentar el correo.').message);
+    } finally {
+      setRetryingOrderId(null);
     }
   };
 
@@ -160,6 +183,10 @@ export const OrderManager = ({
             onAdvanceStatus={(order, nextStatus) => {
               void handleAdvanceStatus(order, nextStatus);
             }}
+            onRetryEmail={(order) => {
+              void handleRetryEmail(order);
+            }}
+            retryingOrderId={retryingOrderId}
           />
         </>
       )}

@@ -88,3 +88,19 @@ export const TRACKER_COOKIE_PREFIXES: Readonly<
 // aviso solo la enlaza si esa página existe y está publicada: mandar a un 404 desde un texto
 // legal es peor que no enlazar nada.
 export const COOKIE_POLICY_SLUG = 'politica-de-cookies';
+export const PRIVACY_POLICY_SLUG = 'politica-de-privacidad';
+
+export const resolveCookieNoticeHref = (
+  publishedPages: readonly { readonly slug: string }[]
+): string | null => {
+  // Si hay política de cookies publicada, enlazamos a ella porque es más precisa.
+  if (publishedPages.some((p) => p.slug === COOKIE_POLICY_SLUG)) {
+    return `/${COOKIE_POLICY_SLUG}`;
+  }
+  // Si no hay, intentamos caer a la de privacidad.
+  if (publishedPages.some((p) => p.slug === PRIVACY_POLICY_SLUG)) {
+    return `/${PRIVACY_POLICY_SLUG}`;
+  }
+  // Si ninguna existe, no enlazamos para evitar un 404.
+  return null;
+};

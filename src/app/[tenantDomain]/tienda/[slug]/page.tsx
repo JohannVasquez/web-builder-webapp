@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
+import { notFoundWithRedirect } from '@/modules/Redirect/presentation/notFoundWithRedirect';
+import { createRedirectService } from '@/modules/Redirect/infrastructure/redirectServiceFactory';
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { ProductGallery } from '@/modules/Store/presentation/ProductGallery';
@@ -74,7 +75,7 @@ export default async function StoreProductPage({
   ]);
 
   if (store === null || product === null) {
-    notFound();
+    return await notFoundWithRedirect(createRedirectService(tenantDomain), `/tienda/${slug}`);
   }
 
   const siteUrl = `https://${settings.primaryDomain ?? tenantDomain}`;

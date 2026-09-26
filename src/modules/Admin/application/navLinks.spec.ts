@@ -3,7 +3,7 @@ import { visibleNavLinks, isOwnerOnlyPath } from './navLinks';
 describe('visibleNavLinks', () => {
   it('la dueña ve claves de acceso y usuarios además de las secciones comunes', () => {
     const hrefs = visibleNavLinks('owner').map((link) => link.href);
-    expect(hrefs).toEqual(['/', '/claves', '/usuarios', '/actividad']);
+    expect(hrefs).toEqual(['/', '/claves', '/usuarios', '/cobros', '/actividad']);
   });
 
   it('una persona editora no ve claves de acceso ni usuarios', () => {

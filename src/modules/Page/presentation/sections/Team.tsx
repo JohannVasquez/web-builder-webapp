@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import type { ComponentType, ReactElement } from 'react';
 import { z } from 'zod';
 import { Link as LinkIcon } from 'lucide-react';
@@ -20,7 +21,6 @@ import {
   sectionLayoutClasses,
   type SectionLayoutDefaults,
 } from '@/shared/lib/sectionLayout';
-import { imageLoading } from '@/shared/lib/imageLoading';
 import { HEADING_TAGS, subHeadingLevel } from '@/shared/lib/heading';
 import { RevealOnScroll } from '@/shared/ui/RevealOnScroll';
 import type { SectionComponentProps } from '../SectionComponentProps';
@@ -99,13 +99,7 @@ function Avatar({
 }): ReactElement {
   if (member.photoUrl !== undefined) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
-      <img
-        src={member.photoUrl}
-        alt={member.name}
-        className={cn(size, 'shrink-0 rounded-full object-cover')}
-        {...imageLoading()}
-      />
+            <Image src={member.photoUrl} alt={member.name} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
     );
   }
   return (

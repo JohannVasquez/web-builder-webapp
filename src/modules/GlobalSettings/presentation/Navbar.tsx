@@ -43,14 +43,14 @@ function Logo({
     <Link href="/" className={cn('text-lg font-bold tracking-tight', className)}>
       {logoLight !== undefined ? (
         <>
-          {/* eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- Ratio desconocido: next/image sin dimensiones rompe w-auto o exige contenedor fijo */}
           <img
             src={logoLight}
             alt={settings.siteName}
             className={logoDark !== undefined ? 'h-8 w-auto dark:hidden' : 'h-8 w-auto'}
           />
           {logoDark !== undefined && (
-            // eslint-disable-next-line @next/next/no-img-element -- URLs dinámicas del bucket, fuera del optimizador de next/image
+            // eslint-disable-next-line @next/next/no-img-element -- Ratio desconocido: next/image sin dimensiones rompe w-auto o exige contenedor fijo
             <img
               src={logoDark}
               alt={settings.siteName}

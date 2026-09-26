@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-25T06:20:00Z",
+  "title": "Design System: Web Builder",
+  "extensions": {
+    "colorMeta": {
+      "brand-primary": {
+        "role": "primary",
+        "displayName": "Tinta Casi Negra",
+        "canonical": "#171717",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.25 0 0)",
+          "oklch(0.35 0 0)",
+          "oklch(0.45 0 0)",
+          "oklch(0.56 0 0)",
+          "oklch(0.70 0 0)",
+          "oklch(0.85 0 0)",
+          "oklch(0.95 0 0)"
+        ]
+      },
+      "brand-secondary": {
+        "role": "secondary",
+        "displayName": "Papel Apenas Gris",
+        "canonical": "#f5f5f5",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.27 0 0)",
+          "oklch(0.40 0 0)",
+          "oklch(0.52 0 0)",
+          "oklch(0.65 0 0)",
+          "oklch(0.78 0 0)",
+          "oklch(0.90 0 0)",
+          "oklch(0.97 0 0)"
+        ]
+      },
+      "brand-accent": {
+        "role": "tertiary",
+        "displayName": "Gris de Contorno",
+        "canonical": "#e5e5e5",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.26 0 0)",
+          "oklch(0.38 0 0)",
+          "oklch(0.50 0 0)",
+          "oklch(0.63 0 0)",
+          "oklch(0.76 0 0)",
+          "oklch(0.88 0 0)",
+          "oklch(0.95 0 0)"
+        ]
+      },
+      "brand-success": {
+        "role": "success",
+        "displayName": "Verde Confirmacion",
+        "canonical": "#16a34a",
+        "tonalRamp": [
+          "oklch(0.20 0.08 149)",
+          "oklch(0.30 0.11 149)",
+          "oklch(0.40 0.14 149)",
+          "oklch(0.50 0.16 149)",
+          "oklch(0.63 0.17 149)",
+          "oklch(0.75 0.14 149)",
+          "oklch(0.86 0.09 149)",
+          "oklch(0.95 0.04 149)"
+        ]
+      },
+      "brand-warning": {
+        "role": "warning",
+        "displayName": "Ambar Advertencia",
+        "canonical": "#d97706",
+        "tonalRamp": [
+          "oklch(0.20 0.07 70)",
+          "oklch(0.31 0.10 70)",
+          "oklch(0.42 0.13 70)",
+          "oklch(0.53 0.15 70)",
+          "oklch(0.64 0.16 70)",
+          "oklch(0.76 0.14 70)",
+          "oklch(0.87 0.09 70)",
+          "oklch(0.95 0.04 70)"
+        ]
+      },
+      "brand-danger": {
+        "role": "danger",
+        "displayName": "Rojo Error",
+        "canonical": "#dc2626",
+        "tonalRamp": [
+          "oklch(0.20 0.09 27)",
+          "oklch(0.30 0.13 27)",
+          "oklch(0.40 0.17 27)",
+          "oklch(0.50 0.20 27)",
+          "oklch(0.58 0.22 27)",
+          "oklch(0.72 0.17 27)",
+          "oklch(0.85 0.10 27)",
+          "oklch(0.95 0.04 27)"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Blanco Puro",
+        "canonical": "oklch(1 0 0)",
+        "tonalRamp": [
+          "oklch(0.15 0 0)",
+          "oklch(0.27 0 0)",
+          "oklch(0.40 0 0)",
+          "oklch(0.52 0 0)",
+          "oklch(0.65 0 0)",
+          "oklch(0.80 0 0)",
+          "oklch(0.92 0 0)",
+          "oklch(1.00 0 0)"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Casi Negro",
+        "canonical": "oklch(0.145 0 0)",
+        "tonalRamp": [
+          "oklch(0.145 0 0)",
+          "oklch(0.25 0 0)",
+          "oklch(0.36 0 0)",
+          "oklch(0.47 0 0)",
+          "oklch(0.58 0 0)",
+          "oklch(0.72 0 0)",
+          "oklch(0.86 0 0)",
+          "oklch(0.95 0 0)"
+        ]
+      },
+      "dark-background": {
+        "role": "neutral",
+        "displayName": "Noche Azulada",
+        "canonical": "#0b0b0d",
+        "tonalRamp": [
+          "oklch(0.13 0.008 280)",
+          "oklch(0.22 0.008 280)",
+          "oklch(0.33 0.008 280)",
+          "oklch(0.45 0.008 280)",
+          "oklch(0.58 0.008 280)",
+          "oklch(0.72 0.008 280)",
+          "oklch(0.86 0.008 280)",
+          "oklch(0.95 0.008 280)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Todos los titulos, de h1 a h6. Familia elegida por el cliente; peso y tracking los fija el estilo visual activo."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto corrido. Familia de cuerpo del par tipografico elegido, escalada por --brand-text-scale."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Botones, etiquetas de formulario y controles."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-rest",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Tarjeta en reposo en el estilo Clasico. Separa del fondo sin llamar la atencion. Se declara como --ui-card-shadow y cada estilo la redefine."
+      },
+      {
+        "name": "button-rest",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.08)",
+        "purpose": "Boton en reposo. Apenas mas marcada que la tarjeta, para que se lea como pulsable."
+      },
+      {
+        "name": "input-rest",
+        "value": "none",
+        "purpose": "Los campos se definen por borde, no por sombra."
+      },
+      {
+        "name": "nav-rest",
+        "value": "none",
+        "purpose": "La barra superior flota por transparencia y desenfoque, no por sombra."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ui-transition",
+        "value": "160ms ease",
+        "purpose": "Unica duracion de estado del sistema: hover, foco y sombra. La declara el estilo activo como --ui-transition."
+      },
+      {
+        "name": "reveal",
+        "value": "700ms ease-out",
+        "purpose": "Animacion de entrada de un bloque al aparecer en pantalla, en sus variantes desvanecer y deslizar."
+      },
+      {
+        "name": "reveal-slide-offset",
+        "value": "translateY(1.5rem)",
+        "purpose": "Desplazamiento inicial de la variante deslizar."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "0.01ms",
+        "purpose": "Toda animacion y transicion colapsa a este valor cuando el visitante pide reducir movimiento. Es global y ningun bloque debe esquivarlo."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Accion principal de cualquier bloque. Toma el color de marca del cliente y su color de texto calculado.",
+      "html": "<button class=\"ds-btn-primary\">Pedir presupuesto</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0.5rem 1rem; font-family: var(--font-body, Inter, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; font-weight: var(--ui-button-weight, 500); white-space: nowrap; background: var(--primary, #171717); color: var(--primary-foreground, #fafafa); border: var(--ui-button-border-width, 0px) solid var(--ui-button-border-color, transparent); border-radius: var(--ui-button-radius, 0.625rem); box-shadow: var(--ui-button-shadow, 0 1px 2px 0 rgb(0 0 0 / 0.08)); cursor: pointer; transition: box-shadow var(--ui-transition, 160ms ease), transform var(--ui-transition, 160ms ease), background var(--ui-transition, 160ms ease); } .ds-btn-primary:hover { background: color-mix(in srgb, var(--primary, #171717) 90%, transparent); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #b5b5b5) 50%, transparent); } .ds-btn-primary:active { box-shadow: var(--ui-button-active-shadow, var(--ui-button-shadow, none)); transform: translate(var(--ui-button-active-translate, 0px), var(--ui-button-active-translate, 0px)); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Accion de apoyo junto a la principal. Superficie suave, nunca el color de marca.",
+      "html": "<button class=\"ds-btn-secondary\">Ver servicios</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0.5rem 1rem; font-family: var(--font-body, Inter, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; font-weight: var(--ui-button-weight, 500); background: var(--secondary, #f5f5f5); color: var(--secondary-foreground, #171717); border: var(--ui-button-border-width, 0px) solid var(--ui-button-border-color, transparent); border-radius: var(--ui-button-radius, 0.625rem); box-shadow: var(--ui-button-shadow, 0 1px 2px 0 rgb(0 0 0 / 0.08)); cursor: pointer; transition: background var(--ui-transition, 160ms ease); } .ds-btn-secondary:hover { background: color-mix(in srgb, var(--secondary, #f5f5f5) 80%, transparent); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #b5b5b5) 50%, transparent); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Accion terciaria sobre fondos claros. Se define por contorno.",
+      "html": "<button class=\"ds-btn-outline\">Como llegar</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0.5rem 1rem; font-family: var(--font-body, Inter, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; font-weight: 500; background: var(--background, #ffffff); color: var(--foreground, #0a0a0a); border: 1px solid var(--border, #e5e5e5); border-radius: var(--ui-button-radius, 0.625rem); box-shadow: var(--ui-button-shadow, 0 1px 2px 0 rgb(0 0 0 / 0.08)); cursor: pointer; transition: background var(--ui-transition, 160ms ease); } .ds-btn-outline:hover { background: var(--accent, #f5f5f5); color: var(--accent-foreground, #171717); } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #b5b5b5) 50%, transparent); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Accion discreta dentro de barras y menus. Invisible en reposo.",
+      "html": "<button class=\"ds-btn-ghost\">Cancelar</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; height: 2.25rem; padding: 0.5rem 1rem; font-family: var(--font-body, Inter, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; font-weight: 500; background: transparent; color: var(--foreground, #0a0a0a); border: none; border-radius: var(--ui-button-radius, 0.625rem); cursor: pointer; transition: background var(--ui-transition, 160ms ease); } .ds-btn-ghost:hover { background: var(--accent, #f5f5f5); color: var(--accent-foreground, #171717); } .ds-btn-ghost:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #b5b5b5) 50%, transparent); }"
+    },
+    {
+      "name": "Surface Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "La superficie base de todo bloque con tarjetas. Su forma, borde, sombra y material los dicta por completo el estilo visual activo.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Instalaciones electricas</h3><p class=\"ds-card-body\">Certificacion SEC incluida y garantia por escrito en cada trabajo.</p></div>",
+      "css": ".ds-card { padding: 1.5rem; background: var(--ui-card-bg, var(--card, #ffffff)); border: var(--ui-card-border-width, 1px) solid var(--ui-card-border-color, var(--border, #e5e5e5)); border-radius: var(--ui-radius-lg, 0.875rem); box-shadow: var(--ui-card-shadow, 0 1px 2px 0 rgb(0 0 0 / 0.05)); -webkit-backdrop-filter: var(--ui-card-backdrop, none); backdrop-filter: var(--ui-card-backdrop, none); transition: box-shadow var(--ui-transition, 160ms ease); } .ds-card-title { margin: 0 0 0.5rem; font-family: var(--font-heading, Inter, ui-sans-serif, system-ui, sans-serif); font-size: 1.125rem; font-weight: var(--ui-heading-weight, 700); letter-spacing: var(--ui-heading-tracking, -0.025em); color: var(--card-foreground, #0a0a0a); } .ds-card-body { margin: 0; font-family: var(--font-body, Inter, ui-sans-serif, system-ui, sans-serif); font-size: 0.9375rem; line-height: 1.6; color: var(--muted-foreground, #737373); }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo del formulario de contacto. Se define por borde, no por sombra, y marca error por aria-invalid y no por una clase.",
+      "html": "<input class=\"ds-input\" type=\"email\" placeholder=\"tu@correo.cl\" aria-label=\"Correo\" />",
+      "css": ".ds-input { width: 100%; height: 2.25rem; padding: 0.5rem 0.75rem; font-family: var(--font-body, Inter, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; color: var(--foreground, #0a0a0a); background: var(--ui-input-bg, var(--background, #ffffff)); border-style: solid; border-width: var(--ui-input-border-width, 1px); border-color: var(--ui-input-border-color, var(--input, #e5e5e5)); border-radius: var(--ui-input-radius, 0.5rem); box-shadow: var(--ui-input-shadow, none); transition: border-color var(--ui-transition, 160ms ease), box-shadow var(--ui-transition, 160ms ease); } .ds-input::placeholder { color: var(--muted-foreground, #737373); } .ds-input:focus-visible { outline: none; border-color: var(--ring, #b5b5b5); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #b5b5b5) 50%, transparent); } .ds-input[aria-invalid=\"true\"] { border-color: var(--destructive, #dc2626); box-shadow: 0 0 0 3px color-mix(in srgb, var(--destructive, #dc2626) 20%, transparent); }"
+    },
+    {
+      "name": "Site Navigation",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Barra superior del sitio publicado. En el estilo Clasico flota por transparencia y desenfoque, nunca por sombra.",
+      "html": "<nav class=\"ds-nav\"><span class=\"ds-nav-brand\">ElectroAndes</span><span class=\"ds-nav-links\"><a class=\"ds-nav-link\" href=\"#\">Servicios</a><a class=\"ds-nav-link\" href=\"#\">Nosotros</a><a class=\"ds-nav-link\" href=\"#\">Contacto</a></span></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 0.75rem 1.25rem; background: var(--ui-nav-bg, color-mix(in srgb, var(--background, #ffffff) 80%, transparent)); border-bottom: var(--ui-nav-border, 1px solid var(--border, #e5e5e5)); box-shadow: var(--ui-nav-shadow, none); -webkit-backdrop-filter: var(--ui-nav-backdrop, blur(8px)); backdrop-filter: var(--ui-nav-backdrop, blur(8px)); } .ds-nav-brand { font-family: var(--font-heading, Inter, ui-sans-serif, system-ui, sans-serif); font-weight: var(--ui-heading-weight, 700); letter-spacing: var(--ui-heading-tracking, -0.025em); color: var(--foreground, #0a0a0a); } .ds-nav-links { display: flex; gap: 0.25rem; } .ds-nav-link { padding: 0.375rem 0.75rem; font-family: var(--font-body, Inter, ui-sans-serif, system-ui, sans-serif); font-size: 0.875rem; color: var(--foreground, #0a0a0a); text-decoration: none; border-radius: var(--ui-button-radius, 0.625rem); transition: background var(--ui-transition, 160ms ease); } .ds-nav-link:hover { background: var(--accent, #f5f5f5); color: var(--accent-foreground, #171717); } .ds-nav-link:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #b5b5b5) 50%, transparent); }"
+    },
+    {
+      "name": "Section Divider",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Separador entre secciones. En estilos minimalistas hace el trabajo que en otros hace la sombra.",
+      "html": "<hr class=\"ds-divider\" />",
+      "css": ".ds-divider { border: 0; border-top: var(--ui-divider-width, 1px) solid var(--ui-divider-color, var(--border, #e5e5e5)); margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "El Chasis",
+    "overview": "Este sistema no tiene cara propia, y esa es su tesis. Lo que esta documentado aqui es la estructura que nunca se ve: la geometria, el ritmo vertical, el contraste garantizado y el vocabulario de superficies. La carroceria (el color, la tipografia, la textura) la monta cada cliente encima, sin tocar una sola linea de lo que hay debajo. Un bloque jamas sabe de que color es la marca que lo esta usando ni que estilo visual esta activo. Esa ignorancia es deliberada: es lo que permite que el mismo contenido se vea Neo-Brutalista para una barberia y Editorial para un estudio juridico sin reescribir nada.\n\nEl sistema se compone de tres capas independientes que se combinan libremente. La identidad de marca aporta color y tipografia, y llega desde los datos de cada cliente. El estilo visual aporta forma, profundidad y material, y es uno de trece definiciones intercambiables que solo declaran valores para un contrato fijo de tokens. La variante de bloque aporta disposicion. Ninguna capa puede romper a las otras, y cuando una falta, la de abajo responde con un valor razonable en vez de fallar.\n\nLo que sale de fabrica, el estilo Clasico sobre la paleta neutra, es confiable antes que memorable. Nada llama la atencion sobre si mismo: bordes apenas redondeados, una sombra de un pixel, transiciones de 160 milisegundos. El visitante tiene que recordar al electricista, no al sitio. La sobriedad del estado por defecto es una decision, no una carencia.",
+    "keyCharacteristics": [
+      "Ningun bloque escribe un color, una sombra ni un radio: todos se toman de tokens.",
+      "El color de texto sobre cualquier fondo se calcula, nunca se elige.",
+      "La profundidad y el material son decision del estilo, no del sistema.",
+      "La densidad completa, tipografia y respiro entre secciones, es un solo multiplicador.",
+      "Todo tiene que verse bien sin imagenes y sin JavaScript."
+    ],
+    "rules": [
+      {
+        "name": "La Regla del Chasis",
+        "body": "Ningun bloque escribe un color. Todos se toman de tokens de marca. Un color literal dentro de un bloque es una excepcion que hay que justificar explicitamente, porque rompe la promesa de que cambiar la marca actualiza el sitio entero.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Contraste Derivado",
+        "body": "El color del texto sobre cualquier color lo decide el sistema eligiendo entre blanco y negro, nunca una persona. Esa eleccion supera 4.5:1 sobre cualquier fondo y hay pruebas que lo verifican contra una bateria de paletas.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de los Dos Registros",
+        "body": "--primary, --secondary y --accent son superficies de interfaz. Los colores dos y tres de la marca viven aparte, en --brand-secondary y --brand-accent. Pintar el pie de pagina con el indigo del cliente se ve peor, no mejor.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla del Color Intacto",
+        "body": "Los colores de marca no se ajustan por contraste: son fondos de boton y el contraste lo aporta su propio -foreground. Solo la variante -text se ajusta, para cuando el color se usa como texto sobre el fondo de la pagina.",
+        "section": "colors"
+      },
+      {
+        "name": "La Regla de las Dos Variables",
+        "body": "Solo existen dos familias en todo el sitio: titulos y texto. No hay una tercera para detalles ni una cuarta para citas. Un par curado se elige entero.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Tamano Unico",
+        "body": "La densidad tipografica es un multiplicador sobre la raiz (0.9375, 1 o 1.0625), no una tabla de tamanos. Cambiar a compacto o amplio reescala el sitio completo sin tocar un solo bloque.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Cero Salto",
+        "body": "Las diecisiete familias se declaran juntas pero ninguna se precarga: el archivo se descarga solo si el par elegido lo usa, y el salto al cargar lo evita el ajuste metrico de la fuente de respaldo.",
+        "section": "typography"
+      },
+      {
+        "name": "La Regla del Respiro Escalable",
+        "body": "El espaciado entre secciones nunca es un valor absoluto: siempre es el paso multiplicado por --brand-section-spacing. Un py-20 escrito a mano dentro de un bloque queda fuera del sistema y rompe la densidad elegida.",
+        "section": "layout"
+      },
+      {
+        "name": "La Regla del Celular Primero de Verdad",
+        "body": "Toda variante tiene que verse bien en celular, porque es donde llega la mayoria de las visitas. Una disposicion que solo funciona en escritorio no esta terminada.",
+        "section": "layout"
+      },
+      {
+        "name": "La Regla del Token Prestado",
+        "body": "Ninguna sombra se escribe dentro de un bloque. Toda sombra sale de --ui-card-shadow, --ui-button-shadow, --ui-input-shadow o --ui-nav-shadow. Un box-shadow literal en un bloque hace que ese bloque se vea igual en los trece estilos.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Regla del Hundimiento Opcional",
+        "body": "El boton que se hunde al presionarlo es un token, no un comportamiento: --ui-button-active-translate vale cero en casi todos los estilos y solo el Neo-Brutalism lo activa.",
+        "section": "elevation"
+      },
+      {
+        "name": "La Regla del Radio Heredado",
+        "body": "Un bloque nunca declara su propio radio. Usa las clases de superficie del sistema y recibe la forma del estilo activo. Un rounded-xl escrito a mano sobrevive al cambio de estilo, que es justamente lo que no debe pasar.",
+        "section": "shapes"
+      },
+      {
+        "name": "La Regla de la Clase de Superficie",
+        "body": "Si un elemento necesita fondo, borde, radio o sombra, usa una clase .ui-*. Si ninguna calza, el sistema necesita un token nuevo, no una excepcion local.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do tomar todo color, sombra, radio y transicion de un token. Si no existe el token, agregarlo al contrato de estilo, no escribir el valor.",
+      "Do dejar que el sistema calcule el color de texto sobre cualquier fondo de marca.",
+      "Do disenar cada bloque para que se vea completo sin ninguna imagen cargada.",
+      "Do escalar el espaciado vertical con --brand-section-spacing en vez de fijar valores.",
+      "Do respetar reducir movimiento: ya esta resuelto globalmente y ninguna animacion nueva debe esquivarlo.",
+      "Do mantener el contenido legible sin JavaScript: las animaciones de entrada solo ocultan bajo [data-js='on'], para que sin JS nada desaparezca.",
+      "Do verificar toda variante nueva en celular antes de darla por terminada."
+    ],
+    "donts": [
+      "Don't escribir un color, una sombra o un radio literal dentro de un bloque. Sobrevive al cambio de estilo y rompe la promesa del sistema.",
+      "Don't pintar superficies grandes con los colores dos y tres de la marca. Son fondos de boton, no de seccion.",
+      "Don't agregar una tercera familia tipografica. Solo hay titulos y texto.",
+      "Don't entregar algo que se parezca a un SaaS generico en ingles: degradado morado, ilustraciones isometricas, promesas abstractas.",
+      "Don't recurrir al repertorio de agencia de los 2010: parallax, carruseles infinitos, contadores animados sin motivo, scroll secuestrado.",
+      "Don't caer en el corporativo frio: azul institucional, fotos de reuniones sonrientes, lenguaje de folleto.",
+      "Don't inventar testimonios, cifras, logos de clientes ni casos de exito para llenar un bloque. Si no hay contenido real, el bloque no va."
+    ]
+  }
+}

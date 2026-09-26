@@ -78,6 +78,10 @@ export const AdminPageSchema = z.object({
   isPublished: z.boolean(),
   // Estilo propio de la página; nulo = hereda el del sitio.
   visualStyle: z.string().nullable().default(null),
+  seoTitle: z.string().nullable().optional(),
+  seoDescription: z.string().nullable().optional(),
+  ogImageKey: z.string().nullable().optional(),
+  noindex: z.boolean().optional(),
   sections: z.array(AdminSectionSchema),
 });
 
@@ -253,6 +257,47 @@ export const SubscribersSchema = z.object({
   total: z.number(),
 });
 
+export const DATA_RIGHTS = [
+  'acceso',
+  'rectificacion',
+  'cancelacion',
+  'oposicion',
+  'portabilidad',
+] as const;
+
+export const REQUEST_STATUSES = [
+  'pendiente',
+  'verificada',
+  'resuelta',
+  'rechazada',
+] as const;
+
+export const DataRightsRequestSchema = z.object({
+  id: z.string(),
+  right: z.enum(DATA_RIGHTS),
+  email: z.string(),
+  details: z.string(),
+  status: z.enum(REQUEST_STATUSES),
+  createdAt: z.string(),
+  verifiedAt: z.string().nullable(),
+  resolvedAt: z.string().nullable(),
+  dueAt: z.string(),
+});
+
+export const DataRightsRequestsSchema = z.object({
+  requests: z.array(DataRightsRequestSchema),
+});
+
+export const RedirectSchema = z.object({
+  id: z.string(),
+  fromPath: z.string(),
+  toPath: z.string(),
+  statusCode: z.number(),
+  createdAt: z.string(),
+});
+export const RedirectsSchema = z.object({ redirects: z.array(RedirectSchema) });
+export const RedirectResponseSchema = z.object({ redirect: RedirectSchema });
+
 export type Tenant = z.infer<typeof TenantSchema>;
 export type TenantStatus = z.infer<typeof TenantStatusSchema>;
 export type SiteTemplate = z.infer<typeof SiteTemplateSchema>;
@@ -272,3 +317,30 @@ export type AssetUsage = z.infer<typeof AssetUsageSchema>;
 export type Subscriber = z.infer<typeof SubscriberSchema>;
 export type UserAccount = z.infer<typeof UserAccountSchema>;
 export type NavigationLink = z.infer<typeof NavigationLinkSchema>;
+export type DataRightsRequest = z.infer<typeof DataRightsRequestSchema>;
+export type AdminRedirect = z.infer<typeof RedirectSchema>;
+
+export const SubscriptionStatusSchema = z.enum(['al_dia', 'por_vencer', 'atrasado']);
+export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
+
+export const SubscriptionOverviewRowSchema = z.object({
+  tenantId: z.string(),
+  planName: z.string(),
+  priceCents: z.number(),
+  status: SubscriptionStatusSchema,
+  mrrCents: z.number(),
+});
+export type SubscriptionOverviewRow = z.infer<typeof SubscriptionOverviewRowSchema>;
+
+export const SubscriptionOverviewResponseSchema = z.object({
+  rows: z.array(SubscriptionOverviewRowSchema),
+  totalMrrCents: z.number(),
+});
+export type SubscriptionOverviewResponse = z.infer<typeof SubscriptionOverviewResponseSchema>;
+
+export const SubscriptionStatusResponseSchema = z.object({
+  planName: z.string(),
+  priceCents: z.number(),
+  status: SubscriptionStatusSchema,
+});
+export type SubscriptionStatusResponse = z.infer<typeof SubscriptionStatusResponseSchema>;

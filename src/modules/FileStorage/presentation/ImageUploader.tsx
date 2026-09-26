@@ -23,8 +23,9 @@ import {
   type UploadedFile,
 } from '../domain/FileUploadSchema';
 import { FileStorageService } from '../application/FileStorageService';
+import { ImageCropper } from './ImageCropper';
 
-type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
+type UploadStatus = 'idle' | 'cropping' | 'uploading' | 'success' | 'error';
 
 export interface ImageUploaderProps {
   /**
@@ -80,6 +81,18 @@ export function ImageUploader({
       return;
     }
 
+    if (file.type.startsWith('image/')) {
+      const url = URL.createObjectURL(file);
+      setSelectedFile(file);
+      setPreviewUrl(url);
+      setStatus('cropping');
+      return;
+    }
+
+    await doUpload(file);
+  };
+
+  const doUpload = async (file: File): Promise<void> => {
     setSelectedFile(file);
     setUploadedFile(null);
     setErrorMessage(null);
@@ -93,7 +106,6 @@ export function ImageUploader({
       toast.success('Archivo subido correctamente.');
       onUploaded(uploaded.key);
     } catch (error) {
-      // Sesión caducada y fallo de servidor se arreglan distinto: mensajes separados (SPEC 0.1).
       const message =
         error instanceof SessionExpiredError
           ? error.message
@@ -176,6 +188,7 @@ export function ImageUploader({
         )}
       >
         {previewUrl !== null ? (
+          // Decisión: Mantenemos <img> nativo para evitar que las firmas temporales saturen el disco y la caché de next/image.
           // eslint-disable-next-line @next/next/no-img-element -- preview local (blob:) y URLs de bucket dinámicas, fuera del optimizador de next/image
           <img
             src={previewUrl}
@@ -234,6 +247,15 @@ export function ImageUploader({
             <X /> Quitar
           </Button>
         </div>
+      )}
+
+      {status === 'cropping' && previewUrl !== null && selectedFile !== null && (
+        <ImageCropper
+          imageSrc={previewUrl}
+          onCropComplete={(cropped) => void doUpload(cropped)}
+          onSkip={() => void doUpload(selectedFile)}
+          onCancel={reset}
+        />
       )}
     </div>
   );

@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
 import type { ReactElement } from 'react';
+import { notFoundWithRedirect } from '@/modules/Redirect/presentation/notFoundWithRedirect';
+import { createRedirectService } from '@/modules/Redirect/infrastructure/redirectServiceFactory';
 import { createStoreService } from '@/modules/Store/infrastructure/storeServiceFactory';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { ProductCard } from '@/modules/Store/presentation/ProductCard';
@@ -47,7 +48,7 @@ export default async function StoreIndexPage({
 
   const store = await storeService.getStoreSettings();
   if (store === null) {
-    notFound();
+    return await notFoundWithRedirect(createRedirectService(tenantDomain), '/tienda');
   }
 
   const { q, categoria, page: pageParam } = await searchParams;
@@ -67,7 +68,7 @@ export default async function StoreIndexPage({
   // Una página fuera de rango es un listado vacío con URL propia: si responde 200, el
   // buscador la indexa como contenido sin valor. Mejor que no exista.
   if (page > totalPages) {
-    notFound();
+    return await notFoundWithRedirect(createRedirectService(tenantDomain), '/tienda');
   }
 
   const pageHref = (targetPage: number): string => {
