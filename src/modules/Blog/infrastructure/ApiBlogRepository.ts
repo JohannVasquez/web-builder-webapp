@@ -3,11 +3,20 @@ import {
   BlogPostResponseSchema,
   type BlogListResponse,
   type BlogPostDetail,
+  type BlogPostSummary,
 } from '../domain/BlogPost';
 import type { BlogListParams, BlogRepository } from '../domain/BlogRepository';
 
 import { TENANT_DOMAIN_HEADER } from '@/shared/config/tenant';
 import { siteCacheOptions } from '@/shared/lib/cacheTags';
+import { readDemoToken } from '@/shared/lib/demoAccess';
+
+// En una demo de prospecto `/api/media/<clave>` responde 404 (el navegador no lleva el
+// token): sin la clave, la portada cae a la URL firmada, igual que en `ApiStoreRepository`.
+const withoutCoverKey = <T extends BlogPostSummary>(post: T): T => ({
+  ...post,
+  coverImageKey: null,
+});
 
 export class ApiBlogRepository implements BlogRepository {
   constructor(
@@ -39,7 +48,10 @@ export class ApiBlogRepository implements BlogRepository {
       throw new Error(`Failed to list blog posts: HTTP ${response.status}`);
     }
     const payload: unknown = await response.json();
-    return BlogListResponseSchema.parse(payload);
+    const list = BlogListResponseSchema.parse(payload);
+    return (await readDemoToken()) === undefined
+      ? list
+      : { ...list, posts: list.posts.map(withoutCoverKey) };
   }
 
   public async findBySlug(slug: string): Promise<BlogPostDetail | null> {
@@ -59,6 +71,9 @@ export class ApiBlogRepository implements BlogRepository {
     }
 
     const payload: unknown = await response.json();
-    return BlogPostResponseSchema.parse(payload).post;
+    const post = BlogPostResponseSchema.parse(payload).post;
+    return (await readDemoToken()) === undefined
+      ? post
+      : { ...withoutCoverKey(post), related: post.related.map(withoutCoverKey) };
   }
 }

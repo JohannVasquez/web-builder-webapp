@@ -154,4 +154,20 @@ describe('GET /sitemap.xml', () => {
     // Sigue siendo un sitemap válido, para que el cliente vea que está vacío a propósito.
     expect(xml).toContain('<urlset');
   });
+
+  it('un host demo-* responde un sitemap vacío, siempre y sin tocar la API', async () => {
+    const response = await GET(
+      new NextRequest('https://demo-luna.webbuilder.cl/sitemap.xml'),
+      {
+        params: Promise.resolve({ tenantDomain: 'demo-luna.webbuilder.cl' }),
+      },
+    );
+    const xml = await response.text();
+
+    expect(xml).toContain('<urlset');
+    expect(xml).not.toContain('<loc>');
+    expect(getSettings).not.toHaveBeenCalled();
+    expect(getPublishedPages).not.toHaveBeenCalled();
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+  });
 });

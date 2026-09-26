@@ -10,7 +10,7 @@ import { StoreOrderService } from '@/modules/Store/application/StoreOrderService
 import { variantsMatch } from '@/modules/Store/application/cartLogic';
 import type { QuoteResponse } from '@/modules/Store/domain/Quote';
 import { useAsyncData } from '@/shared/lib/useAsyncData';
-import { getPublicApiBaseUrl } from '@/shared/config/api';
+import { useSiteApiBaseUrl } from '@/shared/lib/useSiteApiBaseUrl';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 
@@ -37,13 +37,14 @@ const EMPTY_QUOTE: QuoteResponse = {
 // guarda `productId`, `quantity` y `variant`, nunca un precio (SPEC 8.2).
 export default function CartPage(): ReactElement {
   const cart = useCart();
+  const apiBaseUrl = useSiteApiBaseUrl();
   const orderService = useMemo(
     () =>
       new StoreOrderService(
-        getPublicApiBaseUrl(),
+        apiBaseUrl,
         typeof window === 'undefined' ? undefined : window.location.hostname,
       ),
-    [],
+    [apiBaseUrl],
   );
 
   const itemsKey = JSON.stringify(cart.items);

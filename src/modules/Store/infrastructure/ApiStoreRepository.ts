@@ -12,6 +12,20 @@ import { StoreSettingsResponseSchema, type StoreSettings } from '../domain/Store
 
 import { TENANT_DOMAIN_HEADER } from '@/shared/config/tenant';
 import { siteCacheOptions } from '@/shared/lib/cacheTags';
+import { readDemoToken } from '@/shared/lib/demoAccess';
+
+// En una demo de prospecto `/api/media/<clave>` responde 404: lo piden el navegador y el
+// optimizador de imágenes, y ninguno de los dos puede llevar el token. Sin la clave, las
+// vistas caen a la URL firmada que la API manda al lado, que no pasa por la guarda.
+const withoutMediaKeys = (product: ProductView): ProductView => {
+  const { imageKeys: _imageKeys, ...rest } = product;
+  return rest;
+};
+
+const forDemo = async (
+  products: readonly ProductView[],
+): Promise<readonly ProductView[]> =>
+  (await readDemoToken()) === undefined ? products : products.map(withoutMediaKeys);
 
 export class ApiStoreRepository implements StoreRepository {
   constructor(
@@ -50,7 +64,8 @@ export class ApiStoreRepository implements StoreRepository {
       throw new Error(`Failed to list products: HTTP ${response.status}`);
     }
     const payload: unknown = await response.json();
-    return ProductListResponseSchema.parse(payload);
+    const list = ProductListResponseSchema.parse(payload);
+    return { ...list, products: [...(await forDemo(list.products))] };
   }
 
   public async getFeaturedProducts(limit: number): Promise<readonly ProductView[]> {
@@ -62,7 +77,7 @@ export class ApiStoreRepository implements StoreRepository {
       throw new Error(`Failed to list featured products: HTTP ${response.status}`);
     }
     const payload: unknown = await response.json();
-    return FeaturedProductsResponseSchema.parse(payload).products;
+    return forDemo(FeaturedProductsResponseSchema.parse(payload).products);
   }
 
   public async findProductBySlug(slug: string): Promise<ProductView | null> {
@@ -81,7 +96,8 @@ export class ApiStoreRepository implements StoreRepository {
     }
 
     const payload: unknown = await response.json();
-    return ProductResponseSchema.parse(payload).product;
+    const [product] = await forDemo([ProductResponseSchema.parse(payload).product]);
+    return product ?? null;
   }
 
   public async listCategories(): Promise<readonly ProductCategory[]> {

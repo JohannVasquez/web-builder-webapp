@@ -6,7 +6,7 @@ import { Loader2, Mail } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
-import { getPublicApiBaseUrl } from '@/shared/config/api';
+import { useSiteApiBaseUrl } from '@/shared/lib/useSiteApiBaseUrl';
 import { TENANT_DOMAIN_HEADER } from '@/shared/config/tenant';
 import {
   SectionBackgroundPropsSchema,
@@ -54,8 +54,12 @@ type Status = 'idle' | 'submitting' | 'success';
 
 // Mismo patrón que `ContactService`: el dominio del visitante viaja en `X-Tenant-Domain` porque,
 // llamando a la API cross-origin, el `Host` que ella ve es el suyo propio.
-async function submitNewsletter(email: string, website: string): Promise<void> {
-  const response = await fetch(`${getPublicApiBaseUrl()}/api/newsletter`, {
+async function submitNewsletter(
+  apiBaseUrl: string,
+  email: string,
+  website: string,
+): Promise<void> {
+  const response = await fetch(`${apiBaseUrl}/api/newsletter`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -84,6 +88,7 @@ export function Newsletter({
   const [website, setWebsite] = useState('');
   const [status, setStatus] = useState<Status>('idle');
   const [error, setError] = useState<string | undefined>(undefined);
+  const apiBaseUrl = useSiteApiBaseUrl();
 
   if (!parsed.success || parsed.data.title === '') {
     return null;
@@ -103,7 +108,7 @@ export function Newsletter({
     }
     setError(undefined);
     setStatus('submitting');
-    submitNewsletter(validation.data, website)
+    submitNewsletter(apiBaseUrl, validation.data, website)
       .then(() => {
         setStatus('success');
       })

@@ -26,7 +26,7 @@ import {
   subscribeToDecision,
 } from '../application/consentStorage';
 import { ConsentService, type ConsentSource } from '../application/ConsentService';
-import { getPublicApiBaseUrl } from '@/shared/config/api';
+import { useSiteApiBaseUrl } from '@/shared/lib/useSiteApiBaseUrl';
 
 interface ConsentContextValue {
   readonly decision: ConsentDecision | null;
@@ -65,7 +65,8 @@ export function ConsentProvider({
   );
   const [isOpen, setIsOpen] = useState(false);
 
-  const service = useMemo(() => new ConsentService(getPublicApiBaseUrl()), []);
+  const apiBaseUrl = useSiteApiBaseUrl();
+  const service = useMemo(() => new ConsentService(apiBaseUrl), [apiBaseUrl]);
 
   const recordFor = useCallback(
     (next: ConsentDecision, source: ConsentSource) => {

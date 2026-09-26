@@ -6,6 +6,8 @@ import type { BlogPostSummary } from '@/modules/Blog/domain/BlogPost';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { isUnderConstruction } from '@/modules/GlobalSettings/domain/GlobalSettings';
 import type { ProductView } from '@/modules/Store/domain/Product';
+import { DEMO_RESPONSE_HEADERS } from '@/shared/config/demo';
+import { isDemoRequest } from '@/shared/lib/demoAccess';
 
 const HOME_SLUG = 'home';
 // 50 es el máximo que acepta `GET /api/blog` (ver `perPage`); pedir más devuelve un 400 que
@@ -89,18 +91,19 @@ const toXmlEntry = (origin: string, entry: SitemapEntry): string => {
   return `  <url>\n    <loc>${loc}</loc>${lastmod}\n  </url>`;
 };
 
-const xmlResponse = (xml: string): NextResponse =>
+const xmlResponse = (
+  xml: string,
+  cacheHeaders: Readonly<Record<string, string>> = {
+    'Cache-Control': 'public, max-age=3600',
+  },
+): NextResponse =>
   new NextResponse(xml, {
-    headers: {
-      'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
-    },
+    headers: { 'Content-Type': 'application/xml; charset=utf-8', ...cacheHeaders },
   });
 
-const emptySitemap = (): NextResponse =>
-  xmlResponse(
-    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>`,
-  );
+const EMPTY_SITEMAP = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n</urlset>`;
+
+const emptySitemap = (): NextResponse => xmlResponse(EMPTY_SITEMAP);
 
 // Ruta propia en vez del `sitemap.ts` de Next porque el sitemap es POR TENANT y el tenant
 // llega en el segmento de la ruta, no en la configuración del proyecto.
@@ -109,6 +112,12 @@ export async function GET(
   { params }: { params: Promise<{ tenantDomain: string }> },
 ): Promise<NextResponse> {
   const { tenantDomain } = await params;
+
+  // Una demo de prospecto no se anuncia a buscadores ni aunque quien pide tenga el enlace.
+  if (await isDemoRequest(tenantDomain)) {
+    return xmlResponse(EMPTY_SITEMAP, DEMO_RESPONSE_HEADERS);
+  }
+
   const origin = new URL(request.url).origin;
 
   // Un sitio en construcción no ofrece nada que rastrear, pero el sitemap sigue existiendo

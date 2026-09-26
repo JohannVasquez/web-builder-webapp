@@ -16,7 +16,7 @@ import {
 } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
-import { getPublicApiBaseUrl } from '@/shared/config/api';
+import { useSiteApiBaseUrl } from '@/shared/lib/useSiteApiBaseUrl';
 import {
   ContactFormSchema,
   toContactInput,
@@ -34,13 +34,14 @@ interface ContactFormProps {
 export function ContactForm({ privacyHref = null }: ContactFormProps): ReactElement {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { recordFor } = useConsent();
+  const apiBaseUrl = useSiteApiBaseUrl();
   const contactService = useMemo(
     () =>
       new ContactService(
-        getPublicApiBaseUrl(),
+        apiBaseUrl,
         typeof window === 'undefined' ? undefined : window.location.hostname,
       ),
-    [],
+    [apiBaseUrl],
   );
 
   const form = useForm<ContactFormInput>({

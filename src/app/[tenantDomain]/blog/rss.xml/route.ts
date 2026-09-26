@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { createBlogService } from '@/modules/Blog/infrastructure/blogServiceFactory';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import { buildBlogRssXml } from '@/modules/Blog/presentation/rssFeed';
+import { DEMO_RESPONSE_HEADERS } from '@/shared/config/demo';
+import { isDemoRequest } from '@/shared/lib/demoAccess';
 
 // Suficiente para un feed razonable sin paginar el canal RSS (SPEC 7.4).
 const RSS_ITEM_LIMIT = 50;
@@ -11,6 +13,12 @@ export async function GET(
   { params }: { params: Promise<{ tenantDomain: string }> },
 ): Promise<NextResponse> {
   const { tenantDomain } = await params;
+
+  // Una demo de prospecto no tiene canal RSS: nada suyo sale del sitio hacia un lector.
+  if (await isDemoRequest(tenantDomain)) {
+    return new NextResponse(null, { status: 404, headers: DEMO_RESPONSE_HEADERS });
+  }
+
   const origin = new URL(request.url).origin;
 
   const [settings, { posts }] = await Promise.all([

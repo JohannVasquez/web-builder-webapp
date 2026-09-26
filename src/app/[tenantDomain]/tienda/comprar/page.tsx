@@ -18,7 +18,7 @@ import { CustomerInputSchema } from '@/modules/Store/domain/Checkout';
 import type { DeliveryMethod } from '@/modules/Store/domain/Checkout';
 import type { QuoteResponse } from '@/modules/Store/domain/Quote';
 import { useAsyncData } from '@/shared/lib/useAsyncData';
-import { getPublicApiBaseUrl } from '@/shared/config/api';
+import { useSiteApiBaseUrl } from '@/shared/lib/useSiteApiBaseUrl';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import {
@@ -70,13 +70,14 @@ export default function CheckoutPage(): ReactElement {
   const [keyForPurchase] = useState(() =>
     createIdempotencyKeyTracker(() => crypto.randomUUID()),
   );
+  const apiBaseUrl = useSiteApiBaseUrl();
   const orderService = useMemo(
     () =>
       new StoreOrderService(
-        getPublicApiBaseUrl(),
+        apiBaseUrl,
         typeof window === 'undefined' ? undefined : window.location.hostname,
       ),
-    [],
+    [apiBaseUrl],
   );
 
   const [selectedShippingCode, setSelectedShippingCode] = useState<string | undefined>(

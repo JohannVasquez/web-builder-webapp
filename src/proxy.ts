@@ -1,4 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import {
+  DEMO_RESPONSE_HEADERS,
+  DEMO_TOKEN_COOKIE,
+  isDemoHost,
+  isDemoToken,
+} from '@/shared/config/demo';
+import { redeemDemoLink } from '@/modules/Demo/infrastructure/redeemDemoLink';
 
 /**
  * Resuelve el tenant una sola vez, en el borde, y lo mete en la ruta:
@@ -24,7 +31,11 @@ import { NextResponse, type NextRequest } from 'next/server';
 // por eso se decide aquí, antes de meter el dominio en la ruta.
 const ADMIN_HOST_LABEL = 'admin';
 
-export function proxy(request: NextRequest): NextResponse {
+// Enlace mágico de una demo de prospecto: un solo tramo después de `/demo/`. Las acciones del
+// navegador (`/demo/api/...`) tienen más tramos y siguen de largo hasta su route handler.
+const DEMO_LINK_PATH = /^\/demo\/([^/]+)\/?$/;
+
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const host = request.headers.get('host') ?? request.nextUrl.hostname;
   const tenantDomain = host.split(':')[0]?.toLowerCase() ?? '';
 
@@ -35,10 +46,23 @@ export function proxy(request: NextRequest): NextResponse {
     return NextResponse.rewrite(url);
   }
 
+  const demoLink = DEMO_LINK_PATH.exec(url.pathname);
+  if (demoLink?.[1] !== undefined && request.method === 'GET') {
+    return redeemDemoLink(request, tenantDomain, demoLink[1]);
+  }
+
   // Evita el `//` (y el redirect de trailing slash) cuando se pide la raíz.
   url.pathname = `/${tenantDomain}${url.pathname === '/' ? '' : url.pathname}`;
 
-  return NextResponse.rewrite(url);
+  // Una demo no se guarda en ninguna caché ni entra a ningún buscador, tenga o no acceso quien
+  // la pide: por el host basta, aunque no haya cookie (ni Google ni un curioso la tienen).
+  const isDemo =
+    isDemoHost(tenantDomain) ||
+    isDemoToken(request.cookies.get(DEMO_TOKEN_COOKIE)?.value);
+
+  return isDemo
+    ? NextResponse.rewrite(url, { headers: DEMO_RESPONSE_HEADERS })
+    : NextResponse.rewrite(url);
 }
 
 export const config = {

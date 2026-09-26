@@ -61,4 +61,20 @@ describe('GET /robots.txt', () => {
 
     expect(await robots()).toContain('Allow: /');
   });
+
+  it('un host demo-* bloquea todo, sin preguntarle nada a la API ni ofrecer sitemap', async () => {
+    getSettings.mockClear();
+
+    const response = await GET(
+      new NextRequest('https://demo-luna.webbuilder.cl/robots.txt'),
+      {
+        params: Promise.resolve({ tenantDomain: 'demo-luna.webbuilder.cl' }),
+      },
+    );
+
+    expect(await response.text()).toBe('User-agent: *\nDisallow: /\n');
+    expect(getSettings).not.toHaveBeenCalled();
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+    expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow');
+  });
 });

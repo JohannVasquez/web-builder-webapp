@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createGlobalSettingsService } from '@/modules/GlobalSettings/infrastructure/globalSettingsServiceFactory';
 import type { Brand } from '@/modules/Brand/domain/Brand';
+import { DEMO_RESPONSE_HEADERS } from '@/shared/config/demo';
+import { isDemoRequest } from '@/shared/lib/demoAccess';
 
 // Las URLs del bucket son firmadas y expiran en una hora, así que no sirven como `og:image`:
 // el rastreador de WhatsApp puede pedirla mucho después y el enlace compartido quedaría roto.
@@ -27,12 +29,17 @@ export async function GET(
   const settings = await createGlobalSettingsService(tenantDomain).getSettings();
   const url = settings.brand.assets[field];
   if (url === undefined || url === '') {
-    return new NextResponse('Este cliente no tiene ese recurso de marca', { status: 404 });
+    return new NextResponse('Este cliente no tiene ese recurso de marca', {
+      status: 404,
+    });
   }
 
-  // Menos que la hora que dura la firma, para no redirigir nunca a una URL ya vencida.
+  // Menos que la hora que dura la firma, para no redirigir nunca a una URL ya vencida. Una
+  // demo no se cachea en ningún lado: la redirección solo existe para quien canjeó el enlace.
   return NextResponse.redirect(url, {
     status: 307,
-    headers: { 'Cache-Control': `public, max-age=${CACHE_SECONDS}` },
+    headers: (await isDemoRequest(tenantDomain))
+      ? DEMO_RESPONSE_HEADERS
+      : { 'Cache-Control': `public, max-age=${CACHE_SECONDS}` },
   });
 }

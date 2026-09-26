@@ -17,7 +17,12 @@ import { CookieNotice } from '@/modules/Consent/presentation/CookieNotice';
 import { resolveCookieNoticeHref } from '@/modules/Consent/domain/Consent';
 import { createPageService } from '@/modules/Page/infrastructure/pageServiceFactory';
 import { readAnalyticsConfig } from '@/modules/Analytics/domain/Analytics';
-import { isUnderConstruction } from '@/modules/GlobalSettings/domain/GlobalSettings';
+import {
+  isServedAsDemo,
+  isUnderConstruction,
+} from '@/modules/GlobalSettings/domain/GlobalSettings';
+import { DEMO_ACTIONS_BASE_URL } from '@/shared/config/demo';
+import { isDemoRequest } from '@/shared/lib/demoAccess';
 import { Toaster } from '@/shared/ui/sonner';
 import { draftMode } from 'next/headers';
 import { TenantProviders } from './providers';
@@ -33,9 +38,12 @@ export async function generateMetadata({
   const { tenantDomain } = await params;
   const settings = await createGlobalSettingsService(tenantDomain).getSettings();
   const { favicon, ogImage } = settings.brand.assets;
-  
+
   const dm = await draftMode();
   const isPreview = dm.isEnabled;
+  // Por el host, por la cookie del enlace o porque la API lo dijo (`X-Demo: true`): cualquiera
+  // de las tres basta para que una demo de prospecto no entre a un buscador.
+  const isDemo = isServedAsDemo(settings) || (await isDemoRequest(tenantDomain));
 
   // Rutas estables en vez de las URLs firmadas del bucket, que expiran en una hora y
   // dejarían sin imagen cualquier enlace ya compartido.
@@ -54,7 +62,9 @@ export async function generateMetadata({
 
   return {
     metadataBase: new URL(`https://${canonicalHost}`),
-    ...(underConstruction || isPreview ? { robots: { index: false, follow: false } } : {}),
+    ...(underConstruction || isPreview || isDemo
+      ? { robots: { index: false, follow: false } }
+      : {}),
     verification: {
       ...(settings.googleSiteVerification === ''
         ? {}
@@ -89,14 +99,20 @@ export default async function TenantLayout({
   const { tenantDomain } = await params;
   const dm = await draftMode();
   const isPreview = dm.isEnabled;
-  
+
   const [settings, links, store, publishedPages] = await Promise.all([
     createGlobalSettingsService(tenantDomain).getSettings(),
     createNavigationService(tenantDomain).getLinks(),
     createStoreService(tenantDomain).getStoreSettings(),
     createPageService(tenantDomain).getPublishedPages(),
   ]);
-  const legalSlugs = ['politica-de-privacidad', 'terminos-y-condiciones', 'politica-de-cookies', 'terminos-de-compra'];
+  const isDemo = isServedAsDemo(settings) || (await isDemoRequest(tenantDomain));
+  const legalSlugs = [
+    'politica-de-privacidad',
+    'terminos-y-condiciones',
+    'politica-de-cookies',
+    'terminos-de-compra',
+  ];
   const legalLinks = publishedPages
     .filter((page) => legalSlugs.includes(page.slug))
     .map((page) => ({ href: `/${page.slug}`, label: page.title }));
@@ -105,7 +121,14 @@ export default async function TenantLayout({
   const pairing = resolveFontPairing(settings.brand.typography.pairing);
 
   return (
-    <TenantProviders>
+    // En una demo las acciones del navegador pasan por el servidor de Next, que agrega el
+    // token desde la cookie httpOnly (ver `DEMO_ACTIONS_BASE_URL`).
+    <TenantProviders apiBaseUrl={isDemo ? DEMO_ACTIONS_BASE_URL : undefined}>
+      {/* Además del `robots` de `generateMetadata`: una página que declara su propio `robots`
+          (aunque sea `undefined`) pisa el del layout, y una demo no puede depender de eso.
+          React lleva esta etiqueta al <head>. Sin franja ni aviso: el vendedor habla en la
+          llamada. */}
+      {isDemo && <meta name="robots" content="noindex, nofollow" />}
       <ThemeScript colorMode={settings.brand.colorMode} />
       <SiteJsonLd
         settings={settings}
@@ -120,7 +143,8 @@ export default async function TenantLayout({
       <VisualStyleTokens styleId={settings.brand.visualStyle} />
       {isPreview && (
         <div className="bg-primary text-primary-foreground text-center py-2 px-4 text-sm font-medium z-50 sticky top-0">
-          Estás viendo una vista previa de este sitio. Los cambios en borrador son visibles.
+          Estás viendo una vista previa de este sitio. Los cambios en borrador son
+          visibles.
         </div>
       )}
       {/* Primer elemento enfocable: permite saltarse el menú sin tabular por todos sus enlaces. */}
