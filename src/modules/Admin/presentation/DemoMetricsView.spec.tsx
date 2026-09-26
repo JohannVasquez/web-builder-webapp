@@ -190,10 +190,12 @@ describe('DemoMetricsReport', () => {
         .map((cell) => cell.textContent ?? '');
 
     expect(firstColumn()).toEqual(['pastelería', 'spa', 'Sin rubro']);
-    await user.click(within(table).getByRole('button', { name: /Conversión/ }));
+    await user.click(
+      within(table).getByRole('button', { name: /ordenar por conversión/ }),
+    );
     expect(firstColumn()).toEqual(['spa', 'pastelería', 'Sin rubro']);
     expect(
-      within(table).getByRole('columnheader', { name: /Conversión/ }),
+      within(table).getByRole('columnheader', { name: /ordenar por conversión/ }),
     ).toHaveAttribute('aria-sort', 'descending');
   });
 

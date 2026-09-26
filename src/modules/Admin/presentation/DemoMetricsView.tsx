@@ -197,8 +197,8 @@ export function DemoMetricsReport({
   return (
     <div className="space-y-6">
       <p className="text-muted-foreground text-sm">
-        Demos creadas del {period} (hora de Chile). Estados al{' '}
-        {formatDemoDateTime(metrics.asOf)}.
+        Demos creadas del {period}, en hora de Chile · estados al{' '}
+        {formatDemoDateTime(metrics.asOf)}
       </p>
 
       <section aria-labelledby="metrics-funnel-heading" className="space-y-3">
@@ -434,7 +434,7 @@ function GroupsTable({
         <p className="text-muted-foreground text-sm">No hay grupos que mostrar.</p>
       ) : (
         <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-          <table className="w-full min-w-[22rem] text-sm">
+          <table className="w-full min-w-[18rem] text-sm">
             <caption className="sr-only">
               Embudo de las demos del período por {groupName.toLowerCase()}
             </caption>
@@ -449,9 +449,8 @@ function GroupsTable({
                 <th scope="col" className="px-2 py-2 text-right font-medium">
                   Abiertas
                 </th>
-                <th scope="col" className="px-2 py-2 text-right font-medium">
-                  Convertidas
-                </th>
+                {/* La conversión va bajo las convertidas, como la apertura bajo las abiertas:
+                    cuatro columnas caben en un celular sin desplazarse de lado. */}
                 <th
                   scope="col"
                   aria-sort={ARIA_SORT[sort]}
@@ -462,7 +461,9 @@ function GroupsTable({
                     onClick={() => setSort(SORT_NEXT[sort])}
                     className="hover:text-foreground inline-flex items-center gap-1"
                   >
-                    Conversión <SortIcon className="size-3.5" aria-hidden="true" />
+                    Convertidas
+                    <span className="sr-only">, ordenar por conversión</span>
+                    <SortIcon className="size-3.5" aria-hidden="true" />
                   </button>
                 </th>
               </tr>
@@ -482,11 +483,11 @@ function GroupsTable({
                       {formatRate(group.funnel.openRate)}
                     </span>
                   </td>
-                  <td className="px-2 py-2 text-right tabular-nums">
+                  <td className="py-2 pl-2 text-right tabular-nums">
                     {group.funnel.converted}
-                  </td>
-                  <td className="py-2 pl-2 text-right font-medium tabular-nums">
-                    {formatRate(group.funnel.conversionRate)}
+                    <span className="block text-xs font-medium">
+                      {formatRate(group.funnel.conversionRate)}
+                    </span>
                   </td>
                 </tr>
               ))}
