@@ -60,6 +60,10 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   // La versión de Next no es información que nadie necesite para visitar un sitio.
   poweredByHeader: false,
+  // Sin esto Next le quita al proxy las cabeceras de las peticiones RSC, y el proxy no puede
+  // distinguir la precarga de un enlace de una visita real a una demo (ver `src/proxy.ts`).
+  // Normalizar la URL solo sirve a `/_next/data` del Pages Router, que este proyecto no usa.
+  skipProxyUrlNormalize: true,
   images: {
     /**
      * `/api/media/<clave>` responde un 307 al bucket, así que el optimizador termina pidiendo

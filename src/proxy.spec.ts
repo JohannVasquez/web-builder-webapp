@@ -134,4 +134,41 @@ describe('proxy', () => {
       expect(response.headers.get('x-robots-tag')).toBeNull();
     });
   });
+
+  describe('precarga de enlaces en una demo', () => {
+    const prefetch = (url: string, cookie?: string): NextRequest =>
+      new NextRequest(url, {
+        headers: {
+          'next-router-prefetch': '1',
+          rsc: '1',
+          ...(cookie === undefined ? {} : { cookie }),
+        },
+      });
+
+    it('no se renderiza: la API la contaría como una visita del prospecto', async () => {
+      const response = await proxy(
+        prefetch(`https://${DEMO_HOST}/nosotros`, `demo_token=${TOKEN}`),
+      );
+
+      expect(response.status).toBe(204);
+      expect(rewrittenTo(response)).toBeNull();
+      expect(response.headers.get('cache-control')).toBe('private, no-store');
+    });
+
+    it('la navegación real a la misma página sí se sirve', async () => {
+      const response = await proxy(
+        new NextRequest(`https://${DEMO_HOST}/nosotros`, {
+          headers: { rsc: '1', cookie: `demo_token=${TOKEN}` },
+        }),
+      );
+
+      expect(rewrittenTo(response)).toBe(`/${DEMO_HOST}/nosotros`);
+    });
+
+    it('un cliente normal sigue precargando', async () => {
+      const response = await proxy(prefetch('https://acme.cl/nosotros'));
+
+      expect(rewrittenTo(response)).toBe('/acme.cl/nosotros');
+    });
+  });
 });

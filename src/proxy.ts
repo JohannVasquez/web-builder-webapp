@@ -35,6 +35,9 @@ const ADMIN_HOST_LABEL = 'admin';
 // navegador (`/demo/api/...`) tienen más tramos y siguen de largo hasta su route handler.
 const DEMO_LINK_PATH = /^\/demo\/([^/]+)\/?$/;
 
+// Lo pone el router de Next en las precargas de un <Link>, no en la navegación real.
+const PREFETCH_HEADER = 'next-router-prefetch';
+
 export async function proxy(request: NextRequest): Promise<NextResponse> {
   const host = request.headers.get('host') ?? request.nextUrl.hostname;
   const tenantDomain = host.split(':')[0]?.toLowerCase() ?? '';
@@ -60,9 +63,21 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     isDemoHost(tenantDomain) ||
     isDemoToken(request.cookies.get(DEMO_TOKEN_COOKIE)?.value);
 
-  return isDemo
-    ? NextResponse.rewrite(url, { headers: DEMO_RESPONSE_HEADERS })
-    : NextResponse.rewrite(url);
+  if (!isDemo) {
+    return NextResponse.rewrite(url);
+  }
+
+  // En una demo no se precarga nada. La precarga de un <Link> que entra a la vista renderiza
+  // esa ruta en el servidor (al menos su metadata), que pide la página a la API con el token
+  // del prospecto, y la API la anota como visita: abrir la portada dejaba "visitadas" todas
+  // las páginas del menú. Sin precarga, la página se pide al hacer clic, que es cuando el
+  // prospecto de verdad la abre. Next solo deja ver esta cabecera aquí con
+  // `skipProxyUrlNormalize` (ver next.config.ts); a `headers()` nunca le llega.
+  if (request.headers.get(PREFETCH_HEADER) === '1') {
+    return new NextResponse(null, { status: 204, headers: DEMO_RESPONSE_HEADERS });
+  }
+
+  return NextResponse.rewrite(url, { headers: DEMO_RESPONSE_HEADERS });
 }
 
 export const config = {
