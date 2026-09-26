@@ -184,3 +184,61 @@ export type DemoDetail = z.infer<typeof DemoDetailSchema>;
 export type DemoVisit = z.infer<typeof DemoVisitSchema>;
 export type DemoInvitation = z.infer<typeof DemoInvitationSchema>;
 export type ConvertDemoResponse = z.infer<typeof ConvertDemoResponseSchema>;
+
+// Métricas (`GET /api/admin/demos/metrics`, solo owner). Tasas de 0 a 1; sin datos todo
+// viene en 0 y las medianas en nulo, nunca `NaN`.
+export const DEMO_METRICS_GROUPINGS = [
+  'industry',
+  'template',
+  'creator',
+  'month',
+] as const;
+export const DemoMetricsGroupingSchema = z.enum(DEMO_METRICS_GROUPINGS);
+
+export const DemoFunnelSchema = z.object({
+  created: z.number(),
+  opened: z.number(),
+  converted: z.number(),
+  openRate: z.number(),
+  conversionRate: z.number(),
+  conversionRateOfOpened: z.number(),
+});
+
+export const DISCARD_REASON_BUCKETS = [...DEMO_DISCARD_REASONS, 'sin-motivo'] as const;
+
+export const DemoMetricsSchema = z.object({
+  range: z.object({ from: z.string(), to: z.string(), timeZone: z.string() }),
+  asOf: z.string(),
+  funnel: DemoFunnelSchema,
+  outcomes: z.object({
+    active: z.number(),
+    expired: z.number(),
+    discarded: z.number(),
+    discardReasons: z.record(z.enum(DISCARD_REASON_BUCKETS), z.number()),
+    otraPropuesta: z.number(),
+    converted: z.number(),
+    purged: z.number(),
+  }),
+  timing: z.object({
+    medianDaysToFirstVisit: z.number().nullable(),
+    medianDaysToConversion: z.number().nullable(),
+  }),
+  engagement: z.object({
+    avgVisitsPerOpenedDemo: z.number(),
+    avgExtensions: z.number(),
+  }),
+  groupBy: DemoMetricsGroupingSchema.nullable(),
+  groups: z.array(
+    z.object({
+      key: z.string().nullable(),
+      label: z.string(),
+      funnel: DemoFunnelSchema,
+    }),
+  ),
+});
+
+export type DemoMetricsGrouping = z.infer<typeof DemoMetricsGroupingSchema>;
+export type DemoFunnel = z.infer<typeof DemoFunnelSchema>;
+export type DiscardReasonBucket = (typeof DISCARD_REASON_BUCKETS)[number];
+export type DemoMetrics = z.infer<typeof DemoMetricsSchema>;
+export type DemoMetricsGroup = DemoMetrics['groups'][number];

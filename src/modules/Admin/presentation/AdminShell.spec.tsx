@@ -60,4 +60,20 @@ describe('AdminShell: sección Demos por rol', () => {
       expect(screen.queryByText('Contenido de la pantalla')).not.toBeInTheDocument();
     },
   );
+
+  it('una editora que escribe la dirección de las métricas ve el aviso de la dueña', () => {
+    renderAs('editor', '/demos/metricas');
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Esta sección es solo para la dueña de la cuenta.',
+    );
+    expect(screen.queryByText('Contenido de la pantalla')).not.toBeInTheDocument();
+  });
+
+  it('la dueña entra a las métricas', () => {
+    renderAs('owner', '/demos/metricas');
+
+    expect(screen.getByText('Contenido de la pantalla')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Demos' })).toHaveClass('bg-accent');
+  });
 });

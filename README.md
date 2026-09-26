@@ -194,6 +194,15 @@ menú y, si escribe la dirección, `AdminShell` le muestra el aviso de "solo par
   opcionales y muestra el resultado de la invitación (`sent`, `not-needed` o `failed`). La
   lista de Clientes se vuelve a pedir, así que el sitio aparece ahí con su dirección
   definitiva.
+- **Métricas** (`/demos/metricas`, solo la dueña): embudo creadas → abiertas → convertidas,
+  tasas, medianas de días, resultados con los motivos de descarte y una tabla por rubro, kit,
+  vendedor o mes, ordenable por conversión. Todo sale tal cual de
+  `GET /api/admin/demos/metrics` (el panel no recalcula tasas) para el rango elegido: últimos
+  30 o 90 días, este año o uno personalizado, en días de Chile como los cuenta la API. Un
+  período sin demos muestra "Todavía no hay demos en este período." y nunca `NaN %`. Las
+  barras del embudo solo repiten el número y el porcentaje que ya están en texto. Una editora
+  no ve la pestaña (la API le responde 403) y, si escribe la dirección, ve el aviso de "solo
+  para la dueña" (`OWNER_ONLY_SUBPATHS` en `navLinks.ts`).
 
 ## Puesta en marcha
 

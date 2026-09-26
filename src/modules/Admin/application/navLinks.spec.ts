@@ -46,6 +46,12 @@ describe('isOwnerOnlyPath', () => {
     expect(isOwnerOnlyPath('/usuarios')).toBe(true);
   });
 
+  it('marca las métricas de demos, pero no la lista ni la ficha de una demo', () => {
+    expect(isOwnerOnlyPath('/demos/metricas')).toBe(true);
+    expect(isOwnerOnlyPath('/demos')).toBe(false);
+    expect(isOwnerOnlyPath('/demos/018f6f1a-0000-7000-8000-000000000001')).toBe(false);
+  });
+
   it('no marca las secciones compartidas', () => {
     expect(isOwnerOnlyPath('/')).toBe(false);
     expect(isOwnerOnlyPath('/actividad')).toBe(false);

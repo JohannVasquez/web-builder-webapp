@@ -31,10 +31,17 @@ export const visibleNavLinks = (role: AdminRole): readonly NavLink[] =>
     label,
   }));
 
+// Pantallas de la dueña dentro de una sección compartida: las métricas de demos muestran
+// cómo le va a cada vendedor, que es información del negocio y no del equipo (la API
+// responde 403 a una editora).
+export const DEMO_METRICS_PATH = '/demos/metricas';
+const OWNER_ONLY_SUBPATHS: readonly string[] = [DEMO_METRICS_PATH];
+
 // Rutas que un rol sin acceso puede escribir a mano en la barra de direcciones: la pantalla
 // debe mostrar el aviso de "solo para la dueña" en vez de un error crudo o quedar vacía.
 export const isOwnerOnlyPath = (pathname: string): boolean =>
-  NAV_LINK_DEFINITIONS.some((link) => link.ownerOnly && link.href === pathname);
+  NAV_LINK_DEFINITIONS.some((link) => link.ownerOnly && link.href === pathname) ||
+  OWNER_ONLY_SUBPATHS.includes(pathname);
 
 // Igual que la anterior pero para el equipo, y también para las pantallas que cuelgan de la
 // sección (`/demos/<id>`): un `client` que escribe la dirección ve el aviso, no la ficha.

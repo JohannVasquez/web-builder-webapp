@@ -22,6 +22,7 @@ import { useAdminApi } from './useAdminApi';
 import { CreateDemoForm } from './CreateDemoForm';
 import { DemoLinksReveal } from './DemoLinksReveal';
 import { DemoStatusBadge } from './DemoStatusBadge';
+import { DemoSectionTabs } from './DemoSectionTabs';
 import { useAsyncData } from '@/shared/lib/useAsyncData';
 import { cn } from '@/shared/lib/utils';
 import { Button } from '@/shared/ui/button';
@@ -53,6 +54,7 @@ export function DemoManager({ platformDomain }: DemoManagerProps): ReactElement 
 
   return (
     <div className="space-y-6">
+      <DemoSectionTabs role={session?.user.role ?? 'client'} current="/demos" />
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="ui-heading text-2xl">Demos</h1>
         {!isFormOpen && (

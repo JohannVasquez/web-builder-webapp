@@ -31,7 +31,7 @@ src/
 │   ├── admin/                  # Panel de administración
 │   │   ├── layout.tsx          # Shell del panel
 │   │   ├── clientes/[tenantId]/ # Pantallas por cliente
-│   │   ├── demos/              # Demos de prospecto: lista, creación y ficha (/demos/[demoId])
+│   │   ├── demos/              # Demos de prospecto: lista, ficha (/demos/[demoId]) y métricas (/demos/metricas)
 │   │   └── ...
 │   └── api/                    # Route handlers de Next.js
 │       ├── revalidate/         # POST /api/revalidate — invalida caché por dominio
