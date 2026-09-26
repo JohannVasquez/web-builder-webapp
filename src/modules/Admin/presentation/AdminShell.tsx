@@ -90,6 +90,10 @@ export function AdminShell({ children }: AdminShellProps): ReactElement {
                 <Link
                   key={href}
                   href={href}
+                  // En el celular solo se ve el ícono: el nombre tiene que seguir llegando al
+                  // lector de pantalla (un `hidden` lo saca también del árbol accesible).
+                  aria-label={label}
+                  aria-current={isCurrentSection(pathname, href) ? 'page' : undefined}
                   className={cn(
                     'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
                     isCurrentSection(pathname, href)

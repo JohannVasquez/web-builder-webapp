@@ -76,4 +76,22 @@ describe('AdminShell: sección Demos por rol', () => {
     expect(screen.getByText('Contenido de la pantalla')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Demos' })).toHaveClass('bg-accent');
   });
+
+  it('en el celular el menú muestra solo íconos, pero cada enlace conserva su nombre', () => {
+    renderAs('editor', '/demos');
+
+    // La etiqueta visible se oculta con `hidden sm:inline`, que también la saca del árbol
+    // accesible: el nombre tiene que venir del propio enlace.
+    expect(screen.getByRole('link', { name: 'Demos' })).toHaveAttribute(
+      'aria-label',
+      'Demos',
+    );
+    expect(screen.getByRole('link', { name: 'Demos' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(screen.getByRole('link', { name: 'Clientes' })).not.toHaveAttribute(
+      'aria-current',
+    );
+  });
 });
